@@ -18,6 +18,7 @@
   "dependencies": {
     "@prisma/adapter-mariadb": "^7.8.0",
     "@prisma/client": "^7.8.0",
+    "@wastegrab/shared": "file:../shared",
     "dotenv": "^17.4.2",
     "express": "^5.2.1"
   },

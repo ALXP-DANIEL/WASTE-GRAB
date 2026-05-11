@@ -3,8 +3,21 @@ import express, {
   type Request,
   type Response,
 } from "express";
+import type {
+  ApiErrorResponse,
+  CreateTodoInput,
+  HealthResponse,
+  Todo,
+  UpdateTodoInput,
+} from "@wastegrab/shared";
 import { config } from "./config.js";
-import { prisma } from "./prisma.js";
+import {
+  createTodo,
+  deleteTodo,
+  getTodoById,
+  listTodos,
+  updateTodo,
+} from "./services/todo.service.js";
 
 type TodoParams = {
   id: string;
@@ -31,31 +44,26 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 app.get("/api/health", (req: Request, res: Response) => {
-  res.json({
+  const payload: HealthResponse = {
     status: "ok",
     service: "wastegrab-todo-api",
-  });
+  };
+
+  res.json(payload);
 });
 
 app.get("/api/todos", async (req: Request, res: Response) => {
-  const todos = await prisma.todo.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  const todos = await listTodos();
 
   res.json(todos);
 });
 
 app.get<TodoParams>("/api/todos/:id", async (req, res) => {
-  const todo = await prisma.todo.findUnique({
-    where: {
-      id: req.params.id,
-    },
-  });
+  const todo = await getTodoById(req.params.id);
 
   if (!todo) {
-    res.status(404).json({ error: "Todo not found." });
+    const payload: ApiErrorResponse = { error: "Todo not found." };
+    res.status(404).json(payload);
     return;
   }
 
@@ -63,69 +71,55 @@ app.get<TodoParams>("/api/todos/:id", async (req, res) => {
 });
 
 app.post("/api/todos", async (req: Request, res: Response) => {
-  const body = getBody(req.body);
+  const body = getBody(req.body) as Partial<CreateTodoInput>;
   const title = normalizeTitle(body.title);
 
   if (!title) {
-    res.status(400).json({ error: "Title is required." });
+    const payload: ApiErrorResponse = { error: "Title is required." };
+    res.status(400).json(payload);
     return;
   }
 
-  const todo = await prisma.todo.create({
-    data: {
-      title,
-    },
-  });
+  const todo = await createTodo({ title });
 
   res.status(201).json(todo);
 });
 
 app.patch<TodoParams>("/api/todos/:id", async (req, res) => {
-  const body = getBody(req.body);
-  const data: { title?: string; completed?: boolean } = {};
+  const body = getBody(req.body) as Partial<UpdateTodoInput>;
 
   if (Object.hasOwn(body, "title")) {
     const title = normalizeTitle(body.title);
 
     if (!title) {
-      res.status(400).json({ error: "Title cannot be empty." });
+      const payload: ApiErrorResponse = { error: "Title cannot be empty." };
+      res.status(400).json(payload);
       return;
     }
 
-    data.title = title;
+    body.title = title;
   }
 
-  if (Object.hasOwn(body, "completed")) {
-    if (typeof body.completed !== "boolean") {
-      res.status(400).json({ error: "Completed must be a boolean." });
-      return;
-    }
-
-    data.completed = body.completed;
+  if (Object.hasOwn(body, "completed") && typeof body.completed !== "boolean") {
+    const payload: ApiErrorResponse = { error: "Completed must be a boolean." };
+    res.status(400).json(payload);
+    return;
   }
 
-  const todo = await prisma.todo.update({
-    where: {
-      id: req.params.id,
-    },
-    data,
-  });
+  const todo = await updateTodo(req.params.id, body);
 
   res.json(todo);
 });
 
 app.delete<TodoParams>("/api/todos/:id", async (req, res) => {
-  await prisma.todo.delete({
-    where: {
-      id: req.params.id,
-    },
-  });
+  await deleteTodo(req.params.id);
 
   res.sendStatus(204);
 });
 
 app.use((req: Request, res: Response) => {
-  res.status(404).json({ error: "Route not found." });
+  const payload: ApiErrorResponse = { error: "Route not found." };
+  res.status(404).json(payload);
 });
 
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
@@ -135,7 +129,8 @@ app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
   }
 
   if (isPrismaNotFoundError(err)) {
-    res.status(404).json({ error: "Todo not found." });
+    const payload: ApiErrorResponse = { error: "Todo not found." };
+    res.status(404).json(payload);
     return;
   }
 

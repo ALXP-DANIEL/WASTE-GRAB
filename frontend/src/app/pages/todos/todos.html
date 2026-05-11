@@ -1,0 +1,101 @@
+<main class="flex min-h-screen items-center justify-center p-4 bg-slate-50">
+  <z-card class="w-full max-w-md shadow-lg">
+    <div class="p-6 space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-slate-500">WasteGrab Tasks</p>
+          <h1 class="text-2xl font-bold tracking-tight">Todo list</h1>
+        </div>
+
+        <button 
+          z-button
+          variant="outline" 
+          size="sm" 
+          type="button" 
+          (click)="loadTodos()" 
+          [disabled]="isLoading()">
+          Refresh
+        </button>
+      </div>
+
+      <form class="flex gap-2" (ngSubmit)="addTodo()">
+        <div class="flex-1">
+          <label for="todo-title" class="sr-only">Todo title</label>
+          <input
+            z-input
+            id="todo-title"
+            name="title"
+            type="text"
+            placeholder="Add a task"
+            autocomplete="off"
+            [(ngModel)]="newTitle"
+            [disabled]="isSaving()" />
+        </div>
+        <button z-button type="submit" [disabled]="isSaving()" >
+          Add
+        </button>
+      </form>
+
+      <div class="flex gap-4 text-sm font-medium text-slate-600">
+        <div class="flex items-center gap-1.5">
+          <z-badge variant="secondary">{{ remainingCount() }}</z-badge>
+          <span>{{ remainingCount() === 1 ? 'task' : 'tasks' }} left</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <z-badge variant="outline">{{ completedCount() }}</z-badge>
+          <span>done</span>
+        </div>
+      </div>
+
+      @if (error()) {
+        <div class="p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+          {{ error() }}
+        </div>
+      }
+
+      @if (isLoading()) {
+        <div class="flex justify-center py-8">
+          <div class="text-slate-500">Loading...</div>
+        </div>
+      } @else if (todos().length === 0) {
+        <div class="flex justify-center py-8">
+          <div class="text-slate-500">No tasks yet. Add one to get started!</div>
+        </div>
+      } @else {
+        <div class="space-y-2">
+          @for (todo of todos(); track todo.id) {
+            <div class="flex items-center gap-3 p-3 rounded border border-slate-200 hover:bg-slate-50 transition">
+              <button
+                type="button"
+                (click)="toggleTodo(todo)"
+                [disabled]="busyTodoId() === todo.id"
+                class="flex-shrink-0 w-5 h-5 rounded border transition"
+                [class.border-green-500]="todo.completed"
+                [class.bg-green-500]="todo.completed"
+                [class.border-slate-300]="!todo.completed"
+                [class.cursor-not-allowed]="busyTodoId() === todo.id"
+              ></button>
+              <span
+                class="flex-1 text-sm transition"
+                [class.line-through]="todo.completed"
+                [class.text-slate-500]="todo.completed"
+                [class.text-slate-900]="!todo.completed">
+                {{ todo.title }}
+              </span>
+              <button
+                z-button
+                variant="ghost"
+                size="sm"
+                type="button"
+                (click)="deleteTodo(todo)"
+                [disabled]="busyTodoId() === todo.id"
+              >
+                ✕
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </z-card>
+</main>

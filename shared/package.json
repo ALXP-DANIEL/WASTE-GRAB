@@ -1,0 +1,12 @@
+{
+  "name": "@wastegrab/shared",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "types": "./index.ts",
+  "exports": {
+    ".": {
+      "types": "./index.ts"
+    }
+  }
+}
