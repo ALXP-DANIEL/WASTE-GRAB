@@ -1,0 +1,72 @@
+<main class="todo-page">
+  <section class="todo-shell" aria-labelledby="todo-heading">
+    <div class="todo-header">
+      <div>
+        <p class="eyebrow">WasteGrab Tasks</p>
+        <h1 id="todo-heading">Todo list</h1>
+      </div>
+
+      <button class="ghost-button" type="button" (click)="loadTodos()" [disabled]="isLoading()">
+        Refresh
+      </button>
+    </div>
+
+    <form class="todo-form" (ngSubmit)="addTodo()">
+      <label class="sr-only" for="todo-title">Todo title</label>
+      <input
+        id="todo-title"
+        name="title"
+        type="text"
+        placeholder="Add a task"
+        autocomplete="off"
+        [ngModel]="newTitle()"
+        (ngModelChange)="newTitle.set($event)"
+      />
+
+      <button type="submit" [disabled]="!newTitle().trim() || isSaving()">
+        {{ isSaving() ? 'Adding...' : 'Add' }}
+      </button>
+    </form>
+
+    @if (error()) {
+      <p class="error-message">{{ error() }}</p>
+    }
+
+    <div class="todo-stats" aria-label="Todo summary">
+      <span>{{ todos().length }} total</span>
+      <span>{{ remainingCount() }} active</span>
+      <span>{{ completedCount() }} done</span>
+    </div>
+
+    @if (isLoading()) {
+      <p class="empty-state">Loading todos...</p>
+    } @else if (!todos().length) {
+      <p class="empty-state">No todos yet. Add your first task above.</p>
+    } @else {
+      <ul class="todo-list" aria-label="Todos">
+        @for (todo of todos(); track todo.id) {
+          <li class="todo-item" [class.completed]="todo.completed">
+            <label class="todo-check">
+              <input
+                type="checkbox"
+                [checked]="todo.completed"
+                [disabled]="busyTodoId() === todo.id"
+                (change)="toggleTodo(todo)"
+              />
+              <span>{{ todo.title }}</span>
+            </label>
+
+            <button
+              class="delete-button"
+              type="button"
+              [disabled]="busyTodoId() === todo.id"
+              (click)="deleteTodo(todo)"
+            >
+              Delete
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</main>
