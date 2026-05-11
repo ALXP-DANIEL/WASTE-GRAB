@@ -4,18 +4,30 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug api with Nx",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["nx", "serve", "api"],
-      "env": {
-        "NODE_OPTIONS": "--inspect=9229"
-      },
+      "name": "Launch api only",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["exec", "nx", "serve", "api"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "skipFiles": ["<node_internals>/**"],
       "sourceMaps": true,
       "outFiles": [
         "${workspaceFolder}/apps/api/dist/**/*.(m|c|)js",
+        "!**/node_modules/**"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch frontend + api",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["exec", "nx", "serve", "frontend"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**"],
+      "sourceMaps": true,
+      "outFiles": [
+        "${workspaceFolder}/apps/frontend/dist/**/*.(m|c|)js",
         "!**/node_modules/**"
       ]
     }

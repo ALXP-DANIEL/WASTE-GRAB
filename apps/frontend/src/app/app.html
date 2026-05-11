@@ -1,0 +1,123 @@
+<main class="shell">
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Todo learning flow</p>
+      <h1>Simple tasks to learn CRUD end to end.</h1>
+      <p class="lede">
+        Add tasks, update them, and clear them out using a lightweight Express
+        API plus an Angular UI.
+      </p>
+    </div>
+
+    <div class="hero-card">
+      <span class="hero-card__value">{{ todoCount() }}</span>
+      <span class="hero-card__label">total tasks</span>
+      <span class="hero-card__meta">{{ remainingCount() }} remaining</span>
+    </div>
+  </section>
+
+  @if (error()) {
+    <section class="alert" role="alert">
+      {{ error() }}
+    </section>
+  }
+
+  <section class="content-grid">
+    <section class="panel form-panel">
+      <div class="panel__header">
+        <div>
+          <p class="panel__eyebrow">Form</p>
+          <h2>{{ formTitle() }}</h2>
+        </div>
+
+        <button
+          type="button"
+          class="button button--ghost"
+          (click)="cancelEdit()"
+          [disabled]="!isEditing()"
+        >
+          Clear
+        </button>
+      </div>
+
+      <form class="todo-form" [formGroup]="form" (ngSubmit)="saveTodo()">
+        <label class="field">
+          <span>Title</span>
+          <input type="text" formControlName="title" placeholder="Write project brief" />
+        </label>
+
+        <label class="field field--full">
+          <span>Notes</span>
+          <textarea
+            formControlName="notes"
+            rows="5"
+            placeholder="A quick reminder of the task details"
+          ></textarea>
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" class="button button--primary" [disabled]="saving()">
+            {{ submitLabel() }}
+          </button>
+
+          <button type="button" class="button button--secondary" (click)="loadTodos()" [disabled]="loading()">
+            Refresh
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel list-panel">
+      <div class="panel__header">
+        <div>
+          <p class="panel__eyebrow">List</p>
+          <h2>Todo list</h2>
+        </div>
+
+        <span class="status-chip" [class.status-chip--busy]="loading()">
+          {{ loading() ? 'Loading' : 'Ready' }}
+        </span>
+      </div>
+
+      @if (loading()) {
+        <div class="empty-state">
+          <p>Loading tasks from the API.</p>
+        </div>
+      } @else if (todos().length === 0) {
+        <div class="empty-state">
+          <p>No tasks yet. Add the first one using the form.</p>
+        </div>
+      } @else {
+        <div class="todo-grid">
+          @for (todo of todos(); track todo.id) {
+            <article class="todo-card" [class.todo-card--done]="todo.completed">
+              <div class="todo-card__top">
+                <span class="pill" [class.pill--done]="todo.completed">
+                  {{ todo.completed ? 'Complete' : 'In progress' }}
+                </span>
+                <span class="meta-text">{{ todo.createdAt | date:'medium' }}</span>
+              </div>
+
+              <h3>{{ todo.title }}</h3>
+              <p class="todo-card__description">{{ todo.notes }}</p>
+
+              <div class="todo-card__actions">
+                <button type="button" class="button button--ghost" (click)="startEdit(todo)">
+                  Edit
+                </button>
+
+                <button type="button" class="button button--secondary" (click)="toggleComplete(todo)" [disabled]="saving()">
+                  {{ todo.completed ? 'Reopen' : 'Complete' }}
+                </button>
+
+                <button type="button" class="button button--danger" (click)="removeTodo(todo)" [disabled]="saving()">
+                  Delete
+                </button>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+  </section>
+</main>
