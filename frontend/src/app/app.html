@@ -1,72 +1,91 @@
-<main class="todo-page">
-  <section class="todo-shell" aria-labelledby="todo-heading">
-    <div class="todo-header">
-      <div>
-        <p class="eyebrow">WasteGrab Tasks</p>
-        <h1 id="todo-heading">Todo list</h1>
+<main class="flex min-h-screen items-center justify-center p-4 bg-slate-50">
+  <z-card class="w-full max-w-md shadow-lg">
+    <div class="p-6 space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-slate-500">WasteGrab Tasks</p>
+          <h1 class="text-2xl font-bold tracking-tight">Todo list</h1>
+        </div>
+
+        <button 
+          z-button
+          variant="outline" 
+          size="sm" 
+          type="button" 
+          (click)="loadTodos()" 
+          [disabled]="isLoading()">
+          Refresh
+        </button>
       </div>
 
-      <button class="ghost-button" type="button" (click)="loadTodos()" [disabled]="isLoading()">
-        Refresh
-      </button>
-    </div>
+      <form class="flex gap-2" (ngSubmit)="addTodo()">
+        <div class="flex-1">
+          <label for="todo-title" class="sr-only">Todo title</label>
+          <input
+            z-input
+            id="todo-title"
+            name="title"
+            type="text"
+            placeholder="Add a task"
+            autocomplete="off"
+            [ngModel]="newTitle()"
+            (ngModelChange)="newTitle.set($event)"
+          />
+        </div>
 
-    <form class="todo-form" (ngSubmit)="addTodo()">
-      <label class="sr-only" for="todo-title">Todo title</label>
-      <input
-        id="todo-title"
-        name="title"
-        type="text"
-        placeholder="Add a task"
-        autocomplete="off"
-        [ngModel]="newTitle()"
-        (ngModelChange)="newTitle.set($event)"
-      />
+        <button 
+          z-button
+          type="submit" 
+          [disabled]="!newTitle().trim() || isSaving()">
+          {{ isSaving() ? 'Adding...' : 'Add' }}
+        </button>
+      </form>
 
-      <button type="submit" [disabled]="!newTitle().trim() || isSaving()">
-        {{ isSaving() ? 'Adding...' : 'Add' }}
-      </button>
-    </form>
+      @if (error()) {
+        <p class="text-sm text-destructive font-medium">{{ error() }}</p>
+      }
 
-    @if (error()) {
-      <p class="error-message">{{ error() }}</p>
-    }
+      <div class="flex gap-2 justify-center">
+        <z-badge variant="secondary">{{ todos().length }} total</z-badge>
+        <z-badge variant="secondary">{{ remainingCount() }} active</z-badge>
+        <z-badge variant="secondary">{{ completedCount() }} done</z-badge>
+      </div>
 
-    <div class="todo-stats" aria-label="Todo summary">
-      <span>{{ todos().length }} total</span>
-      <span>{{ remainingCount() }} active</span>
-      <span>{{ completedCount() }} done</span>
-    </div>
+      @if (isLoading()) {
+        <p class="text-center text-muted-foreground py-4">Loading todos...</p>
+      } @else if (!todos().length) {
+        <p class="text-center text-muted-foreground py-4">No todos yet. Add your first task above.</p>
+      } @else {
+        <ul class="space-y-3">
+          @for (todo of todos(); track todo.id) {
+            <li class="flex items-center justify-between p-3 rounded-lg border bg-white hover:bg-slate-50 transition-colors">
+              <label class="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                  [checked]="todo.completed"
+                  [disabled]="busyTodoId() === todo.id"
+                  (change)="toggleTodo(todo)"
+                />
+                <span [class.line-through]="todo.completed" [class.text-slate-400]="todo.completed">
+                  {{ todo.title }}
+                </span>
+              </label>
 
-    @if (isLoading()) {
-      <p class="empty-state">Loading todos...</p>
-    } @else if (!todos().length) {
-      <p class="empty-state">No todos yet. Add your first task above.</p>
-    } @else {
-      <ul class="todo-list" aria-label="Todos">
-        @for (todo of todos(); track todo.id) {
-          <li class="todo-item" [class.completed]="todo.completed">
-            <label class="todo-check">
-              <input
-                type="checkbox"
-                [checked]="todo.completed"
+              <button
+                z-button
+                variant="destructive"
+                size="sm"
+                type="button"
                 [disabled]="busyTodoId() === todo.id"
-                (change)="toggleTodo(todo)"
-              />
-              <span>{{ todo.title }}</span>
-            </label>
-
-            <button
-              class="delete-button"
-              type="button"
-              [disabled]="busyTodoId() === todo.id"
-              (click)="deleteTodo(todo)"
-            >
-              Delete
-            </button>
-          </li>
-        }
-      </ul>
-    }
-  </section>
+                (click)="deleteTodo(todo)"
+              >
+                Delete
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  </z-card>
 </main>

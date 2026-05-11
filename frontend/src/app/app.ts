@@ -2,6 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../environments/environment';
+import { ZardButtonComponent } from '@/components/button';
+import { ZardCardComponent } from '@/components/card';
+import { ZardBadgeComponent } from '@/components/badge';
+import { ZardInputDirective } from '@/components/input';
 
 interface Todo {
   id: string;
@@ -12,7 +16,13 @@ interface Todo {
 
 @Component({
   selector: 'app-root',
-  imports: [FormsModule],
+  imports: [
+    FormsModule, 
+    ZardButtonComponent, 
+    ZardCardComponent, 
+    ZardBadgeComponent, 
+    ZardInputDirective
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
