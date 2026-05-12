@@ -1,10 +1,36 @@
-<z-card class="mx-auto flex w-full max-w-4xl items-center justify-center border-slate-200/70 bg-white/90 shadow-sm backdrop-blur-xl">
-  <div class="flex flex-col items-center gap-5 p-8 text-center sm:p-12">
-    <p class="text-xs font-extrabold uppercase tracking-[0.35em] text-slate-500">WasteGrab</p>
-    <h1 class="text-4xl font-extrabold tracking-tight sm:text-6xl">WasteGrab</h1>
-    <p class="max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
-      Simple todo tracking with the same clean WasteGrab shell.
-    </p>
-    <a z-button zType="default" routerLink="/todos">Todos</a>
+<section class="flex w-full flex-col gap-6 px-4 pt-6 sm:px-6 lg:px-8">
+  <div class="flex items-start justify-between gap-4">
+    <div class="min-w-0 flex-1">
+      @if (authService.currentUser(); as user) {
+        <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">Welcome back, {{ user.name }}! 👋</h1>
+        <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base">{{ randomQuote }}</p>
+      } @else if (!authService.hasLoadedSession()) {
+        <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">Welcome back! 👋</h1>
+        <p class="mt-2 text-sm leading-6 text-slate-500 sm:text-base">{{ randomQuote }}</p>
+      } @else {
+        <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">Welcome! 👋</h1>
+        <p class="mt-2 text-sm leading-6 text-slate-500 sm:text-base">{{ randomQuote }}</p>
+      }
+    </div>
+
+    @if (authService.currentUser(); as user) {
+      <z-avatar
+        [zFallback]="user.name.slice(0, 2).toUpperCase()"
+        [zAlt]="user.name + ' avatar'"
+        zSize="lg"
+        class="mt-1 ring-2 ring-white shadow-sm"
+      />
+    }
   </div>
-</z-card>
+
+  <!-- <z-card class="flex w-full items-center justify-center border-slate-200/70 bg-white/90 shadow-sm backdrop-blur-xl">
+    <div class="flex flex-col items-center gap-5 p-8 text-center sm:p-12">
+      <p class="text-xs font-extrabold uppercase tracking-[0.35em] text-slate-500">WasteGrab</p>
+      <h2 class="text-3xl font-extrabold tracking-tight sm:text-5xl">WasteGrab</h2>
+      <p class="max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
+        Simple todo tracking with the same clean WasteGrab shell.
+      </p>
+      <a z-button zType="default" routerLink="/todos">Todos</a>
+    </div>
+  </z-card> -->
+</section>
