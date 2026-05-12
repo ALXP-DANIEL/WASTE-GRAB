@@ -253,7 +253,7 @@ export class AuthPage {
     this.authService.login(this.loginForm.getRawValue()).subscribe({
       next: async () => {
         this.isSubmitting.set(false);
-        await this.router.navigateByUrl('/dashboards');
+        await this.router.navigateByUrl('/dashboard');
       },
       error: () => {
         this.error.set('Could not sign in. Check your email and password.');
@@ -274,7 +274,7 @@ export class AuthPage {
     this.authService.register(this.registerForm.getRawValue()).subscribe({
       next: async () => {
         this.isSubmitting.set(false);
-        await this.router.navigateByUrl('/dashboards');
+        await this.router.navigateByUrl('/dashboard');
       },
       error: () => {
         this.error.set('Could not create your account.');
