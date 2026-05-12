@@ -9,6 +9,7 @@ import { ZardButtonComponent } from '@/components/button/button.component';
 import { ZardCardComponent } from '@/components/card/card.component';
 import { ZardInputDirective } from '@/components/input';
 import { ZardFormFieldComponent, ZardFormLabelComponent, ZardFormControlComponent } from '@/components/form/form.component';
+import { ZardDialogService } from '@/components/dialog/dialog.service';
 import { AuthService } from '@/services/auth.service';
 
 type AuthMode = 'login' | 'register';
@@ -35,12 +36,19 @@ type RegisterFormGroup = FormGroup<{
 export class AuthPage {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly dialogService = inject(ZardDialogService);
 
   protected readonly mode = signal<AuthMode>('login');
   protected readonly isSubmitting = signal(false);
   protected readonly error = signal('');
   protected readonly currentSlide = signal(0);
   protected autoplayInterval: any = null;
+  
+  // Forgot password state
+  protected readonly showForgotPasswordStep = signal<'email' | 'password' | null>(null);
+  protected readonly forgotPasswordEmail = signal('');
+  protected readonly forgotPasswordError = signal('');
+  protected readonly forgotPasswordSubmitting = signal(false);
 
   protected readonly slides = [
     {
@@ -98,6 +106,24 @@ export class AuthPage {
     }),
   });
 
+  protected readonly forgotPasswordForm = new FormGroup({
+    email: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.email],
+    }),
+  });
+
+  protected readonly resetPasswordForm = new FormGroup({
+    password: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(8)],
+    }),
+    confirmPassword: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(8)],
+    }),
+  });
+
   constructor() {
     effect(() => {
       if (this.autoplayInterval) {
@@ -129,6 +155,85 @@ export class AuthPage {
 
   protected prevSlide(): void {
     this.currentSlide.set((this.currentSlide() - 1 + this.slides.length) % this.slides.length);
+  }
+
+  protected openForgotPassword(): void {
+    this.showForgotPasswordStep.set('email');
+    this.forgotPasswordError.set('');
+    this.forgotPasswordForm.reset();
+    this.resetPasswordForm.reset();
+  }
+
+  protected closeForgotPassword(): void {
+    this.showForgotPasswordStep.set(null);
+    this.forgotPasswordError.set('');
+    this.forgotPasswordForm.reset();
+    this.resetPasswordForm.reset();
+  }
+
+  protected submitForgotPasswordEmail(): void {
+    if (this.forgotPasswordForm.invalid) {
+      this.forgotPasswordForm.markAllAsTouched();
+      return;
+    }
+
+    this.forgotPasswordSubmitting.set(true);
+    this.forgotPasswordError.set('');
+    
+    const emailValue = this.forgotPasswordForm.get('email')?.value;
+    if (emailValue) {
+      this.authService.forgotPassword(emailValue).subscribe({
+        next: () => {
+          this.forgotPasswordEmail.set(emailValue);
+          this.showForgotPasswordStep.set('password');
+          this.forgotPasswordSubmitting.set(false);
+          this.resetPasswordForm.reset();
+        },
+        error: (err) => {
+          this.forgotPasswordError.set(err.error?.error || 'An error occurred while requesting password reset.');
+          this.forgotPasswordSubmitting.set(false);
+        }
+      });
+    }
+  }
+
+  protected submitResetPassword(): void {
+    if (this.resetPasswordForm.invalid) {
+      this.resetPasswordForm.markAllAsTouched();
+      return;
+    }
+
+    const password = this.resetPasswordForm.get('password')?.value;
+    const confirmPassword = this.resetPasswordForm.get('confirmPassword')?.value;
+
+    if (password !== confirmPassword) {
+      this.forgotPasswordError.set('Passwords do not match.');
+      return;
+    }
+
+    this.forgotPasswordSubmitting.set(true);
+    this.forgotPasswordError.set('');
+    
+    this.authService.resetPassword(this.forgotPasswordEmail(), password!).subscribe({
+      next: () => {
+        this.dialogService.create({
+          zTitle: 'Success',
+          zContent: 'Password reset successfully.',
+          zOkText: 'Sign In',
+          zCancelText: null,
+          zWidth: 'max-w-sm',
+          zOnOk: () => {
+            this.closeForgotPassword();
+            this.forgotPasswordSubmitting.set(false);
+            this.mode.set('login');
+          },
+        });
+      },
+      error: (err) => {
+        this.forgotPasswordError.set(err.error?.error || 'Unable to reset password.');
+        this.forgotPasswordSubmitting.set(false);
+      },
+    });
   }
 
   protected switchMode(mode: AuthMode): void {

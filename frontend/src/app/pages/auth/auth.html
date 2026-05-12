@@ -50,7 +50,7 @@
             <z-form-field>
               <div class="flex items-center justify-between">
                 <z-form-label [zRequired]="true">Password</z-form-label>
-                <a z-button zType="link" href="#" class="p-0 text-xs">Forgot password?</a>
+                <button type="button" z-button zType="link" (click)="openForgotPassword()" class="p-0 text-xs">Forgot password?</button>
               </div>
               <z-form-control>
                 <input
@@ -166,6 +166,118 @@
     </div>
   </div>
 
+  <!-- Forgot Password Modal -->
+  @if (showForgotPasswordStep() === 'email') {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <z-card class="w-full max-w-md p-6 sm:p-8">
+        <div class="space-y-6">
+          <div>
+            <h2 class="text-2xl font-bold">Reset Password</h2>
+            <p class="text-sm text-slate-600 mt-2">Enter your email to reset your password</p>
+          </div>
+
+          @if (forgotPasswordError()) {
+            <div class="rounded-lg bg-red-50 p-3 text-sm text-red-700 border border-red-200">
+              {{ forgotPasswordError() }}
+            </div>
+          }
+
+          <form [formGroup]="forgotPasswordForm" (ngSubmit)="submitForgotPasswordEmail()" class="space-y-4">
+            <z-form-field>
+              <z-form-label [zRequired]="true">Email</z-form-label>
+              <z-form-control>
+                <input
+                  z-input
+                  type="email"
+                  formControlName="email"
+                  placeholder="name@example.com"
+                  class="w-full"
+                  autocomplete="email"
+                />
+              </z-form-control>
+            </z-form-field>
+
+            <div class="flex gap-3">
+              <button type="button" z-button zType="outline" (click)="closeForgotPassword()" class="flex-1">
+                Cancel
+              </button>
+              <button type="submit" z-button class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white" [zDisabled]="forgotPasswordSubmitting()">
+                @if (forgotPasswordSubmitting()) {
+                  Verifying...
+                } @else {
+                  Next
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </z-card>
+    </div>
+  }
+
+  <!-- Reset Password Modal -->
+  @if (showForgotPasswordStep() === 'password') {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <z-card class="w-full max-w-md p-6 sm:p-8">
+        <div class="space-y-6">
+          <div>
+            <h2 class="text-2xl font-bold">Set New Password</h2>
+            <p class="text-sm text-slate-600 mt-2">Email: {{ forgotPasswordEmail() }}</p>
+          </div>
+
+          @if (forgotPasswordError()) {
+            <div class="rounded-lg bg-red-50 p-3 text-sm text-red-700 border border-red-200">
+              {{ forgotPasswordError() }}
+            </div>
+          }
+
+          <form [formGroup]="resetPasswordForm" (ngSubmit)="submitResetPassword()" class="space-y-4">
+            <z-form-field>
+              <z-form-label [zRequired]="true">New Password</z-form-label>
+              <z-form-control>
+                <input
+                  z-input
+                  type="password"
+                  formControlName="password"
+                  placeholder="At least 8 characters"
+                  class="w-full"
+                  autocomplete="new-password"
+                />
+              </z-form-control>
+            </z-form-field>
+
+            <z-form-field>
+              <z-form-label [zRequired]="true">Confirm Password</z-form-label>
+              <z-form-control>
+                <input
+                  z-input
+                  type="password"
+                  formControlName="confirmPassword"
+                  placeholder="Repeat your password"
+                  class="w-full"
+                  autocomplete="new-password"
+                />
+              </z-form-control>
+            </z-form-field>
+
+            <div class="flex gap-3">
+              <button type="button" z-button zType="outline" (click)="showForgotPasswordStep.set('email')" class="flex-1">
+                Back
+              </button>
+              <button type="submit" z-button class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white" [zDisabled]="forgotPasswordSubmitting()">
+                @if (forgotPasswordSubmitting()) {
+                  Resetting...
+                } @else {
+                  Reset Password
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </z-card>
+    </div>
+  }
+
   <!-- Right: Slideshow (Desktop Only) -->
   <aside class="hidden flex-1 lg:flex lg:flex-col lg:overflow-hidden relative bg-slate-900" 
     (mouseenter)="stopAutoplay()" 
@@ -175,12 +287,12 @@
     <div class="absolute inset-0 flex items-center justify-center">
       @for (slide of slides; let i = $index; track i) {
         @if (currentSlide() === i) {
-          <div [class]="'absolute inset-0 bg-gradient-to-br ' + slide.color + ' transition-all duration-500'"></div>
+          <div [class]="'absolute inset-0 bg-linear-to-br ' + slide.color + ' transition-all duration-500'"></div>
         }
       }
       <!-- Black overlay -->
       <div class="absolute inset-0 bg-black/40"></div>
-      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+      <div class="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent"></div>
     </div>
 
     <!-- Content -->

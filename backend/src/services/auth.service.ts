@@ -90,6 +90,50 @@ export async function getCurrentUserFromRequest(
   return toUserResponse(user);
 }
 
+export async function requestPasswordReset(email: string): Promise<void> {
+  const normalizedEmail = normalizeEmail(email);
+  
+  const user = await prisma.user.findUnique({
+    where: { email: normalizedEmail },
+  });
+
+  if (!user) {
+    throw new Error("Email not found.");
+  }
+
+  // In a real app, you would send a reset email here.
+}
+
+export async function resetPassword(email: string, newPassword: string): Promise<AuthSession> {
+  const normalizedEmail = normalizeEmail(email);
+  const password = normalizePassword(newPassword);
+
+  if (password.length < 8) {
+    throw new Error("Password must be at least 8 characters.");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: normalizedEmail },
+  });
+
+  if (!user) {
+    throw new Error("User not found.");
+  }
+
+  // Update password
+  const updatedUser = await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      passwordHash: hashPassword(password),
+    },
+  });
+
+  return {
+    user: toUserResponse(updatedUser),
+    token: createSessionToken(updatedUser.id),
+  };
+}
+
 export function createAuthCookie(token: string): string {
   return serializeCookie(authCookieName, token, sessionLifetimeMs);
 }

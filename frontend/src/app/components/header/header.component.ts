@@ -102,7 +102,7 @@ export class UserHeaderComponent implements OnInit {
       zOkText: 'Logout',
       zOkDestructive: true,
       zCancelText: 'Cancel',
-      zWidth: '350px',
+      zWidth: 'max-w-sm',
       zOnOk: () => {
         void this.authService.logout().subscribe({
           next: () => {

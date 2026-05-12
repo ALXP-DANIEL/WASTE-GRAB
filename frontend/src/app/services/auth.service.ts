@@ -51,6 +51,16 @@ export class AuthService {
     );
   }
 
+  forgotPassword(email: string) {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/forgot-password`, { email }, this.requestOptions);
+  }
+
+  resetPassword(email: string, password: string) {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/reset-password`, { email, password }, this.requestOptions).pipe(
+      map((response) => response.user),
+    );
+  }
+
   private setSession(user: User): void {
     this.currentUser.set(user);
     this.hasLoadedSession.set(true);

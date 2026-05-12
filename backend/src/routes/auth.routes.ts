@@ -11,6 +11,8 @@ import {
   getCurrentUserFromRequest,
   loginUser,
   registerUser,
+  requestPasswordReset,
+  resetPassword,
 } from "../services/auth.service.js";
 import { getBody } from "../utils/request.js";
 
@@ -97,7 +99,49 @@ authRouter.post("/login", async (req: Request, res: Response) => {
 
 authRouter.post("/logout", (req: Request, res: Response) => {
   res.setHeader("Set-Cookie", clearAuthCookie());
-  res.sendStatus(204);
+  res.status(204).send();
+});
+
+authRouter.post("/forgot-password", async (req: Request, res: Response) => {
+  const body = getBody(req.body) as Partial<{ email: string }>;
+  const email = normalizeEmail(body.email);
+
+  if (!email || !email.includes("@")) {
+    res.status(400).json({ error: "A valid email is required." });
+    return;
+  }
+
+  try {
+    await requestPasswordReset(email);
+    res.status(200).json({ message: "Password reset link has been sent to your email." });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to request password reset.";
+    res.status(400).json({ error: message });
+  }
+});
+
+authRouter.post("/reset-password", async (req: Request, res: Response) => {
+  const body = getBody(req.body);
+  const email = normalizeText(body.email);
+  const password = normalizeText(body.password);
+
+  if (!email || !email.includes("@")) {
+    res.status(400).json({ error: "A valid email is required." });
+    return;
+  }
+
+  if (!password || password.length < 8) {
+    res.status(400).json({ error: "Password must be at least 8 characters." });
+    return;
+  }
+
+  try {
+    await resetPassword(email, password);
+    res.status(200).json({ message: "Password reset successfully." });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to reset password.";
+    res.status(400).json({ error: message });
+  }
 });
 
 export default authRouter;
