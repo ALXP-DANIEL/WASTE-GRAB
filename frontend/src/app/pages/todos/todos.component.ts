@@ -1,9 +1,9 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import type { Todo } from '@wastegrab/shared';
+import { ZardBadgeComponent } from '@/components/badge';
 import { ZardButtonComponent } from '@/components/button';
 import { ZardCardComponent } from '@/components/card';
-import { ZardBadgeComponent } from '@/components/badge';
 import { ZardInputDirective } from '@/components/input';
 import { TodoService } from '../../services/todo.service';
 
