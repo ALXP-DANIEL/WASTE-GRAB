@@ -1,130 +1,128 @@
-<main class="min-h-[calc(100vh-5.5rem)] px-4 py-6 text-slate-900">
-  <z-card class="mx-auto w-full max-w-2xl border-slate-200/70 bg-white/90 shadow-sm backdrop-blur-xl">
-    <div class="flex flex-col gap-6 p-6 sm:p-8">
-      <div class="flex flex-col gap-3">
-        <z-badge zType="outline" class="w-fit border-slate-200 bg-slate-100 text-slate-500">WasteGrab</z-badge>
-        <div class="space-y-2">
-          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            @if (mode() === 'login') {
-              Sign in
-            } @else {
-              Create account
-            }
-          </h1>
-          <p class="max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
-            @if (mode() === 'login') {
-              Use your account to continue to your todo dashboard.
-            } @else {
-              Create your WasteGrab account to get started.
-            }
-          </p>
-        </div>
-      </div>
-
-      @if (error()) {
-        <z-badge zType="destructive" class="w-fit">{{ error() }}</z-badge>
-      }
-
-      @if (mode() === 'login') {
-        <form class="grid gap-4" [formGroup]="loginForm" (ngSubmit)="submitLogin()">
-          <label class="grid gap-2 text-sm font-medium text-slate-700">
-            <span>Email</span>
-            <input
-              z-input
-              type="email"
-              formControlName="email"
-              autocomplete="email"
-              placeholder="you@example.com"
-            />
-          </label>
-
-          <label class="grid gap-2 text-sm font-medium text-slate-700">
-            <span>Password</span>
-            <input
-              z-input
-              type="password"
-              formControlName="password"
-              autocomplete="current-password"
-              placeholder="Your password"
-            />
-          </label>
-
-          <button z-button zType="default" type="submit" [zDisabled]="isSubmitting()">
-            @if (isSubmitting()) {
-              Signing in...
-            } @else {
-              Sign in
-            }
-          </button>
-        </form>
-      } @else {
-        <form class="grid gap-4" [formGroup]="registerForm" (ngSubmit)="submitRegister()">
-          <label class="grid gap-2 text-sm font-medium text-slate-700">
-            <span>Name</span>
-            <input
-              z-input
-              type="text"
-              formControlName="name"
-              autocomplete="name"
-              placeholder="Your name"
-            />
-          </label>
-
-          <label class="grid gap-2 text-sm font-medium text-slate-700">
-            <span>Email</span>
-            <input
-              z-input
-              type="email"
-              formControlName="email"
-              autocomplete="email"
-              placeholder="you@example.com"
-            />
-          </label>
-
-          <label class="grid gap-2 text-sm font-medium text-slate-700">
-            <span>Password</span>
-            <input
-              z-input
-              type="password"
-              formControlName="password"
-              autocomplete="new-password"
-              placeholder="At least 8 characters"
-            />
-          </label>
-
-          <label class="grid gap-2 text-sm font-medium text-slate-700">
-            <span>Phone</span>
-            <input
-              z-input
-              type="tel"
-              formControlName="phone"
-              autocomplete="tel"
-              placeholder="Optional"
-            />
-          </label>
-
-          <button z-button zType="default" type="submit" [zDisabled]="isSubmitting()">
-            @if (isSubmitting()) {
-              Creating account...
-            } @else {
-              Create account
-            }
-          </button>
-        </form>
-      }
-
-      <div class="flex flex-col gap-3 border-t border-slate-200 pt-6 sm:flex-row sm:items-center sm:justify-between">
-        @if (mode() === 'login') {
-          <button z-button zType="ghost" type="button" (click)="switchMode('register')">
-            Need an account? Register
-          </button>
-        } @else {
-          <button z-button zType="ghost" type="button" (click)="switchMode('login')">
-            Already have an account? Sign in
-          </button>
-        }
-        <a z-button zType="outline" routerLink="/">Back to home</a>
+<z-card class="mx-auto w-full max-w-2xl border-slate-200/70 bg-white/90 shadow-sm backdrop-blur-xl">
+  <div class="flex flex-col gap-6 p-6 sm:p-8">
+    <div class="flex flex-col gap-3">
+      <z-badge zType="outline" class="w-fit border-slate-200 bg-slate-100 text-slate-500">WasteGrab</z-badge>
+      <div class="space-y-2">
+        <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">
+          @if (mode() === 'login') {
+            Sign in
+          } @else {
+            Create account
+          }
+        </h1>
+        <p class="max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
+          @if (mode() === 'login') {
+            Use your account to continue to your todo dashboard.
+          } @else {
+            Create your WasteGrab account to get started.
+          }
+        </p>
       </div>
     </div>
-  </z-card>
-</main>
+
+    @if (error()) {
+      <z-badge zType="destructive" class="w-fit">{{ error() }}</z-badge>
+    }
+
+    @if (mode() === 'login') {
+      <form class="grid gap-4" [formGroup]="loginForm" (ngSubmit)="submitLogin()">
+        <label class="grid gap-2 text-sm font-medium text-slate-700">
+          <span>Email</span>
+          <input
+            z-input
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+          />
+        </label>
+
+        <label class="grid gap-2 text-sm font-medium text-slate-700">
+          <span>Password</span>
+          <input
+            z-input
+            type="password"
+            formControlName="password"
+            autocomplete="current-password"
+            placeholder="Your password"
+          />
+        </label>
+
+        <button z-button zType="default" type="submit" [zDisabled]="isSubmitting()">
+          @if (isSubmitting()) {
+            Signing in...
+          } @else {
+            Sign in
+          }
+        </button>
+      </form>
+    } @else {
+      <form class="grid gap-4" [formGroup]="registerForm" (ngSubmit)="submitRegister()">
+        <label class="grid gap-2 text-sm font-medium text-slate-700">
+          <span>Name</span>
+          <input
+            z-input
+            type="text"
+            formControlName="name"
+            autocomplete="name"
+            placeholder="Your name"
+          />
+        </label>
+
+        <label class="grid gap-2 text-sm font-medium text-slate-700">
+          <span>Email</span>
+          <input
+            z-input
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+          />
+        </label>
+
+        <label class="grid gap-2 text-sm font-medium text-slate-700">
+          <span>Password</span>
+          <input
+            z-input
+            type="password"
+            formControlName="password"
+            autocomplete="new-password"
+            placeholder="At least 8 characters"
+          />
+        </label>
+
+        <label class="grid gap-2 text-sm font-medium text-slate-700">
+          <span>Phone</span>
+          <input
+            z-input
+            type="tel"
+            formControlName="phone"
+            autocomplete="tel"
+            placeholder="Optional"
+          />
+        </label>
+
+        <button z-button zType="default" type="submit" [zDisabled]="isSubmitting()">
+          @if (isSubmitting()) {
+            Creating account...
+          } @else {
+            Create account
+          }
+        </button>
+      </form>
+    }
+
+    <div class="flex flex-col gap-3 border-t border-slate-200 pt-6 sm:flex-row sm:items-center sm:justify-between">
+      @if (mode() === 'login') {
+        <button z-button zType="ghost" type="button" (click)="switchMode('register')">
+          Need an account? Register
+        </button>
+      } @else {
+        <button z-button zType="ghost" type="button" (click)="switchMode('login')">
+          Already have an account? Sign in
+        </button>
+      }
+      <a z-button zType="outline" routerLink="/">Back to home</a>
+    </div>
+  </div>
+</z-card>

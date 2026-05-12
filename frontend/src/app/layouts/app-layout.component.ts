@@ -6,9 +6,9 @@ import { AppNavbarComponent } from '@/components/navbar/navbar.component';
   selector: 'app-layout',
   imports: [AppNavbarComponent, RouterOutlet],
   template: `
-    <div class="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(15,23,42,0.08),transparent_28%),linear-gradient(180deg,#f8fafc_0%,#ffffff_100%)] text-slate-900">
+    <div class="flex min-h-dvh flex-col overflow-x-hidden bg-[radial-gradient(circle_at_top_left,rgba(15,23,42,0.08),transparent_28%),linear-gradient(180deg,#f8fafc_0%,#ffffff_100%)] text-slate-900">
       <app-navbar />
-      <main class="min-h-0">
+      <main class="flex-1 px-4 py-6">
         <router-outlet />
       </main>
     </div>
