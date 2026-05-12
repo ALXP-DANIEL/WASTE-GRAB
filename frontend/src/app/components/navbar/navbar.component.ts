@@ -1,5 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideHome, lucideRecycle, lucideGift } from '@ng-icons/lucide';
 
 interface NavItem {
   label: string;
@@ -10,7 +13,8 @@ interface NavItem {
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink],
+  imports: [RouterLink, RouterLinkActive, NgIcon],
+  viewProviders: [provideIcons({ lucideHome, lucideRecycle, lucideGift })],
   template: `
     <!-- Desktop Sidebar (lg:) - Dark Green -->
     <aside class="hidden lg:flex lg:flex-col lg:fixed lg:left-0 lg:top-0 lg:h-dvh lg:w-56 lg:bg-emerald-900 lg:border-r lg:border-emerald-800 z-40 lg:rounded-tr-2xl lg:rounded-br-2xl overflow-y-auto">
@@ -32,10 +36,14 @@ interface NavItem {
           @for (item of navItems; track item.route) {
             <a 
               [routerLink]="item.route" 
-              class="px-4 py-2 rounded-lg text-sm font-medium text-emerald-100 hover:bg-emerald-800 hover:text-white transition-colors flex items-center gap-3"
+              routerLinkActive="bg-emerald-800 rounded-xl"
+              [routerLinkActiveOptions]="{ exact: true }"
+              class="group flex items-center gap-3 rounded-xl text-sm font-medium text-emerald-100 transition-colors"
             >
-              <span>{{ item.icon }}</span>
-              <span>{{ item.label }}</span>
+              <span class="flex w-full items-center gap-3 rounded-xl px-4 py-2 transition-colors group-hover:bg-emerald-700 group-hover:text-white">
+                <ng-icon [name]="item.icon" class="size-4! shrink-0 text-emerald-100" />
+                <span>{{ item.label }}</span>
+              </span>
             </a>
           }
         </nav>
@@ -45,16 +53,20 @@ interface NavItem {
     </aside>
 
     <!-- Mobile Bottom Navigation -->
-    <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200/70 z-40">
-      <div class="flex items-center justify-around p-2">
+    <nav class="lg:hidden bg-emerald-900 border border-emerald-800 rounded-2xl z-40 shadow-lg mx-2 mb-2">
+      <div class="flex items-center justify-around p-3">
         @for (item of navItems; track item.route) {
           @if (item.showOnMobile) {
             <a 
               [routerLink]="item.route" 
-              class="flex flex-col items-center justify-center gap-1 px-4 py-2 text-slate-600 hover:text-emerald-900 transition-colors text-center"
+              routerLinkActive="bg-emerald-800 rounded-xl"
+              [routerLinkActiveOptions]="{ exact: true }"
+              class="group flex flex-col items-center justify-center gap-1 rounded-xl text-center text-emerald-100 transition-colors"
             >
-              <span class="text-lg">{{ item.icon }}</span>
-              <span class="text-xs font-medium">{{ item.label }}</span>
+              <span class="flex w-full flex-col items-center justify-center gap-1 rounded-xl px-4 py-2 transition-colors group-hover:bg-emerald-700 group-hover:text-white">
+                <ng-icon [name]="item.icon" class="size-5!" />
+                <span class="text-xs font-medium">{{ item.label }}</span>
+              </span>
             </a>
           }
         }
@@ -65,13 +77,8 @@ interface NavItem {
 })
 export class AppNavbarComponent {
   navItems: NavItem[] = [
-    { label: 'Dashboard', route: '/', icon: '🏠', showOnMobile: true },
-    // { label: 'Request Pickup', route: '/request-pickup', icon: '📦', showOnMobile: false },
-    { label: 'My Requests', route: '/my-requests', icon: '📋', showOnMobile: true },
-    { label: 'Rewards', route: '/rewards', icon: '🎁', showOnMobile: true },
-    // { label: 'AI Scanner', route: '/ai-scanner', icon: '🤖', showOnMobile: false },
-    // { label: 'Impact', route: '/impact', icon: '🌱', showOnMobile: false },
-    // { label: 'Profile', route: '/profile', icon: '👤', showOnMobile: true },
-    // { label: 'Settings', route: '/settings', icon: '⚙️', showOnMobile: false },
+    { label: 'Dashboard', route: '/dashboard', icon: 'lucideHome', showOnMobile: true },
+    { label: 'My Requests', route: '/my-requests', icon: 'lucideRecycle', showOnMobile: true },
+    { label: 'Rewards', route: '/rewards', icon: 'lucideGift', showOnMobile: true },
   ];
 }
