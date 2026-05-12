@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { AuthService } from '@/services/auth.service';
 import { UserHeaderComponent } from '@/components/header/header.component';
 import { ZardAvatarComponent } from '@/components/avatar/avatar.component';
@@ -6,7 +7,7 @@ import { ZardButtonComponent } from '@/components/button/button.component';
 
 @Component({
   selector: 'app-profile-page',
-  imports: [UserHeaderComponent, ZardAvatarComponent, ZardButtonComponent],
+  imports: [UserHeaderComponent, ZardAvatarComponent, ZardButtonComponent, DatePipe],
   templateUrl: './profile.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

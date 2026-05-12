@@ -1,10 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, effect } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, Validators, FormControl, FormGroup } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideChevronLeft, lucideChevronRight } from '@ng-icons/lucide';
 import { ZardBadgeComponent } from '@/components/badge/badge.component';
 import { ZardButtonComponent } from '@/components/button/button.component';
 import { ZardCardComponent } from '@/components/card/card.component';
 import { ZardInputDirective } from '@/components/input';
+import { ZardFormFieldComponent, ZardFormLabelComponent, ZardFormControlComponent } from '@/components/form/form.component';
 import { AuthService } from '@/services/auth.service';
 
 type AuthMode = 'login' | 'register';
@@ -23,7 +27,8 @@ type RegisterFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-auth-page',
-  imports: [ReactiveFormsModule, RouterLink, ZardBadgeComponent, ZardButtonComponent, ZardCardComponent, ZardInputDirective],
+  imports: [CommonModule, ReactiveFormsModule, ZardButtonComponent, ZardCardComponent, ZardInputDirective, ZardFormFieldComponent, ZardFormLabelComponent, ZardFormControlComponent, NgIcon],
+  providers: [provideIcons({ lucideChevronLeft, lucideChevronRight })],
   templateUrl: './auth.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -34,6 +39,35 @@ export class AuthPage {
   protected readonly mode = signal<AuthMode>('login');
   protected readonly isSubmitting = signal(false);
   protected readonly error = signal('');
+  protected readonly currentSlide = signal(0);
+  protected autoplayInterval: any = null;
+
+  protected readonly slides = [
+    {
+      title: 'Reduce Waste',
+      quote: 'Help reduce environmental impact by properly managing and recycling waste responsibly.',
+      author: 'Eco Warrior',
+      color: 'from-emerald-500 to-teal-600',
+    },
+    {
+      title: 'Earn Rewards',
+      quote: 'Get rewarded for your contribution to a cleaner planet and sustainable future.',
+      author: 'Sustainability Lead',
+      color: 'from-blue-500 to-cyan-600',
+    },
+    {
+      title: 'Build Community',
+      quote: 'Connect with others who care about sustainability and environmental change.',
+      author: 'Community Manager',
+      color: 'from-purple-500 to-pink-600',
+    },
+    {
+      title: 'Make Impact',
+      quote: 'Track your environmental impact and see the difference you make every day.',
+      author: 'Impact Director',
+      color: 'from-orange-500 to-red-600',
+    },
+  ];
 
   protected readonly loginForm: LoginFormGroup = new FormGroup({
     email: new FormControl('', {
@@ -63,6 +97,39 @@ export class AuthPage {
       nonNullable: true,
     }),
   });
+
+  constructor() {
+    effect(() => {
+      if (this.autoplayInterval) {
+        clearInterval(this.autoplayInterval);
+      }
+      this.startAutoplay();
+    });
+  }
+
+  protected startAutoplay(): void {
+    this.autoplayInterval = setInterval(() => {
+      this.currentSlide.set((this.currentSlide() + 1) % this.slides.length);
+    }, 5000);
+  }
+
+  protected stopAutoplay(): void {
+    if (this.autoplayInterval) {
+      clearInterval(this.autoplayInterval);
+    }
+  }
+
+  protected goToSlide(index: number): void {
+    this.currentSlide.set(index);
+  }
+
+  protected nextSlide(): void {
+    this.currentSlide.set((this.currentSlide() + 1) % this.slides.length);
+  }
+
+  protected prevSlide(): void {
+    this.currentSlide.set((this.currentSlide() - 1 + this.slides.length) % this.slides.length);
+  }
 
   protected switchMode(mode: AuthMode): void {
     this.mode.set(mode);

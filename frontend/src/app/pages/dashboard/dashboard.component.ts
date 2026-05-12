@@ -5,7 +5,7 @@ import { UserHeaderComponent } from '@/components/header/header.component';
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [ZardAvatarComponent, UserHeaderComponent],
+  imports: [ UserHeaderComponent],
   templateUrl: './dashboard.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
