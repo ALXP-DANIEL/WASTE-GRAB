@@ -1,6 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, Validators, FormControl, FormGroup } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { ZardBadgeComponent } from '@/components/badge/badge.component';
+import { ZardButtonComponent } from '@/components/button/button.component';
+import { ZardCardComponent } from '@/components/card/card.component';
+import { ZardInputDirective } from '@/components/input';
 import { AuthService } from '@/services/auth.service';
 
 type AuthMode = 'login' | 'register';
@@ -19,10 +23,8 @@ type RegisterFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-auth-page',
-  standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, ZardBadgeComponent, ZardButtonComponent, ZardCardComponent, ZardInputDirective],
   templateUrl: './auth.html',
-  styleUrl: './auth.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthPage {
