@@ -13,7 +13,7 @@ interface NavItem {
   imports: [RouterLink],
   template: `
     <!-- Desktop Sidebar (lg:) - Dark Green -->
-    <aside class="hidden lg:flex lg:flex-col lg:fixed lg:left-0 lg:top-0 lg:h-dvh lg:w-56 lg:bg-emerald-900 lg:border-r lg:border-emerald-800 z-40 overflow-y-auto">
+    <aside class="hidden lg:flex lg:flex-col lg:fixed lg:left-0 lg:top-0 lg:h-dvh lg:w-56 lg:bg-emerald-900 lg:border-r lg:border-emerald-800 z-40 lg:rounded-tr-2xl lg:rounded-br-2xl overflow-y-auto">
       <div class="flex flex-col h-full">
         <!-- Brand -->
         <div class="px-6 py-6 border-b border-emerald-800">

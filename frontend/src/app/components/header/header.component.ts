@@ -25,7 +25,7 @@ import { AuthService } from '@/services/auth.service';
         </div>
 
         <!-- Right: User Avatar -->
-        <div class="flex items-center gap-2 flex-shrink-0">
+        <div class="flex items-center gap-2 shrink-0">
           @if (authService.currentUser(); as user) {
               <z-avatar
                 [zFallback]="user.name.slice(0, 2).toUpperCase()"
