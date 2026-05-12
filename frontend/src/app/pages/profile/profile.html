@@ -1,0 +1,51 @@
+<!-- Profile header -->
+<user-header></user-header>
+
+<!-- Page content -->
+<section class="flex w-full flex-col gap-6 px-4 pt-24 sm:px-6 lg:px-8">
+  <div class="max-w-2xl">
+    <h2 class="text-2xl font-bold text-slate-900 mb-6">My Profile</h2>
+
+    @if (authService.currentUser(); as user) {
+      <div class="bg-white rounded-lg shadow p-6 space-y-6">
+        <!-- Avatar -->
+        <div class="flex items-center gap-4">
+          <z-avatar
+            [zFallback]="user.name.slice(0, 2).toUpperCase()"
+            [zAlt]="user.name + ' avatar'"
+            zSize="lg"
+            class="ring-2 ring-slate-200 shadow-sm"
+          />
+          <div>
+            <p class="text-sm text-slate-500">Profile Picture</p>
+            <p class="font-medium text-slate-900">{{ user.name }}</p>
+          </div>
+        </div>
+
+        <!-- User Info -->
+        <div class="space-y-4 border-t pt-6">
+          <div class="grid gap-2">
+            <label class="text-sm font-medium text-slate-700">Full Name</label>
+            <p class="text-slate-900">{{ user.name }}</p>
+          </div>
+
+          <div class="grid gap-2">
+            <label class="text-sm font-medium text-slate-700">Email</label>
+            <p class="text-slate-900">{{ user.email }}</p>
+          </div>
+
+          <div class="grid gap-2">
+            <label class="text-sm font-medium text-slate-700">Member Since</label>
+            <p class="text-slate-900">{{ user.createdAt | date: 'MMM dd, yyyy' }}</p>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="border-t pt-6 flex gap-3">
+          <button z-button zType="outline" class="px-4 py-2">Edit Profile</button>
+          <button z-button zType="outline" class="px-4 py-2">Change Password</button>
+        </div>
+      </div>
+    }
+  </div>
+</section>

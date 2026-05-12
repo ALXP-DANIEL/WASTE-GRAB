@@ -107,6 +107,7 @@ export class ZardDropdownService {
     const positionStrategy = this.overlayPositionBuilder
       .flexibleConnectedTo(triggerElement)
       .withPositions([
+        // Default: align start-to-start (below)
         {
           originX: 'start',
           originY: 'bottom',
@@ -114,10 +115,27 @@ export class ZardDropdownService {
           overlayY: 'top',
           offsetY: 4,
         },
+        // Flip vertically if needed (above)
         {
           originX: 'start',
           originY: 'top',
           overlayX: 'start',
+          overlayY: 'bottom',
+          offsetY: -4,
+        },
+        // If near right edge, align end-to-end (below)
+        {
+          originX: 'end',
+          originY: 'bottom',
+          overlayX: 'end',
+          overlayY: 'top',
+          offsetY: 4,
+        },
+        // End-to-end and flipped vertically (above)
+        {
+          originX: 'end',
+          originY: 'top',
+          overlayX: 'end',
           overlayY: 'bottom',
           offsetY: -4,
         },

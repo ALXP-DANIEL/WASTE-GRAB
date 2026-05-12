@@ -6,6 +6,8 @@ import { TodosPage } from './pages/todos/todos.component';
 import { MyRequestsPage } from './pages/my-requests/my-requests.component';
 import { RewardsPage } from './pages/rewards/rewards.component';
 import { DashboardPage } from './pages/dashboard/dashboard.component';
+import { ProfilePage } from './pages/profile/profile.component';
+import { SettingsPage } from './pages/settings/settings.component';
 import { authGuard, guestGuard } from './services/auth.guard';
 
 export const routes: Routes = [
@@ -40,6 +42,16 @@ export const routes: Routes = [
       {
         path: 'rewards',
         component: RewardsPage,
+        canActivate: [authGuard],
+      },
+      {
+        path: 'profile',
+        component: ProfilePage,
+        canActivate: [authGuard],
+      },
+      {
+        path: 'settings',
+        component: SettingsPage,
         canActivate: [authGuard],
       },
     ],
