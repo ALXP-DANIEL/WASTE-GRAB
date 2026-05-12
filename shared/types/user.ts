@@ -10,22 +10,26 @@ export type User = {
   email: string;
   phone: string | null;
   role: UserRole;
-  points: number;
-  isActiveCollector: boolean;
-  vehicleInfo: string | null;
   createdAt: string;
 };
 
 export type CreateUserInput = {
   name: string;
   email: string;
-  passwordHash: string;
+  password: string;
   phone?: string;
 };
 
 export type UpdateUserInput = {
   name?: string;
   phone?: string;
-  isActiveCollector?: boolean;
-  vehicleInfo?: string;
+};
+
+export type LoginInput = {
+  email: string;
+  password: string;
+};
+
+export type AuthResponse = {
+  user: User;
 };

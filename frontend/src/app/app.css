@@ -1,48 +1,187 @@
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background:
+    radial-gradient(circle at top left, rgba(15, 23, 42, 0.08), transparent 28%),
+    linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  color: #0f172a;
+}
+
+.app-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+}
+
+.app-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.app-brand-mark {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+
+.app-brand-text {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.app-status {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.status-pill,
+.status-card,
+.app-action {
+  border-radius: 9999px;
+  padding: 0.58rem 0.95rem;
+  font-weight: 700;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.status-pill--loading {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+
+.status-card {
+  display: grid;
+  gap: 0.1rem;
+  background: #dcfce7;
+  color: #166534;
+  min-width: 0;
+}
+
+.status-card__label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.82;
+}
+
+.status-card__name {
+  font-size: 0.95rem;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.status-card__role {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.app-action {
+  border: 0;
+  background: #0f172a;
+  color: #ffffff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.app-action--ghost {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.app-action:hover,
+.app-action:focus-visible {
+  transform: translateY(-1px);
+}
+
+.app-action:focus-visible,
+.app-brand:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 3px;
+}
+
+.app-main {
+  min-height: 0;
+}
+
 .home-shell {
-	min-height: 100vh;
-	display: grid;
-	place-items: center;
-	padding: 1.5rem;
-	background: #ffffff;
-	color: #111827;
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: #ffffff;
+  color: #111827;
 }
 
 .home-content {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 1.25rem;
-	text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
 }
 
 .home-title {
-	margin: 0;
-	font-size: clamp(3rem, 10vw, 6rem);
-	line-height: 1;
-	font-weight: 800;
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
+  margin: 0;
+  font-size: clamp(3rem, 10vw, 6rem);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .home-button {
-	border: 0;
-	border-radius: 9999px;
-	padding: 0.875rem 1.75rem;
-	background: #111827;
-	color: #ffffff;
-	font-size: 1rem;
-	font-weight: 700;
-	letter-spacing: 0.04em;
-	cursor: pointer;
-	transition: transform 120ms ease, background-color 120ms ease;
+  border: 0;
+  border-radius: 9999px;
+  padding: 0.875rem 1.75rem;
+  background: #111827;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: transform 120ms ease, background-color 120ms ease;
 }
 
 .home-button:hover {
-	background: #0f172a;
-	transform: translateY(-1px);
+  background: #0f172a;
+  transform: translateY(-1px);
 }
 
 .home-button:focus-visible {
-	outline: 3px solid #93c5fd;
-	outline-offset: 4px;
+  outline: 3px solid #93c5fd;
+  outline-offset: 4px;
 }

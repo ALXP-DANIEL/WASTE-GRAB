@@ -9,24 +9,25 @@ import { environment } from '../../environments/environment';
 export class TodoService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiBaseUrl}/todos`;
+  private readonly requestOptions = { withCredentials: true as const };
 
   listTodos() {
-    return this.http.get<Todo[]>(this.apiUrl);
+    return this.http.get<Todo[]>(this.apiUrl, this.requestOptions);
   }
 
   getTodoById(id: string) {
-    return this.http.get<Todo>(`${this.apiUrl}/${id}`);
+    return this.http.get<Todo>(`${this.apiUrl}/${id}`, this.requestOptions);
   }
 
   createTodo(input: CreateTodoInput) {
-    return this.http.post<Todo>(this.apiUrl, input);
+    return this.http.post<Todo>(this.apiUrl, input, this.requestOptions);
   }
 
   updateTodo(id: string, input: Partial<UpdateTodoInput>) {
-    return this.http.patch<Todo>(`${this.apiUrl}/${id}`, input);
+    return this.http.patch<Todo>(`${this.apiUrl}/${id}`, input, this.requestOptions);
   }
 
   deleteTodo(id: string) {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, this.requestOptions);
   }
 }

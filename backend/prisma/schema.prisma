@@ -45,9 +45,6 @@ model User {
   passwordHash      String    @db.VarChar(255)
   phone             String?   @db.VarChar(20)
   role              UserRole  @default(USER)
-  points            Int       @default(0)
-  isActiveCollector Boolean   @default(false)
-  vehicleInfo       String?   @db.Text
   createdAt         DateTime  @default(now()) @map("created_at")
 
   pickupRequestsAsUser     PickupRequest[] @relation("UserRequests")

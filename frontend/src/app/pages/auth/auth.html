@@ -1,0 +1,118 @@
+<main class="auth-shell">
+  <section class="auth-card">
+    <p class="auth-brand">WasteGrab</p>
+    <h1 class="auth-title">
+      @if (mode() === 'login') {
+        Sign in
+      } @else {
+        Create account
+      }
+    </h1>
+    <p class="auth-copy">
+      @if (mode() === 'login') {
+        Use your account to continue to your todo dashboard.
+      } @else {
+        Create your WasteGrab account to get started.
+      }
+    </p>
+
+    @if (error()) {
+      <p class="auth-error" role="alert">{{ error() }}</p>
+    }
+
+    @if (mode() === 'login') {
+      <form class="auth-form" [formGroup]="loginForm" (ngSubmit)="submitLogin()">
+        <label class="auth-field">
+          <span>Email</span>
+          <input
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+          />
+        </label>
+
+        <label class="auth-field">
+          <span>Password</span>
+          <input
+            type="password"
+            formControlName="password"
+            autocomplete="current-password"
+            placeholder="Your password"
+          />
+        </label>
+
+        <button type="submit" class="auth-button" [disabled]="isSubmitting()">
+          @if (isSubmitting()) {
+            Signing in...
+          } @else {
+            Sign in
+          }
+        </button>
+      </form>
+    } @else {
+      <form class="auth-form" [formGroup]="registerForm" (ngSubmit)="submitRegister()">
+        <label class="auth-field">
+          <span>Name</span>
+          <input
+            type="text"
+            formControlName="name"
+            autocomplete="name"
+            placeholder="Your name"
+          />
+        </label>
+
+        <label class="auth-field">
+          <span>Email</span>
+          <input
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+          />
+        </label>
+
+        <label class="auth-field">
+          <span>Password</span>
+          <input
+            type="password"
+            formControlName="password"
+            autocomplete="new-password"
+            placeholder="At least 8 characters"
+          />
+        </label>
+
+        <label class="auth-field">
+          <span>Phone</span>
+          <input
+            type="tel"
+            formControlName="phone"
+            autocomplete="tel"
+            placeholder="Optional"
+          />
+        </label>
+
+        <button type="submit" class="auth-button" [disabled]="isSubmitting()">
+          @if (isSubmitting()) {
+            Creating account...
+          } @else {
+            Create account
+          }
+        </button>
+      </form>
+    }
+
+    <div class="auth-footer">
+      @if (mode() === 'login') {
+        <button type="button" class="auth-link" (click)="switchMode('register')">
+          Need an account? Register
+        </button>
+      } @else {
+        <button type="button" class="auth-link" (click)="switchMode('login')">
+          Already have an account? Sign in
+        </button>
+      }
+      <a routerLink="/" class="auth-home-link">Back to home</a>
+    </div>
+  </section>
+</main>
