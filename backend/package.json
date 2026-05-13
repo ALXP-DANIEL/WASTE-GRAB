@@ -6,13 +6,18 @@
   "type": "module",
   "main": "dist/server.js",
   "scripts": {
+    "build:shared": "npm --prefix ../shared run build",
+    "prebuild": "npm run build:shared",
     "build": "prisma generate && tsc",
     "db:push": "prisma db push",
+    "predev": "npm run build:shared",
     "dev": "prisma generate && tsx watch src/server.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
+    "prestart": "npm run build:shared",
     "start": "node dist/server.js",
+    "pretypecheck": "npm run build:shared",
     "typecheck": "prisma generate && tsc --noEmit"
   },
   "dependencies": {

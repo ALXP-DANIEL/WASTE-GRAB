@@ -251,12 +251,13 @@ export class AuthPage {
     this.error.set('');
 
     this.authService.login(this.loginForm.getRawValue()).subscribe({
-      next: async () => {
+      next: async (user) => {
         this.isSubmitting.set(false);
-        await this.router.navigateByUrl('/dashboard');
+        await this.router.navigateByUrl(this.authService.getDefaultRouteForRole(user.role));
       },
-      error: () => {
-        this.error.set('Could not sign in. Check your email and password.');
+      error: (err: unknown) => {
+        const message = this.getAuthErrorMessage(err);
+        this.error.set(message ?? 'Could not sign in. Check your email and password.');
         this.isSubmitting.set(false);
       },
     });
@@ -272,14 +273,33 @@ export class AuthPage {
     this.error.set('');
 
     this.authService.register(this.registerForm.getRawValue()).subscribe({
-      next: async () => {
+      next: async (user) => {
         this.isSubmitting.set(false);
-        await this.router.navigateByUrl('/dashboard');
+        await this.router.navigateByUrl(this.authService.getDefaultRouteForRole(user.role));
       },
-      error: () => {
-        this.error.set('Could not create your account.');
+      error: (err: unknown) => {
+        const message = this.getAuthErrorMessage(err);
+        this.error.set(message ?? 'Could not create your account.');
         this.isSubmitting.set(false);
       },
     });
+  }
+
+  private getAuthErrorMessage(err: unknown): string | null {
+    const invalidMessages = new Set(['Invalid user role.', 'Invalid user data.']);
+
+    if (typeof err === 'object' && err !== null) {
+      const errorObj = err as { message?: string; error?: { error?: string } };
+
+      if (errorObj.error?.error && invalidMessages.has(errorObj.error.error)) {
+        return errorObj.error.error;
+      }
+
+      if (errorObj.message && invalidMessages.has(errorObj.message)) {
+        return errorObj.message;
+      }
+    }
+
+    return null;
   }
 }

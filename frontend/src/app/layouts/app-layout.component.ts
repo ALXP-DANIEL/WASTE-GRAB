@@ -12,7 +12,7 @@ import { AuthService } from '@/services/auth.service';
       @if (authService.currentUser()) {
         <app-navbar />
       }
-      <main class="flex-1 overflow-y-auto flex flex-col min-h-0" [ngClass]="authService.currentUser() ? 'lg:pb-0 bg-stone-100 m-2 rounded-2xl border-dashed border-2 border-slate-300' : 'lg:pb-0 bg-slate-50'">
+      <main class="flex-1 overflow-y-auto flex flex-col min-h-0" [ngClass]="authService.currentUser() ? 'lg:pb-0 bg-orange-50 m-2 rounded-2xl border-dashed border-2 border-slate-300' : 'lg:pb-0 bg-slate-50'">
         <router-outlet />
       </main>
     </div>

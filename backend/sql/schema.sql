@@ -8,7 +8,7 @@ CREATE TABLE users (
   email VARCHAR(255) NOT NULL UNIQUE,
   passwordHash VARCHAR(255) NOT NULL,
   phone VARCHAR(20),
-  role ENUM('USER', 'COLLECTOR', 'ADMIN') DEFAULT 'USER',
+  role ENUM('CUSTOMER', 'COLLECTOR', 'ADMIN') DEFAULT 'CUSTOMER',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_email (email),
   INDEX idx_role (role),

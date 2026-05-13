@@ -1,0 +1,214 @@
+<section class="flex w-full flex-col gap-6 p-6">
+  <app-header mode="welcome" />
+
+  <z-card class="bg-linear-to-r from-primary to-green-600 text-primary-foreground">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <p class="text-sm opacity-90">Your Reward Points</p>
+        <p class="text-4xl font-bold">450</p>
+        <div class="mt-2">
+          <div class="flex items-center justify-between text-sm mb-1">
+            <span class="opacity-90">Progress to Gold Tier</span>
+            <span>50 pts to go</span>
+          </div>
+          <div class="h-2 w-full bg-white/30"></div>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="text-center">
+          <div
+            class="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mb-1"
+          ></div>
+          <p class="text-xs">Silver Tier</p>
+        </div>
+        <Button variant="secondary" asChild>
+          <a href="/customer/rewards"> View Rewards </a>
+        </Button>
+      </div>
+    </div>
+  </z-card>
+
+  <!-- <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatsCard
+              title="Total Pickups"
+              value="24"
+              change="3 this month"
+              changeType="positive"
+              icon={<Package className="h-6 w-6 text-blue-600" />}
+              iconBgClass="bg-blue-100"
+            />
+            <StatsCard
+              title="Waste Recycled"
+              value="156 kg"
+              change="+12.5 kg this month"
+              changeType="positive"
+              icon={<Leaf className="h-6 w-6 text-green-600" />}
+              iconBgClass="bg-green-100"
+            />
+            <StatsCard
+              title="Points Earned"
+              value="4,250"
+              change="+520 this week"
+              changeType="positive"
+              icon={<Gift className="h-6 w-6 text-primary" />}
+              iconBgClass="bg-primary/10"
+            />
+            <StatsCard
+              title="CO2 Saved"
+              value="78 kg"
+              change="Equivalent to 3 trees"
+              changeType="positive"
+              icon={<Leaf className="h-6 w-6 text-emerald-600" />}
+              iconBgClass="bg-emerald-100"
+            />
+          </div> -->
+
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <!-- Recent Pickups -->
+    <z-card
+      class="lg:col-span-2"
+      zTitle="Recent Pickups"
+      zDescription="Your latest recycling pickup activities"
+    >
+      <div card-header-action>
+        <z-button zType="ghost" zSize="sm"> View All </z-button>
+      </div>
+
+      <div class="space-y-4">
+        <div
+          class="hover:bg-muted/50 flex items-center gap-4 rounded-lg border p-4 transition-colors"
+        >
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 text-green-700"
+          >
+            ✓
+          </div>
+
+          <div class="min-w-0 flex-1">
+            <div class="mb-1 flex items-center gap-2">
+              <p class="font-medium">WG-1001</p>
+
+              <span class="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700">
+                Completed
+              </span>
+            </div>
+
+            <div class="text-muted-foreground flex flex-wrap gap-2 text-sm">
+              <span>Plastic</span>
+              <span>Paper</span>
+              <span>-</span>
+              <span>12kg</span>
+            </div>
+
+            <p class="text-muted-foreground mt-1 text-xs">12 May 2026</p>
+          </div>
+
+          <div class="text-right">
+            <p class="text-primary font-semibold">+120 pts</p>
+          </div>
+        </div>
+
+        <div
+          class="hover:bg-muted/50 flex items-center gap-4 rounded-lg border p-4 transition-colors"
+        >
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100 text-yellow-700"
+          >
+            ⏳
+          </div>
+
+          <div class="min-w-0 flex-1">
+            <div class="mb-1 flex items-center gap-2">
+              <p class="font-medium">WG-1002</p>
+
+              <span
+                class="rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700"
+              >
+                In Progress
+              </span>
+            </div>
+
+            <div class="text-muted-foreground flex flex-wrap gap-2 text-sm">
+              <span>Metal</span>
+              <span>-</span>
+              <span>8kg</span>
+            </div>
+
+            <p class="text-muted-foreground mt-1 text-xs">11 May 2026</p>
+          </div>
+
+          <div class="text-right">
+            <p class="text-primary font-semibold">+80 pts</p>
+
+            <p class="text-muted-foreground text-xs">Collector: John</p>
+          </div>
+        </div>
+      </div>
+
+      <div card-footer class="mt-6"></div>
+    </z-card>
+
+    <!-- Right Section -->
+    <!-- Available Vouchers -->
+    <z-card zTitle="Available Vouchers" zDescription="Redeem your earned points">
+      <div card-header-action>
+        <z-button zType="ghost" zSize="sm"> See All </z-button>
+      </div>
+
+      <div class="space-y-3">
+        <div class="hover:border-primary rounded-lg border p-3 transition-colors">
+          <div class="mb-2 flex items-center justify-between">
+            <h4 class="font-medium">Waste10 - 10% off on next pickup</h4>
+
+            <span class="rounded-full bg-muted px-2 py-1 text-xs"> 100 pts </span>
+          </div>
+
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-primary font-medium"> 40 pts </span>
+
+            <span class="text-muted-foreground"> Expires in 7 days </span>
+          </div>
+        </div>
+      </div>
+    </z-card>
+
+    <z-card
+      zTitle="Your Environmental Impact"
+      zDescription="Your recycling contribution statistics"
+    >
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div class="bg-muted/50 rounded-lg p-4 text-center">
+          <div class="mb-2 text-3xl">🍶</div>
+
+          <p class="text-foreground text-2xl font-bold">312</p>
+
+          <p class="text-muted-foreground text-xs">Plastic Bottles</p>
+        </div>
+
+        <div class="bg-muted/50 rounded-lg p-4 text-center">
+          <div class="mb-2 text-3xl">📄</div>
+
+          <p class="text-foreground text-2xl font-bold">1,540</p>
+
+          <p class="text-muted-foreground text-xs">Paper Sheets</p>
+        </div>
+
+        <div class="bg-muted/50 rounded-lg p-4 text-center">
+          <div class="mb-2 text-3xl">🥫</div>
+
+          <p class="text-foreground text-2xl font-bold">89</p>
+
+          <p class="text-muted-foreground text-xs">Metal Cans</p>
+        </div>
+
+        <div class="bg-muted/50 rounded-lg p-4 text-center">
+          <div class="mb-2 text-3xl">📱</div>
+
+          <p class="text-foreground text-2xl font-bold">12</p>
+
+          <p class="text-muted-foreground text-xs">E-Waste Items</p>
+        </div>
+      </div>
+    </z-card>
+  </div>
+</section>

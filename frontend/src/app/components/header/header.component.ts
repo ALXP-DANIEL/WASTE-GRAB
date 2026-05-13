@@ -35,7 +35,6 @@ import { AuthService } from '@/services/auth.service';
   standalone: true,
   imports: [
     RouterLink,
-    ZardAvatarComponent,
     ZardButtonComponent,
     ZardDropdownMenuComponent,
     ZardDropdownMenuContentComponent,
@@ -71,7 +70,7 @@ import { AuthService } from '@/services/auth.service';
         }
 
         <!-- ✨ ANIMATED QUOTE -->
-        <p class="text-sm text-slate-500 mt-1 min-h-[1.5rem] leading-relaxed">
+        <p class="text-sm text-slate-500 mt-1 min-h-6 leading-relaxed">
 
           @for (word of visibleWords(); track $index) {
             <span class="inline-block mr-1 animate-wordFade">
@@ -90,21 +89,23 @@ import { AuthService } from '@/services/auth.service';
 
           <z-dropdown-menu>
 
-            <div
+            <button
               dropdown-trigger
               z-dropdown
               [zDropdownMenu]="menuContent"
-              class="cursor-pointer"
+              type="button"
+              class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
             >
-              <z-avatar
-                [zFallback]="user.name.slice(0, 2).toUpperCase()"
-                [zAlt]="user.name + ' avatar'"
-                zSize="md"
-                class="ring-2 ring-white shadow-sm"
-              />
-            </div>
+              <ng-icon name="lucideUser" class="size-4" />
+              Account
+            </button>
 
             <z-dropdown-menu-content #menuContent>
+
+              <div class="px-3 py-2 border-b border-slate-100">
+                <p class="text-sm font-semibold text-slate-900 truncate">{{ user.name }}</p>
+                <p class="text-xs text-slate-500 truncate">{{ user.email }}</p>
+              </div>
 
               <z-dropdown-menu-item (click)="goToProfile()" class="flex items-center gap-2">
                 <ng-icon name="lucideUser" class="size-4" />

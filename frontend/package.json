@@ -2,10 +2,15 @@
   "name": "frontend",
   "version": "0.0.0",
   "scripts": {
+    "build:shared": "npm --prefix ../shared run build",
     "ng": "ng",
+    "prestart": "npm run build:shared",
     "start": "ng serve",
+    "prebuild": "npm run build:shared",
     "build": "ng build",
+    "prewatch": "npm run build:shared",
     "watch": "ng build --watch --configuration development",
+    "pretest": "npm run build:shared",
     "test": "ng test"
   },
   "private": true,
