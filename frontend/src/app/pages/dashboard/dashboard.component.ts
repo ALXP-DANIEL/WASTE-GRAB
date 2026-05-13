@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
-import { ZardAvatarComponent } from '@/components/avatar/avatar.component';
 import { AuthService } from '@/services/auth.service';
-import { UserHeaderComponent } from '@/components/header/header.component';
+import { UserHeaderComponent } from '@/components/user-header/user-header.component';
 
 @Component({
   selector: 'app-dashboard-page',

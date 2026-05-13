@@ -16,9 +16,7 @@ import { AuthService } from '@/services/auth.service';
   selector: 'user-header',
   imports: [RouterLink, ZardAvatarComponent, ZardButtonComponent, ZardDropdownMenuComponent, ZardDropdownMenuContentComponent, ZardDropdownMenuItemComponent, ZardDropdownDirective, ZardDividerComponent, NgIcon],
   template: `
-    <!-- Top Minimal Header (Mobile & Desktop) -->
-    <header class="fixed top-0 left-0 right-0 z-50 lg:left-56 pointer-events-none">
-      <div class="flex items-center justify-between gap-4 p-6 pointer-events-auto">
+      <header class="flex items-center justify-between pointer-events-auto">
         <!-- Left: Greeting & Quote -->
         <div class="flex-1">
           @if (authService.currentUser(); as user) {
@@ -56,8 +54,7 @@ import { AuthService } from '@/services/auth.service';
             <a z-button zType="default" routerLink="/auth" class="px-3 py-1 text-xs h-auto bg-emerald-900 hover:bg-emerald-800">Sign in</a>
           }
         </div>
-      </div>
-    </header>
+      </header>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   viewProviders: [provideIcons({ lucideUser, lucideSettings, lucideLogOut })],
@@ -98,7 +95,6 @@ export class UserHeaderComponent implements OnInit {
     this.dialogService.create({
       zTitle: 'Confirm Logout',
       zDescription: 'Are you sure you want to logout?',
-      zContent: LogoutConfirmDialog,
       zOkText: 'Logout',
       zOkDestructive: true,
       zCancelText: 'Cancel',
@@ -117,12 +113,3 @@ export class UserHeaderComponent implements OnInit {
   }
 }
 
-// Logout confirmation dialog component
-@Component({
-  selector: 'logout-confirm-dialog',
-  template: `
-    <!-- Dialog content is handled by ZardDialogComponent, this is empty -->
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-class LogoutConfirmDialog {}
