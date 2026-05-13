@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { AuthService } from '@/services/auth.service';
-import { UserHeaderComponent } from '@/components/user-header/user-header.component';
+import { AppHeaderComponent } from '@/components/header/header.component';
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [ UserHeaderComponent],
+  imports: [ AppHeaderComponent],
   templateUrl: './dashboard.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

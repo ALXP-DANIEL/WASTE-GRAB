@@ -3,10 +3,11 @@ import { DatePipe } from '@angular/common';
 import { AuthService } from '@/services/auth.service';
 import { ZardAvatarComponent } from '@/components/avatar/avatar.component';
 import { ZardButtonComponent } from '@/components/button/button.component';
+import { AppHeaderComponent } from '@/components/header/header.component';
 
 @Component({
   selector: 'app-profile-page',
-  imports: [ ZardAvatarComponent, ZardButtonComponent, DatePipe],
+  imports: [ ZardAvatarComponent, ZardButtonComponent, DatePipe, AppHeaderComponent ],
   templateUrl: './profile.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

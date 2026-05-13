@@ -54,14 +54,14 @@ interface NavItem {
 
     <!-- Mobile Bottom Navigation -->
     <nav class="lg:hidden bg-emerald-900 border border-emerald-800 rounded-2xl z-40 shadow-lg mx-2 mb-2">
-      <div class="flex items-center justify-around p-3">
+      <div class="grid grid-cols-3 gap-2 p-3">
         @for (item of navItems; track item.route) {
           @if (item.showOnMobile) {
             <a 
               [routerLink]="item.route" 
               routerLinkActive="bg-emerald-800 rounded-xl"
               [routerLinkActiveOptions]="{ exact: true }"
-              class="group flex flex-col items-center justify-center gap-1 rounded-xl text-center text-emerald-100 transition-colors"
+              class="group flex w-full flex-col items-center justify-center gap-1 rounded-xl text-center text-emerald-100 transition-colors"
             >
               <span class="flex w-full flex-col items-center justify-center gap-1 rounded-xl px-4 py-2 transition-colors group-hover:bg-emerald-700 group-hover:text-white">
                 <ng-icon [name]="item.icon" class="size-5!" />

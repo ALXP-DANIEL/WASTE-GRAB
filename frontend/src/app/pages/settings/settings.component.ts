@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { AuthService } from '@/services/auth.service';
 import { ZardButtonComponent } from '@/components/button/button.component';
+import { AppHeaderComponent } from '@/components/header/header.component';
 
 @Component({
   selector: 'app-settings-page',
-  imports: [ZardButtonComponent],
+  imports: [ZardButtonComponent, AppHeaderComponent],
   templateUrl: './settings.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

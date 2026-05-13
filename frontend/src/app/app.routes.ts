@@ -18,41 +18,56 @@ export const routes: Routes = [
       {
         path: '',
         component: HomePage,
+        data: { title: 'Home' },
       },
+
       {
         path: 'auth',
         component: AuthPage,
         canActivate: [guestGuard],
+        data: { title: 'Login' },
       },
+
       {
         path: 'todos',
         component: TodosPage,
         canActivate: [authGuard],
+        data: { title: 'Todos' },
       },
+
       {
         path: 'dashboard',
         component: DashboardPage,
         canActivate: [authGuard],
+        data: { title: 'Dashboard' },
       },
+
       {
         path: 'my-requests',
         component: MyRequestsPage,
         canActivate: [authGuard],
+        data: { title: 'My Requests' },
       },
+
       {
         path: 'rewards',
         component: RewardsPage,
         canActivate: [authGuard],
+        data: { title: 'Rewards' },
       },
+
       {
         path: 'profile',
         component: ProfilePage,
         canActivate: [authGuard],
+        data: { title: 'Profile' },
       },
+
       {
         path: 'settings',
         component: SettingsPage,
         canActivate: [authGuard],
+        data: { title: 'Settings' },
       },
     ],
   },
