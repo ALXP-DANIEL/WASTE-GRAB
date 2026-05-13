@@ -3,7 +3,6 @@ import { AppLayout } from './layouts/app-layout.component';
 import { AuthPage } from './pages/auth/auth.component';
 import { HomePage } from './pages/home/home.component';
 import { TodosPage } from './pages/todos/todos.component';
-import { DashboardPage } from './pages/customer/dashboard/dashboard.component';
 import { ProfilePage } from './pages/customer/profile/profile.component';
 import { SettingsPage } from './pages/customer/settings/settings.component';
 import { AdminPage } from './pages/admin/admin.component';
@@ -19,6 +18,7 @@ import { CollectorEarningsPage } from './pages/collector/earnings/earnings.compo
 import { CollectorPickupsPage } from './pages/collector/pickups/pickups.component';
 import { UserRole } from '@wastegrab/shared';
 import { authGuard, guestGuard } from './services/auth.guard';
+import { CustomerPage } from './pages/customer/customer.component';
 
 export const routes: Routes = [
   {
@@ -67,7 +67,7 @@ export const routes: Routes = [
         children: [
           {
             path: '',
-            component: DashboardPage,
+            component: CustomerPage,
             data: { title: 'Dashboard' },
           },
 
@@ -87,13 +87,6 @@ export const routes: Routes = [
             path: 'vouchers',
             component: CustomerVouchersPage,
             data: { title: 'My Vouchers' },
-          },
-
-          // Legacy customer paths
-          {
-            path: 'dashboard',
-            component: DashboardPage,
-            data: { title: 'Dashboard' },
           },
 
           {

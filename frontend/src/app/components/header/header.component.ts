@@ -85,65 +85,6 @@ import { AuthService } from '@/services/auth.service';
       <!-- RIGHT SIDE -->
       <div class="flex items-center gap-2 shrink-0">
 
-        @if (authService.currentUser(); as user) {
-
-          <z-dropdown-menu>
-
-            <button
-              dropdown-trigger
-              z-dropdown
-              [zDropdownMenu]="menuContent"
-              type="button"
-              class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
-            >
-              <ng-icon name="lucideUser" class="size-4" />
-              Account
-            </button>
-
-            <z-dropdown-menu-content #menuContent>
-
-              <div class="px-3 py-2 border-b border-slate-100">
-                <p class="text-sm font-semibold text-slate-900 truncate">{{ user.name }}</p>
-                <p class="text-xs text-slate-500 truncate">{{ user.email }}</p>
-              </div>
-
-              <z-dropdown-menu-item (click)="goToProfile()" class="flex items-center gap-2">
-                <ng-icon name="lucideUser" class="size-4" />
-                Profile
-              </z-dropdown-menu-item>
-
-              <z-dropdown-menu-item (click)="goToSettings()" class="flex items-center gap-2">
-                <ng-icon name="lucideSettings" class="size-4" />
-                Settings
-              </z-dropdown-menu-item>
-
-              <z-divider class="my-1"></z-divider>
-
-              <z-dropdown-menu-item
-                (click)="confirmLogout()"
-                class="bg-red-50 hover:bg-red-100 text-red-700 flex items-center gap-2"
-              >
-                <ng-icon name="lucideLogOut" class="size-4" />
-                Logout
-              </z-dropdown-menu-item>
-
-            </z-dropdown-menu-content>
-
-          </z-dropdown-menu>
-
-        } @else {
-
-          <a
-            z-button
-            zType="default"
-            routerLink="/auth"
-            class="px-3 py-1 text-xs h-auto bg-emerald-900 hover:bg-emerald-800"
-          >
-            Sign in
-          </a>
-
-        }
-
       </div>
 
     </header>

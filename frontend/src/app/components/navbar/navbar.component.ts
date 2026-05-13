@@ -149,7 +149,7 @@ type Role = User['role'];
           <z-avatar
             [zFallback]="getInitials(user()?.name)"
             [zAlt]="user()?.name + ' avatar'"
-            zSize="md"
+            zSize="sm"
             class="ring-2 ring-emerald-700 bg-white text-black"
           />
           <span class="text-xs font-medium">Profile</span>
