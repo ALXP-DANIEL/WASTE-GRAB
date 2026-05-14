@@ -8,6 +8,7 @@ import { config } from "./config.js";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler.js";
 import authRouter from "./routes/auth.routes.js";
 import todoRouter from "./routes/todo.routes.js";
+import addressRouter from "./routes/address.routes.js";
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.get("/api/health", (req: Request, res: Response) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/todos", todoRouter);
+app.use("/api/address", addressRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

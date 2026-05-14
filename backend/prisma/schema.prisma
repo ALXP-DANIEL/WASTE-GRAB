@@ -46,6 +46,7 @@ model User {
   phone             String?   @db.VarChar(20)
   role              UserRole  @default(CUSTOMER)
   createdAt         DateTime  @default(now()) @map("created_at")
+  address         Address[]
 
   pickupRequestsAsUser     PickupRequest[] @relation("UserRequests")
   pickupRequestsAsCollector PickupRequest[] @relation("CollectorRequests")
@@ -64,6 +65,23 @@ model WasteCategory {
   pickupItems  PickupItem[]
 
   @@map("waste_categories")
+}
+
+model Address {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  label      String   @db.VarChar(100)
+  street     String   @db.Text
+  city       String   @db.VarChar(100)
+  state      String   @db.VarChar(100)
+  postalCode String   @db.VarChar(20)
+  notes      String?  @db.Text
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("address")
 }
 
 model PickupRequest {

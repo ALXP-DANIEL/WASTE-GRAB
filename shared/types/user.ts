@@ -4,6 +4,8 @@ export enum UserRole {
   ADMIN = "ADMIN",
 }
 
+import type { Address } from './address.js';
+
 export type User = {
   id: string;
   name: string;
@@ -11,6 +13,7 @@ export type User = {
   phone: string | null;
   role: UserRole;
   createdAt: string;
+  address?: Address[];
 };
 
 export type CreateUserInput = {
