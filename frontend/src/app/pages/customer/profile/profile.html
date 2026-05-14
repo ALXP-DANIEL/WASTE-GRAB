@@ -1,9 +1,7 @@
 <section class="p-6 md:p-8 gap-3 grid">
   <app-header mode="route" />
 
-  <div class="max-w-2xl">
-    <h2 class="text-2xl font-bold text-slate-900 mb-6">My Profile</h2>
-
+  <div>
     @if (authService.currentUser(); as user) {
       <div class="bg-white rounded-lg shadow p-6 space-y-6">
         <!-- Avatar -->
