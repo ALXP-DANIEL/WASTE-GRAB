@@ -37,8 +37,10 @@
         </div>
 
         <!-- Actions -->
-        <div class="border-t pt-6 flex flex-col gap-3">
-          <div class="flex gap-3">
+        <div
+          class="border-t pt-6 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between"
+        >
+          <div class="flex gap-3 flex-row lg:flex-1 lg:max-w-md">
             <button z-button zType="outline" class="flex-1" (click)="editProfile()">
               Edit Profile
             </button>
@@ -46,7 +48,14 @@
               Change Password
             </button>
           </div>
-          <button z-button zType="destructive" class="w-full" (click)="logout()">Logout</button>
+          <button
+            z-button
+            zType="destructive"
+            class="w-full lg:w-auto lg:min-w-32"
+            (click)="logout()"
+          >
+            Logout
+          </button>
         </div>
       </div>
     }
