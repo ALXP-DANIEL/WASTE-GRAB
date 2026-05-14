@@ -178,7 +178,6 @@ export class AppNavbarComponent {
       { label: 'New Request', route: '/customer/new-pickup', icon: 'lucidePlus', showOnMobile: true },
       { label: 'My Pickups', route: '/customer/pickups', icon: 'lucideHistory', showOnMobile: true },
       { label: 'Rewards', route: '/customer/vouchers', icon: 'lucideGift', showOnMobile: true },
-      { label: 'Profile', route: '/customer/profile', icon: 'lucideUser', showOnMobile: false },
     ],
     [UserRole.ADMIN]: [
       { label: 'Dashboard', route: '/admin', icon: 'lucideLayoutDashboard', showOnMobile: true },

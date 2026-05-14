@@ -6,6 +6,7 @@ import type {
   LoginInput,
 } from "@wastegrab/shared";
 import {
+  changePassword,
   clearAuthCookie,
   createAuthCookie,
   getCurrentUserFromRequest,
@@ -13,6 +14,7 @@ import {
   registerUser,
   requestPasswordReset,
   resetPassword,
+  updateProfile,
 } from "../services/auth.service.js";
 import { getBody } from "../utils/request.js";
 
@@ -141,6 +143,70 @@ authRouter.post("/reset-password", async (req: Request, res: Response) => {
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to reset password.";
     res.status(400).json({ error: message });
+  }
+});
+
+authRouter.patch("/profile", async (req: Request, res: Response) => {
+  const user = await getCurrentUserFromRequest(req);
+
+  if (!user) {
+    const payload: ApiErrorResponse = { error: "Not authenticated." };
+    res.status(401).json(payload);
+    return;
+  }
+
+  const body = getBody(req.body) as Partial<{ name?: string; email?: string; phone?: string }>;
+
+  try {
+    const updatedUser = await updateProfile(user.id, {
+      name: body.name,
+      email: body.email,
+      phone: body.phone,
+    });
+
+    const payload: AuthResponse = { user: updatedUser };
+    res.json(payload);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to update profile.";
+    const statusCode = message === "Email already in use." ? 409 : 400;
+    res.status(statusCode).json({ error: message });
+  }
+});
+
+authRouter.post("/change-password", async (req: Request, res: Response) => {
+  const user = await getCurrentUserFromRequest(req);
+
+  if (!user) {
+    const payload: ApiErrorResponse = { error: "Not authenticated." };
+    res.status(401).json(payload);
+    return;
+  }
+
+  const body = getBody(req.body) as Partial<{
+    currentPassword?: string;
+    newPassword?: string;
+  }>;
+  const currentPassword = normalizeText(body.currentPassword);
+  const newPassword = normalizeText(body.newPassword);
+
+  if (!currentPassword) {
+    res.status(400).json({ error: "Current password is required." });
+    return;
+  }
+
+  if (!newPassword || newPassword.length < 8) {
+    res.status(400).json({ error: "New password must be at least 8 characters." });
+    return;
+  }
+
+  try {
+    const updatedUser = await changePassword(user.id, currentPassword, newPassword);
+    const payload: AuthResponse = { user: updatedUser };
+    res.json(payload);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to change password.";
+    const statusCode = message === "Current password is incorrect." ? 401 : 400;
+    res.status(statusCode).json({ error: message });
   }
 });
 

@@ -134,6 +134,83 @@ export async function resetPassword(email: string, newPassword: string): Promise
   };
 }
 
+export async function updateProfile(
+  userId: string,
+  updates: { name?: string; email?: string; phone?: string },
+): Promise<User> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new Error("User not found.");
+  }
+
+  const data: any = {};
+
+  if (updates.name) {
+    data.name = normalizeName(updates.name);
+  }
+
+  if (updates.email) {
+    const normalizedEmail = normalizeEmail(updates.email);
+    const existingUser = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+    });
+
+    if (existingUser && existingUser.id !== userId) {
+      throw new Error("Email already in use.");
+    }
+
+    data.email = normalizedEmail;
+  }
+
+  if (updates.phone !== undefined) {
+    data.phone = normalizeOptionalText(updates.phone);
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: { id: userId },
+    data,
+  });
+
+  return toUserResponse(updatedUser);
+}
+
+export async function changePassword(
+  userId: string,
+  currentPassword: string,
+  newPassword: string,
+): Promise<User> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new Error("User not found.");
+  }
+
+  const normalizedCurrent = normalizePassword(currentPassword);
+  const normalizedNew = normalizePassword(newPassword);
+
+  if (!verifyPassword(normalizedCurrent, user.passwordHash)) {
+    throw new Error("Current password is incorrect.");
+  }
+
+  if (normalizedNew.length < 8) {
+    throw new Error("New password must be at least 8 characters.");
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      passwordHash: hashPassword(normalizedNew),
+    },
+  });
+
+  return toUserResponse(updatedUser);
+}
+
 export function createAuthCookie(token: string): string {
   return serializeCookie(authCookieName, token, sessionLifetimeMs);
 }

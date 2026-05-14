@@ -9,6 +9,7 @@ import { ZardButtonComponent } from '@/components/button/button.component';
 import { ZardCardComponent } from '@/components/card/card.component';
 import { ZardInputDirective } from '@/components/input';
 import { ZardFormFieldComponent, ZardFormLabelComponent, ZardFormControlComponent } from '@/components/form/form.component';
+import { ZardModalComponent } from '@/components/modal/modal.component';
 import { ZardDialogService } from '@/components/dialog/dialog.service';
 import { AuthService } from '@/services/auth.service';
 
@@ -28,7 +29,7 @@ type RegisterFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-auth-page',
-  imports: [CommonModule, ReactiveFormsModule, ZardButtonComponent, ZardCardComponent, ZardInputDirective, ZardFormFieldComponent, ZardFormLabelComponent, ZardFormControlComponent, NgIcon],
+  imports: [CommonModule, ReactiveFormsModule, ZardButtonComponent, ZardCardComponent, ZardInputDirective, ZardFormFieldComponent, ZardFormLabelComponent, ZardFormControlComponent, ZardModalComponent, NgIcon],
   providers: [provideIcons({ lucideChevronLeft, lucideChevronRight })],
   templateUrl: './auth.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

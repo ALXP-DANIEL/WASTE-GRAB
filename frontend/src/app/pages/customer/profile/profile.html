@@ -37,11 +37,21 @@
         </div>
 
         <!-- Actions -->
-        <div class="border-t pt-6 flex gap-3">
-          <button z-button zType="outline" class="px-4 py-2">Edit Profile</button>
-          <button z-button zType="outline" class="px-4 py-2">Change Password</button>
+        <div class="border-t pt-6 flex flex-col gap-3">
+          <div class="flex gap-3">
+            <button z-button zType="outline" class="flex-1" (click)="editProfile()">
+              Edit Profile
+            </button>
+            <button z-button zType="outline" class="flex-1" (click)="changePassword()">
+              Change Password
+            </button>
+          </div>
+          <button z-button zType="destructive" class="w-full" (click)="logout()">Logout</button>
         </div>
       </div>
     }
   </div>
 </section>
+
+<!-- Profile Modal Component -->
+<app-profile-modal />
