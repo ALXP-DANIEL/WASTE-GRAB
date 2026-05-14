@@ -9,6 +9,7 @@ import { AdminPage } from './pages/admin/admin.component';
 import { CollectorPage } from './pages/collector/collector.component';
 import { CustomerNewPickupPage } from './pages/customer/new-pickup/new-pickup.component';
 import { CustomerPickupsPage } from './pages/customer/pickups/pickups.component';
+import { CustomerPickupDetailPage } from './pages/customer/pickups/pickup-detail.component';
 import { CustomerVouchersPage } from './pages/customer/vouchers/vouchers.component';
 import { AdminCollectorsPage } from './pages/admin/collectors/collectors.component';
 import { AdminPickupsPage } from './pages/admin/pickups/pickups.component';
@@ -81,6 +82,12 @@ export const routes: Routes = [
             path: 'pickups',
             component: CustomerPickupsPage,
             data: { title: 'My Pickups' },
+          },
+
+          {
+            path: 'pickups/:pickupId',
+            component: CustomerPickupDetailPage,
+            data: { title: 'Pickup Details' },
           },
 
           {

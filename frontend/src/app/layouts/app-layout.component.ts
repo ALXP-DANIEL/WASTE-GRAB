@@ -8,7 +8,7 @@ import { AuthService } from '@/services/auth.service';
   selector: 'app-layout',
   imports: [AppNavbarComponent, RouterOutlet, NgClass],
   template: `
-    <div class="h-dvh flex flex-col-reverse lg:grid" [ngClass]="authService.currentUser() ? 'lg:grid-cols-[14rem_1fr]' : ''">
+    <div class="h-dvh flex flex-col-reverse lg:grid" [ngClass]="authService.currentUser() ? 'lg:grid-cols-[16rem_1fr]' : ''">
       @if (authService.currentUser()) {
         <app-navbar />
       }
