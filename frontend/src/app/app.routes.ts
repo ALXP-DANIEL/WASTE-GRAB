@@ -45,7 +45,6 @@ export const routes: Routes = [
         canActivate: [authGuard],
         data: { title: 'Todos' },
       },
-
       {
         path: 'profile',
         component: ProfilePage,
@@ -136,22 +135,22 @@ export const routes: Routes = [
           {
             path: 'collectors',
             component: AdminCollectorsPage,
-            data: { title: 'Admin Collectors' },
+            data: { title: 'Manage Collectors' },
           },
           {
             path: 'pickups',
             component: AdminPickupsPage,
-            data: { title: 'Admin Pickups' },
+            data: { title: 'Manage Pickups' },
           },
           {
             path: 'users',
             component: AdminUsersPage,
-            data: { title: 'Admin Users' },
+            data: { title: 'Manage Users' },
           },
           {
             path: 'vouchers',
             component: AdminVouchersPage,
-            data: { title: 'Admin Vouchers' },
+            data: { title: 'Manage Vouchers' },
           },
         ],
       },

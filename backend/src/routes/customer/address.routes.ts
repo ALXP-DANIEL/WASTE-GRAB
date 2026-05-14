@@ -1,8 +1,8 @@
 import { Router, type Request, type Response } from "express";
 import type { ApiErrorResponse, Address, CreateAddressInput, UpdateAddressInput } from "@wastegrab/shared";
-import { getBody } from "../utils/request.js";
-import { getCurrentUserFromRequest } from "../services/auth.service.js";
-import { listAddress, createAddress, getAddressById, updateAddress, deleteAddress, setDefaultAddress } from "../services/address.service.js";
+import { getBody } from "../../utils/request.js";
+import { getCurrentUserFromRequest } from "../../services/auth.service.js";
+import { listAddress, createAddress, getAddressById, updateAddress, deleteAddress, setDefaultAddress } from "../../services/address.service.js";
 
 const addressRouter = Router();
 

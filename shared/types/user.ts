@@ -21,11 +21,13 @@ export type CreateUserInput = {
   email: string;
   password: string;
   phone?: string;
+  role?: UserRole;
 };
 
 export type UpdateUserInput = {
   name?: string;
   phone?: string;
+  role?: UserRole;
 };
 
 export type LoginInput = {

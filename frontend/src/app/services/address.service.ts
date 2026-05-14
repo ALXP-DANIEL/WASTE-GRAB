@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
 })
 export class AddressService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiBaseUrl}/address`;
+  private readonly apiUrl = `${environment.apiBaseUrl}/customer/address`;
   private readonly requestOptions = { withCredentials: true as const };
 
   listAddress() {
