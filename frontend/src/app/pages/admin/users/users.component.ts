@@ -9,6 +9,7 @@ import { ZardBadgeComponent } from '@/components/badge';
 import { ZardModalComponent } from '@/components/modal/modal.component';
 import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/components/form/form.component';
 import { ZardInputDirective } from '@/components/input';
+import { ZardSelectImports } from '@/components/select/select.imports';
 import { ZardDialogService } from '@/components/dialog/dialog.service';
 import { UserService } from '@/services/user.service';
 import { DisplayRolePipe, RoleBadgeTypePipe } from '@/utils/role.pipe';
@@ -32,6 +33,7 @@ type UserModalMode = 'add' | 'edit' | null;
     ZardFormLabelComponent,
     ZardFormControlComponent,
     ZardInputDirective,
+    ...ZardSelectImports,
     DisplayRolePipe,
     RoleBadgeTypePipe,
   ],

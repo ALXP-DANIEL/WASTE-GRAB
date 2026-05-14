@@ -165,13 +165,13 @@
       <z-form-field class="sm:col-span-2">
         <z-form-label [zRequired]="true">Role</z-form-label>
         <z-form-control>
-          <select z-input formControlName="role" class="w-full">
+          <z-select formControlName="role" class="w-full">
             @for (role of userRoles; track role) {
-              <option [value]="role">
+              <z-select-item [zValue]="role">
                 {{ role | displayRole }}
-              </option>
+              </z-select-item>
             }
-          </select>
+          </z-select>
         </z-form-control>
       </z-form-field>
     </form>
