@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { Type } from '@angular/core';
 import { AppLayout } from './layouts/app-layout.component';
 import { AuthPage } from './pages/auth/auth.component';
 import { HomePage } from './pages/home/home.component';
@@ -21,163 +22,210 @@ import { UserRole } from '@wastegrab/shared';
 import { authGuard, guestGuard } from './services/auth.guard';
 import { CustomerPage } from './pages/customer/customer.component';
 
-export const routes: Routes = [
+// Route metadata - Single source of truth
+interface RouteConfig {
+  path: string;
+  component: Type<any>;
+  title: string;
+  guards?: any[];
+  roles?: UserRole[];
+  children?: RouteConfig[];
+}
+
+const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: '',
-    component: AppLayout,
+    component: HomePage,
+    title: 'Home',
+  },
+  {
+    path: 'auth',
+    component: AuthPage,
+    title: 'Login',
+    guards: [guestGuard],
+  },
+  {
+    path: 'todos',
+    component: TodosPage,
+    title: 'Todos',
+    guards: [authGuard],
+  },
+  {
+    path: 'profile',
+    component: ProfilePage,
+    title: 'Profile',
+    guards: [authGuard],
+  },
+  {
+    path: 'settings',
+    component: SettingsPage,
+    title: 'Settings',
+    guards: [authGuard],
+  },
+  {
+    path: 'customer',
+    component: null as any, // Parent route
+    title: 'Customer',
+    guards: [authGuard],
+    roles: [UserRole.CUSTOMER],
     children: [
       {
         path: '',
-        component: HomePage,
-        data: { title: 'Home' },
+        component: CustomerPage,
+        title: 'Dashboard',
       },
-
       {
-        path: 'auth',
-        component: AuthPage,
-        canActivate: [guestGuard],
-        data: { title: 'Login' },
+        path: 'new-pickup',
+        component: CustomerNewPickupPage,
+        title: 'New Pickup',
       },
-
       {
-        path: 'todos',
-        component: TodosPage,
-        canActivate: [authGuard],
-        data: { title: 'Todos' },
+        path: 'pickups',
+        component: CustomerPickupsPage,
+        title: 'My Pickups',
+      },
+      {
+        path: 'pickups/:pickupId',
+        component: CustomerPickupDetailPage,
+        title: 'Pickup Details',
+      },
+      {
+        path: 'vouchers',
+        component: CustomerVouchersPage,
+        title: 'My Vouchers',
+      },
+      {
+        path: 'my-requests',
+        component: CustomerPickupsPage,
+        title: 'My Requests',
+      },
+      {
+        path: 'rewards',
+        component: CustomerVouchersPage,
+        title: 'Rewards',
       },
       {
         path: 'profile',
         component: ProfilePage,
-        canActivate: [authGuard],
-        data: { title: 'Profile' },
+        title: 'Profile',
       },
-
       {
         path: 'settings',
         component: SettingsPage,
-        canActivate: [authGuard],
-        data: { title: 'Settings' },
-      },
-
-      // Customer Routes
-      {
-        path: 'customer',
-        canActivate: [authGuard],
-        data: { roles: [UserRole.CUSTOMER] },
-        children: [
-          {
-            path: '',
-            component: CustomerPage,
-            data: { title: 'Dashboard' },
-          },
-
-          {
-            path: 'new-pickup',
-            component: CustomerNewPickupPage,
-            data: { title: 'New Pickup' },
-          },
-
-          {
-            path: 'pickups',
-            component: CustomerPickupsPage,
-            data: { title: 'My Pickups' },
-          },
-
-          {
-            path: 'pickups/:pickupId',
-            component: CustomerPickupDetailPage,
-            data: { title: 'Pickup Details' },
-          },
-
-          {
-            path: 'vouchers',
-            component: CustomerVouchersPage,
-            data: { title: 'My Vouchers' },
-          },
-
-          {
-            path: 'my-requests',
-            component: CustomerPickupsPage,
-            data: { title: 'My Requests' },
-          },
-
-          {
-            path: 'rewards',
-            component: CustomerVouchersPage,
-            data: { title: 'Rewards' },
-          },
-
-          {
-            path: 'profile',
-            component: ProfilePage,
-            data: { title: 'Profile' },
-          },
-
-          {
-            path: 'settings',
-            component: ProfilePage,
-            data: { title: 'Settings' },
-          },
-        ],
-      },
-
-      // Admin Routes
-      {
-        path: 'admin',
-        canActivate: [authGuard],
-        data: { roles: [UserRole.ADMIN] },
-        children: [
-          {
-            path: '',
-            component: AdminPage,
-            data: { title: 'Admin Dashboard' },
-          },
-          {
-            path: 'collectors',
-            component: AdminCollectorsPage,
-            data: { title: 'Manage Collectors' },
-          },
-          {
-            path: 'pickups',
-            component: AdminPickupsPage,
-            data: { title: 'Manage Pickups' },
-          },
-          {
-            path: 'users',
-            component: AdminUsersPage,
-            data: { title: 'Manage Users' },
-          },
-          {
-            path: 'vouchers',
-            component: AdminVouchersPage,
-            data: { title: 'Manage Vouchers' },
-          },
-        ],
-      },
-
-      // Collector Routes
-      {
-        path: 'collector',
-        canActivate: [authGuard],
-        data: { roles: [UserRole.COLLECTOR] },
-        children: [
-          {
-            path: '',
-            component: CollectorPage,
-            data: { title: 'Collector Dashboard' },
-          },
-          {
-            path: 'earnings',
-            component: CollectorEarningsPage,
-            data: { title: 'Collector Earnings' },
-          },
-          {
-            path: 'pickups',
-            component: CollectorPickupsPage,
-            data: { title: 'Collector Pickups' },
-          },
-        ],
+        title: 'Settings',
       },
     ],
+  },
+  {
+    path: 'admin',
+    component: null as any, // Parent route
+    title: 'Admin',
+    guards: [authGuard],
+    roles: [UserRole.ADMIN],
+    children: [
+      {
+        path: '',
+        component: AdminPage,
+        title: 'Admin Dashboard',
+      },
+      {
+        path: 'collectors',
+        component: AdminCollectorsPage,
+        title: 'Manage Collectors',
+      },
+      {
+        path: 'pickups',
+        component: AdminPickupsPage,
+        title: 'Manage Pickups',
+      },
+      {
+        path: 'users',
+        component: AdminUsersPage,
+        title: 'Manage Users',
+      },
+      {
+        path: 'vouchers',
+        component: AdminVouchersPage,
+        title: 'Manage Vouchers',
+      },
+    ],
+  },
+  {
+    path: 'collector',
+    component: null as any, // Parent route
+    title: 'Collector',
+    guards: [authGuard],
+    roles: [UserRole.COLLECTOR],
+    children: [
+      {
+        path: '',
+        component: CollectorPage,
+        title: 'Collector Dashboard',
+      },
+      {
+        path: 'earnings',
+        component: CollectorEarningsPage,
+        title: 'Collector Earnings',
+      },
+      {
+        path: 'pickups',
+        component: CollectorPickupsPage,
+        title: 'Collector Pickups',
+      },
+    ],
+  },
+];
+
+// Extract just the paths for template navigation
+export const ROUTE_PATHS = {
+  home: '',
+  auth: 'auth',
+  todos: 'todos',
+  profile: 'profile',
+  settings: 'settings',
+  customer: {
+    base: 'customer',
+    newPickup: 'new-pickup',
+    pickups: 'pickups',
+    pickupDetail: ':pickupId',
+    vouchers: 'vouchers',
+    myRequests: 'my-requests',
+    rewards: 'rewards',
+  },
+  admin: {
+    base: 'admin',
+    collectors: 'collectors',
+    pickups: 'pickups',
+    users: 'users',
+    vouchers: 'vouchers',
+  },
+  collector: {
+    base: 'collector',
+    earnings: 'earnings',
+    pickups: 'pickups',
+  },
+} as const;
+
+// Convert RouteConfig to Angular Routes
+function buildRoutes(configs: RouteConfig[]): Routes {
+  return configs.map(config => ({
+    path: config.path,
+    component: config.component,
+    canActivate: config.guards,
+    data: {
+      title: config.title,
+      ...(config.roles && { roles: config.roles }),
+    },
+    children: config.children ? buildRoutes(config.children) : undefined,
+  }));
+}
+
+const appRoutes = buildRoutes(ROUTE_CONFIG);
+
+export const routes: Routes = [
+  {
+    path: '',
+    component: AppLayout,
+    children: appRoutes,
   },
 ];

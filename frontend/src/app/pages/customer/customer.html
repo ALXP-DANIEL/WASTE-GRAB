@@ -1,5 +1,10 @@
 <section class="p-6 md:p-8 gap-3 grid">
-  <app-header mode="route" />
+  <app-header mode="route">
+    <button z-button zType="default" [routerLink]="newPickupPath" rightSide class="gap-1">
+      <ng-icon name="lucidePlus" class="size-4!" />
+      New Pickup
+    </button>
+  </app-header>
 
   <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
     @for (stat of dashboardStats; track stat.label) {
@@ -23,7 +28,7 @@
   <div class="rounded-2xl border border-border bg-card shadow-sm">
     <div class="flex items-center justify-between border-b border-border px-4 py-4 lg:px-6">
       <h3 class="text-lg font-semibold">Recent Pickups</h3>
-      <a z-button zType="ghost" zSize="sm" routerLink="/customer/pickups" class="gap-1">
+      <a z-button zType="ghost" zSize="sm" [routerLink]="pickupsPath" class="gap-1">
         View All <ng-icon name="lucideChevronRight" class="size-4!" />
       </a>
     </div>
@@ -31,7 +36,7 @@
     <div class="max-h-112 space-y-4 overflow-y-auto p-4 pr-2 lg:p-6">
       @for (pickup of recentPickups; track pickup.id) {
         <a
-          [routerLink]="['/customer/pickups', pickup.id]"
+          [routerLink]="[...pickupsPath, pickup.id]"
           class="block rounded-xl border border-border p-4 transition-colors hover:bg-muted/50"
         >
           <div class="flex items-center justify-between">

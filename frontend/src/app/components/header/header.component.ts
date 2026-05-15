@@ -88,6 +88,8 @@ type NotificationItem = {
 
       <!-- RIGHT SIDE -->
       <div class="flex items-center gap-2 shrink-0">
+        <ng-content select="[rightSide]" />
+
         <button
           z-button
           #notificationTrigger
