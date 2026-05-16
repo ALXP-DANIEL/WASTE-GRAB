@@ -91,6 +91,11 @@ export class ZardDialogService {
   ) {
     const dialogRef = new ZardDialogRef<T>(overlayRef, config, dialogContainer, this.platformId);
 
+    // If no content was provided, do not attempt to create a component portal.
+    if (componentOrTemplateRef == null) {
+      return dialogRef;
+    }
+
     if (componentOrTemplateRef instanceof TemplateRef) {
       dialogContainer.attachTemplatePortal(
         new TemplatePortal<T>(

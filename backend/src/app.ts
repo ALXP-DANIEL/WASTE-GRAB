@@ -7,7 +7,7 @@ import type { HealthResponse } from "@wastegrab/shared";
 import { config } from "./config.js";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler.js";
 import authRouter from "./routes/auth.routes.js";
-import { adminUserRouter, customerAddressRouter, customerTodoRouter } from "./routes/index.js";
+import { adminUserRouter, adminLocationRouter, customerAddressRouter, customerTodoRouter } from "./routes/index.js";
 
 const app = express();
 
@@ -41,6 +41,7 @@ app.get("/api/health", (req: Request, res: Response) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/admin/users", adminUserRouter);
+app.use("/api/admin/locations", adminLocationRouter);
 app.use("/api/customer/address", customerAddressRouter);
 app.use("/api/customer/todos", customerTodoRouter);
 

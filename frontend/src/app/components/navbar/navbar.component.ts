@@ -182,7 +182,7 @@ export class AppNavbarComponent {
     [UserRole.ADMIN]: [
       { label: 'Dashboard', route: '/admin', icon: 'lucideLayoutDashboard', showOnMobile: true },
       { label: 'Users', route: '/admin/users', icon: 'lucideUsers', showOnMobile: true },
-      { label: 'Collectors', route: '/admin/collectors', icon: 'lucideTruck', showOnMobile: true },
+      { label: 'Collectors', route: '/admin/location-collectors', icon: 'lucideTruck', showOnMobile: true },
       { label: 'Pickups', route: '/admin/pickups', icon: 'lucidePackage', showOnMobile: true },
       { label: 'Vouchers', route: '/admin/vouchers', icon: 'lucideGift', showOnMobile: false },
     ],
