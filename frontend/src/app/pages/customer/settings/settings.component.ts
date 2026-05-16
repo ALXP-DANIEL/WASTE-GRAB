@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { AuthService } from '@/services/auth.service';
+import { ThemeService } from '@/services/theme.service';
 import { ZardButtonComponent } from '@/components/button/button.component';
 import { AppHeaderComponent } from '@/components/header/header.component';
 
@@ -11,6 +12,7 @@ import { AppHeaderComponent } from '@/components/header/header.component';
 })
 export class SettingsPage implements OnInit {
   protected readonly authService = inject(AuthService);
+  protected readonly themeService = inject(ThemeService);
   protected notifications = true;
   protected emailUpdates = false;
   protected darkMode = false;
@@ -19,6 +21,8 @@ export class SettingsPage implements OnInit {
     if (!this.authService.hasLoadedSession()) {
       void this.authService.loadSession().subscribe();
     }
+    // initialize dark mode from persisted preference or system
+    this.darkMode = this.themeService.isDark();
   }
 
   toggleNotifications(): void {
@@ -31,6 +35,7 @@ export class SettingsPage implements OnInit {
 
   toggleDarkMode(): void {
     this.darkMode = !this.darkMode;
+    this.themeService.setDark(this.darkMode);
   }
 
   saveSettings(): void {
