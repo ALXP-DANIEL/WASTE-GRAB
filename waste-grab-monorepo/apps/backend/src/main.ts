@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { ApiResponse, CreateTodoRequest, Todo } from '@org/models';
+import { ApiResponse } from '@org/models';
 
 const host = process.env.HOST ?? 'localhost';
 const port = process.env.PORT ? Number(process.env.PORT) : 3333;
