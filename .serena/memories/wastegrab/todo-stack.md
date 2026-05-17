@@ -1,0 +1,4 @@
+- Demo shop was converted to a todo app while keeping the product libraries for future reuse.
+- Backend now serves todo CRUD endpoints through TodosService in apps/backend.
+- Frontend app lazy-loads todo routes from the existing frontend libs.
+- Shared models now includes Todo alongside the existing product types.

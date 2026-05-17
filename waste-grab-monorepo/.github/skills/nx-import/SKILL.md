@@ -41,7 +41,7 @@ Read the nx docs if you have the tools for it.
 
 Before importing, identify whether the source is an **application** or a **library**:
 
-- **Applications**: Deployable end products. Common indicators:
+- **Applications**: Deployable end todos. Common indicators:
   - _Frontend_: `next.config.*`, `vite.config.*` with a build entry point, framework-specific app scaffolding (CRA, Angular CLI app, etc.)
   - _Backend (Node.js)_: Express/Fastify/NestJS server entrypoint, no `"exports"` field in `package.json`
   - _JVM_: Maven `pom.xml` with `<packaging>jar</packaging>` or `<packaging>war</packaging>` and a `main` class; Gradle `application` plugin or `mainClass` setting

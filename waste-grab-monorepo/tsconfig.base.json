@@ -14,14 +14,13 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "paths": {
-      "@org/backend/products": ["./libs/backend/products/src/index.ts"],
+      "@org/backend/todos": ["./libs/backend/todos/src/index.ts"],
       "@org/models": ["./libs/shared/models/src/index.ts"],
       "@org/frontend/data": ["./libs/frontend/data/src/index.ts"],
-      "@org/frontend/feature-product-detail": [
-        "./libs/frontend/feature-product-detail/src/index.ts"
+      "@org/frontend/feature-todo-detail": [
+        "./libs/frontend/feature-todo-detail/src/index.ts"
       ],
-      "@org/frontend/feature-products": ["./libs/frontend/feature-products/src/index.ts"],
-      "@org/frontend/shared-ui": ["./libs/frontend/shared-ui/src/index.ts"]
+      "@org/frontend/feature-todo": ["./libs/frontend/feature-todo/src/index.ts"],
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -1,9 +1,0 @@
-{
-  "name": "shared-ui",
-  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/frontend/shared-ui/src",
-  "prefix": "lib",
-  "projectType": "library",
-  "tags": ["scope:frontend", "type:ui"],
-  "targets": {}
-}

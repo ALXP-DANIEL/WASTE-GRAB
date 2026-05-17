@@ -10,17 +10,17 @@ This repository demonstrates a production-ready Angular monorepo with:
 
 - **2 Applications**
 
-  - `frontend` - Angular e-commerce application with product listings and detail views
-  - `backend` - Backend API with Docker support serving product data
+  - `frontend` - Angular e-commerce application with todo listings and detail views
+  - `backend` - Backend API with Docker support serving todo data
 
 - **6 Libraries**
 
-  - `@org/feature-products` - Product listing feature (Angular)
-  - `@org/feature-product-detail` - Product detail feature (Angular)
+  - `@org/feature-todos` - Product listing feature (Angular)
+  - `@org/feature-todo-detail` - Product detail feature (Angular)
   - `@org/data` - Data access layer for frontend features
   - `@org/shared-ui` - Shared UI components
   - `@org/models` - Shared data models
-  - `@org/products` - API product service library
+  - `@org/todos` - API todo service library
 
 - **E2E Testing**
   - `frontend-e2e` - Playwright tests for the frontend application
@@ -163,12 +163,12 @@ This feature helps maintain a healthy CI pipeline by automatically detecting and
 │   └── backend/            [scope:backend]     - Backend API with Docker
 ├── libs/
 │   ├── frontend/
-│   │   ├── feature-products/        [scope:frontend,type:feature] - Product listing
-│   │   ├── feature-product-detail/  [scope:frontend,type:feature] - Product details
+│   │   ├── feature-todos/        [scope:frontend,type:feature] - Product listing
+│   │   ├── feature-todo-detail/  [scope:frontend,type:feature] - Product details
 │   │   ├── data/                    [scope:frontend,type:data]    - Data access
 │   │   └── shared-ui/               [scope:frontend,type:ui]      - UI components
 │   ├── backend/
-│   │   └── products/    [scope:backend]    - Product service
+│   │   └── todos/    [scope:backend]    - Product service
 │   └── shared/
 │       └── models/      [scope:shared,type:data] - Shared models
 ├── nx.json             - Nx configuration
@@ -184,7 +184,7 @@ This repository uses tags to enforce module boundaries:
 | ------------------ | ---------------------------- | ---------------------------- |
 | `frontend`             | `scope:frontend`                 | `scope:frontend`, `scope:shared` |
 | `backend`              | `scope:backend`                  | `scope:backend`, `scope:shared`  |
-| `feature-products` | `scope:frontend`, `type:feature` | `scope:frontend`, `scope:shared` |
+| `feature-todos` | `scope:frontend`, `type:feature` | `scope:frontend`, `scope:shared` |
 | `data`             | `scope:frontend`, `type:data`    | `scope:shared`               |
 | `models`           | `scope:shared`, `type:data`  | Nothing (base library)       |
 
@@ -201,7 +201,7 @@ npx nx serve frontend                              # Serve Angular app
 npx nx serve backend                               # Serve backend API
 npx nx build frontend                              # Build Angular app
 npx nx test data                               # Test a specific library
-npx nx lint feature-products                   # Lint a specific library
+npx nx lint feature-todos                   # Lint a specific library
 
 # Running multiple tasks
 npx nx run-many -t build                       # Build all projects
