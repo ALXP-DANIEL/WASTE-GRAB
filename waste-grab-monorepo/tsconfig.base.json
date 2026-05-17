@@ -15,14 +15,14 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@org/api/products": ["libs/api/products/src/index.ts"],
+      "@org/backend/products": ["libs/backend/products/src/index.ts"],
       "@org/models": ["libs/shared/models/src/index.ts"],
-      "@org/shop/data": ["libs/shop/data/src/index.ts"],
-      "@org/shop/feature-product-detail": [
-        "libs/shop/feature-product-detail/src/index.ts"
+      "@org/frontend/data": ["libs/frontend/data/src/index.ts"],
+      "@org/frontend/feature-product-detail": [
+        "libs/frontend/feature-product-detail/src/index.ts"
       ],
-      "@org/shop/feature-products": ["libs/shop/feature-products/src/index.ts"],
-      "@org/shop/shared-ui": ["libs/shop/shared-ui/src/index.ts"]
+      "@org/frontend/feature-products": ["libs/frontend/feature-products/src/index.ts"],
+      "@org/frontend/shared-ui": ["libs/frontend/shared-ui/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
