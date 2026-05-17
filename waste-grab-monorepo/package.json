@@ -63,6 +63,7 @@
     "nx": "22.7.0",
     "prettier": "^3.8.1",
     "supertest": "^7.1.4",
+    "ts-api-utils": "^2.5.0",
     "ts-node": "10.9.1",
     "tslib": "^2.3.0",
     "typescript": "~5.9.2",

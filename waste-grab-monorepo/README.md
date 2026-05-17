@@ -10,20 +10,20 @@ This repository demonstrates a production-ready Angular monorepo with:
 
 - **2 Applications**
 
-  - `shop` - Angular e-commerce application with product listings and detail views
-  - `api` - Backend API with Docker support serving product data
+  - `frontend` - Angular e-commerce application with product listings and detail views
+  - `backend` - Backend API with Docker support serving product data
 
 - **6 Libraries**
 
   - `@org/feature-products` - Product listing feature (Angular)
   - `@org/feature-product-detail` - Product detail feature (Angular)
-  - `@org/data` - Data access layer for shop features
+  - `@org/data` - Data access layer for frontend features
   - `@org/shared-ui` - Shared UI components
   - `@org/models` - Shared data models
   - `@org/products` - API product service library
 
 - **E2E Testing**
-  - `shop-e2e` - Playwright tests for the shop application
+  - `frontend-e2e` - Playwright tests for the frontend application
 
 ## 🚀 Quick Start
 
@@ -36,11 +36,11 @@ cd <your-repository-name>
 # (Note: You may need --legacy-peer-deps)
 npm install
 
-# Serve the Angular shop application (this will simultaneously serve the API backend)
-npx nx serve shop
+# Serve the Angular frontend application (this will simultaneously serve the API backend)
+npx nx serve frontend
 
 # ...or you can serve the API separately
-npx nx serve api
+npx nx serve backend
 
 # Build all projects
 npx nx run-many -t build
@@ -52,7 +52,7 @@ npx nx run-many -t test
 npx nx run-many -t lint
 
 # Run e2e tests
-npx nx e2e shop-e2e
+npx nx e2e frontend-e2e
 
 # Run tasks in parallel
 
@@ -71,8 +71,8 @@ This repository showcases several powerful Nx features:
 Enforces architectural constraints using tags. Each project has specific dependencies it can use:
 
 - `scope:shared` - Can be used by all projects
-- `scope:shop` - Shop-specific libraries
-- `scope:api` - API-specific libraries
+- `scope:frontend` - Frontend-specific libraries
+- `scope:backend` - API-specific libraries
 - `type:feature` - Feature libraries
 - `type:data` - Data access libraries
 - `type:ui` - UI component libraries
@@ -84,7 +84,7 @@ Enforces architectural constraints using tags. Each project has specific depende
 npx nx graph
 
 # View a specific project's details
-npx nx show project shop --web
+npx nx show project frontend --web
 ```
 
 [Learn more about module boundaries →](https://nx.dev/features/enforce-module-boundaries)
@@ -95,10 +95,10 @@ The API project includes Docker support with automated targets and release manag
 
 ```bash
 # Build Docker image
-npx nx docker:build api
+npx nx docker:build backend
 
 # Run Docker container
-npx nx docker:run api
+npx nx docker:run backend
 
 # Release with automatic Docker image versioning
 npx nx release
@@ -114,10 +114,10 @@ End-to-end testing with Playwright is pre-configured:
 
 ```bash
 # Run e2e tests
-npx nx e2e shop-e2e
+npx nx e2e frontend-e2e
 
 # Run e2e tests in CI mode
-npx nx e2e-ci shop-e2e
+npx nx e2e-ci frontend-e2e
 ```
 
 [Learn more about E2E testing →](https://nx.dev/technologies/test-tools/playwright/introduction#e2e-testing)
@@ -158,17 +158,17 @@ This feature helps maintain a healthy CI pipeline by automatically detecting and
 
 ```
 ├── apps/
-│   ├── shop/           [scope:shop]    - Angular e-commerce app
-│   ├── shop-e2e/                       - E2E tests for shop
-│   └── api/            [scope:api]     - Backend API with Docker
+│   ├── frontend/           [scope:frontend]    - Angular e-commerce app
+│   ├── frontend-e2e/                       - E2E tests for frontend
+│   └── backend/            [scope:backend]     - Backend API with Docker
 ├── libs/
-│   ├── shop/
-│   │   ├── feature-products/        [scope:shop,type:feature] - Product listing
-│   │   ├── feature-product-detail/  [scope:shop,type:feature] - Product details
-│   │   ├── data/                    [scope:shop,type:data]    - Data access
-│   │   └── shared-ui/               [scope:shop,type:ui]      - UI components
-│   ├── api/
-│   │   └── products/    [scope:api]    - Product service
+│   ├── frontend/
+│   │   ├── feature-products/        [scope:frontend,type:feature] - Product listing
+│   │   ├── feature-product-detail/  [scope:frontend,type:feature] - Product details
+│   │   ├── data/                    [scope:frontend,type:data]    - Data access
+│   │   └── shared-ui/               [scope:frontend,type:ui]      - UI components
+│   ├── backend/
+│   │   └── products/    [scope:backend]    - Product service
 │   └── shared/
 │       └── models/      [scope:shared,type:data] - Shared models
 ├── nx.json             - Nx configuration
@@ -182,10 +182,10 @@ This repository uses tags to enforce module boundaries:
 
 | Project            | Tags                         | Can Import From              |
 | ------------------ | ---------------------------- | ---------------------------- |
-| `shop`             | `scope:shop`                 | `scope:shop`, `scope:shared` |
-| `api`              | `scope:api`                  | `scope:api`, `scope:shared`  |
-| `feature-products` | `scope:shop`, `type:feature` | `scope:shop`, `scope:shared` |
-| `data`             | `scope:shop`, `type:data`    | `scope:shared`               |
+| `frontend`             | `scope:frontend`                 | `scope:frontend`, `scope:shared` |
+| `backend`              | `scope:backend`                  | `scope:backend`, `scope:shared`  |
+| `feature-products` | `scope:frontend`, `type:feature` | `scope:frontend`, `scope:shared` |
+| `data`             | `scope:frontend`, `type:data`    | `scope:shared`               |
 | `models`           | `scope:shared`, `type:data`  | Nothing (base library)       |
 
 ## 📚 Useful Commands
@@ -194,12 +194,12 @@ This repository uses tags to enforce module boundaries:
 # Project exploration
 npx nx graph                                    # Interactive dependency graph
 npx nx list                                     # List installed plugins
-npx nx show project shop --web                 # View project details
+npx nx show project frontend --web                 # View project details
 
 # Development
-npx nx serve shop                              # Serve Angular app
-npx nx serve api                               # Serve backend API
-npx nx build shop                              # Build Angular app
+npx nx serve frontend                              # Serve Angular app
+npx nx serve backend                               # Serve backend API
+npx nx build frontend                              # Build Angular app
 npx nx test data                               # Test a specific library
 npx nx lint feature-products                   # Lint a specific library
 
@@ -213,8 +213,8 @@ npx nx affected -t build                       # Build only affected projects
 npx nx affected -t test                        # Test only affected projects
 
 # Docker operations
-npx nx docker:build api                        # Build Docker image
-npx nx docker:run api                          # Run Docker container
+npx nx docker:build backend                        # Build Docker image
+npx nx docker:run backend                          # Run Docker container
 ```
 
 ## 🎯 Adding New Features
@@ -240,7 +240,7 @@ npx nx g @nx/angular:component my-component --project=my-lib
 ### Generate a new API library:
 
 ```bash
-npx nx g @nx/node:lib my-api-lib
+npx nx g @nx/node:lib my-backend-lib
 ```
 
 You can use `npx nx list` to see all available plugins and `npx nx list <plugin-name>` to see all generators for a specific plugin.
