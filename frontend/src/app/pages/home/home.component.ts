@@ -198,7 +198,7 @@ export class HomePage {
     { step: '01', icon: 'lucideCamera', title: 'Upload Waste Images', description: 'Take photos of your recyclable materials - plastic bottles, cardboard, electronics, or anything else you want to recycle.' },
     { step: '02', icon: 'lucideSparkles', title: 'AI Analysis', description: 'Our AI instantly identifies the type of waste, estimates weight, calculates value, and detects any hazardous materials.' },
     { step: '03', icon: 'lucideEdit3', title: 'Review & Edit', description: 'Review the AI-generated details. You can edit quantities, add more items, or adjust the pickup location.' },
-    { step: '04', icon: 'lucideCheckCircle2', title: 'Submit Request', description: 'Confirm your pickup request. The system automatically assigns a collector in your service area.' },
+    { step: '04', icon: 'lucideCheckCircle2', title: 'Submit Request', description: 'Confirm your pickup request. Available collectors can accept and complete the collection.' },
     { step: '05', icon: 'lucideTruck', title: 'Collector Pickup', description: 'A verified collector arrives at your location, verifies the waste, and completes the collection.' },
     { step: '06', icon: 'lucideGift', title: 'Earn Rewards', description: 'Receive reward points based on the verified weight and type of recyclables. Redeem for vouchers!' },
   ];
@@ -206,7 +206,7 @@ export class HomePage {
   readonly featureCards: Feature[] = [
     { icon: 'lucideCamera', title: 'Easy Image Upload', description: 'Simply snap a photo of your recyclables. Support for multiple images per request.', accentClass: 'bg-primary/10 text-primary' },
     { icon: 'lucideBrain', title: 'AI-Powered Detection', description: 'Our AI automatically identifies waste types, estimates weight, and calculates value.', accentClass: 'bg-accent/20 text-accent-foreground' },
-    { icon: 'lucideMapPin', title: 'Location-Based Service', description: 'Collectors in your service area receive your request for quick response times.', accentClass: 'bg-primary/10 text-primary' },
+    { icon: 'lucideMapPin', title: 'Flexible Drop-Off', description: 'Collectors can bring verified recyclables to any available collection location.', accentClass: 'bg-primary/10 text-primary' },
     { icon: 'lucideCoins', title: 'Reward Points System', description: 'Earn points for every successful pickup. Redeem for food, shopping, or cashback vouchers.', accentClass: 'bg-accent/20 text-accent-foreground' },
     { icon: 'lucideShield', title: 'Hazard Detection', description: 'AI flags potentially hazardous materials to ensure safe handling and disposal.', accentClass: 'bg-primary/10 text-primary' },
     { icon: 'lucideZap', title: 'Real-Time Tracking', description: 'Track your pickup request status from submission to completion.', accentClass: 'bg-accent/20 text-accent-foreground' },

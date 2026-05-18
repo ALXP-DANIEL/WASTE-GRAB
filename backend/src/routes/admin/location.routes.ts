@@ -16,12 +16,11 @@ async function requireAdmin(req: Request, res: Response, next: Function) {
   next();
 }
 
-// GET /api/admin/locations - list locations with assigned collectors
+// GET /api/admin/locations - list collection locations
 locationRouter.get("/", requireAdmin, async (req: Request, res: Response) => {
   try {
     const locations = await prisma.location.findMany({
       orderBy: { createdAt: "desc" },
-      include: { collectors: { include: { collector: true } } },
     });
 
     res.json(locations.map(l => ({
@@ -37,10 +36,7 @@ locationRouter.get("/", requireAdmin, async (req: Request, res: Response) => {
 // GET /api/admin/locations/:id - get single location
 locationRouter.get("/:id", requireAdmin, async (req: Request, res: Response) => {
   try {
-    const location = await prisma.location.findUnique({
-      where: { id: String(req.params.id) },
-      include: { collectors: { include: { collector: true } } },
-    });
+    const location = await prisma.location.findUnique({ where: { id: String(req.params.id) } });
 
     if (!location) {
       res.status(404).json({ error: "Location not found." } as ApiErrorResponse);
@@ -93,68 +89,6 @@ locationRouter.post("/", requireAdmin, async (req: Request, res: Response) => {
   }
 });
 
-// POST /api/admin/locations/:id/assign - assign a collector to a location
-locationRouter.post("/:id/assign", requireAdmin, async (req: Request, res: Response) => {
-  const body = getBody(req.body);
-  const collectorId = typeof body.collectorId === "string" ? body.collectorId : "";
-
-  if (!collectorId) {
-    res.status(400).json({ error: "Missing required field: collectorId." } as ApiErrorResponse);
-    return;
-  }
-
-  try {
-    // Diagnostic logging
-    console.debug('[admin:assign] body:', body);
-    console.debug('[admin:assign] collectorId:', collectorId);
-    // Check location exists
-    const location = await prisma.location.findUnique({ where: { id: String(req.params.id) } });
-    console.debug('[admin:assign] location:', !!location);
-    if (!location) {
-      res.status(404).json({ error: "Location not found." } as ApiErrorResponse);
-      return;
-    }
-
-    // Check user exists and is a collector
-    const user = await prisma.user.findUnique({ where: { id: collectorId } });
-    console.debug('[admin:assign] user:', user ? { id: user.id, role: user.role } : null);
-    if (!user || user.role !== "COLLECTOR") {
-      res.status(400).json({ error: "Invalid collector user." } as ApiErrorResponse);
-      return;
-    }
-
-    const assignment = await prisma.locationCollector.create({
-      data: { locationId: location.id, collectorId: collectorId },
-    });
-
-    res.status(201).json({ ...assignment, assignedAt: assignment.assignedAt.toISOString() });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Unable to assign collector.";
-    res.status(400).json({ error: message } as ApiErrorResponse);
-  }
-});
-
-// DELETE /api/admin/locations/:id/collectors/:collectorId - unassign
-locationRouter.delete("/:id/collectors/:collectorId", requireAdmin, async (req: Request, res: Response) => {
-  try {
-    const existing = await prisma.locationCollector.findUnique({
-      where: { locationId_collectorId: { locationId: String(req.params.id), collectorId: String(req.params.collectorId) } },
-    });
-
-    if (!existing) {
-      res.status(404).json({ error: "Assignment not found." } as ApiErrorResponse);
-      return;
-    }
-
-    await prisma.locationCollector.delete({ where: { id: existing.id } });
-
-    res.status(204).send();
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Unable to remove assignment.";
-    res.status(400).json({ error: message } as ApiErrorResponse);
-  }
-});
-
 // PATCH /api/admin/locations/:id - update location
 locationRouter.patch("/:id", requireAdmin, async (req: Request, res: Response) => {
   const body = getBody(req.body);
@@ -177,16 +111,11 @@ locationRouter.patch("/:id", requireAdmin, async (req: Request, res: Response) =
     const updated = await prisma.location.update({
       where: { id: existing.id },
       data: updateData,
-      include: { collectors: { include: { collector: true } } },
     });
 
     res.json({
       ...updated,
       createdAt: updated.createdAt.toISOString(),
-      collectors: updated.collectors.map(c => ({
-        ...c,
-        assignedAt: c.assignedAt.toISOString(),
-      })),
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unable to update location.';

@@ -13,7 +13,6 @@ export interface LocationRecord {
   latitude?: number | null;
   longitude?: number | null;
   createdAt: string;
-  collectors?: Array<{ id: string; assignedAt: string; collector: any }>;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -32,14 +31,6 @@ export class LocationService {
 
   createLocation(payload: Partial<LocationRecord>) {
     return this.http.post<LocationRecord>(this.apiUrl, payload, this.opts);
-  }
-
-  assignCollector(locationId: string, collectorId: string) {
-    return this.http.post(`${this.apiUrl}/${locationId}/assign`, { collectorId }, this.opts);
-  }
-
-  unassignCollector(locationId: string, collectorId: string) {
-    return this.http.delete(`${this.apiUrl}/${locationId}/collectors/${collectorId}`, this.opts);
   }
 
   updateLocation(id: string, payload: Partial<LocationRecord>) {
