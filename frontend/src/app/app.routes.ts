@@ -129,9 +129,9 @@ const ROUTE_CONFIG: RouteConfig[] = [
         title: 'Admin Dashboard',
       },
       {
-        path: 'location-collectors',
+        path: 'locations',
         component: AdminCollectorsPage,
-        title: 'Manage Location Collectors',
+        title: 'Manage Collection Locations',
       },
       {
         path: 'pickups',
@@ -194,7 +194,7 @@ export const ROUTE_PATHS = {
   },
   admin: {
     base: 'admin',
-    collectors: 'location-collectors',
+    collectors: 'locations',
     pickups: 'pickups',
     users: 'users',
     vouchers: 'vouchers',

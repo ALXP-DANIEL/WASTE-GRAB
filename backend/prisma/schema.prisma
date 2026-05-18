@@ -51,7 +51,6 @@ model User {
   pickupRequestsAsUser     PickupRequest[] @relation("UserRequests")
   pickupRequestsAsCollector PickupRequest[] @relation("CollectorRequests")
   transactions            Transaction[]
-  locationAssignments     LocationCollector[]
 
   @@map("users")
 }
@@ -160,7 +159,7 @@ model Todo {
   @@map("todos")
 }
 
-// Locations that admins can create. Each location can have multiple collectors assigned.
+// Collection locations where collectors can deliver waste.
 model Location {
   id         String   @id @default(uuid())
   name       String   @db.VarChar(255)
@@ -173,22 +172,5 @@ model Location {
   createdAt  DateTime @default(now()) @map("created_at")
   createdBy  String?  @map("created_by")
 
-  // Relations
-  collectors LocationCollector[]
-
   @@map("locations")
-}
-
-// Join table linking locations to collector users (many-to-many).
-model LocationCollector {
-  id          String   @id @default(uuid())
-  locationId  String   @map("location_id")
-  collectorId String   @map("collector_id")
-  assignedAt  DateTime @default(now()) @map("assigned_at")
-
-  location    Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
-  collector   User     @relation(fields: [collectorId], references: [id])
-
-  @@unique([locationId, collectorId])
-  @@map("location_collectors")
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { AppHeaderComponent } from '@/components/header/header.component';
@@ -7,13 +7,10 @@ import { ZardButtonComponent } from '@/components/button/button.component';
 import { ZardModalComponent } from '@/components/modal/modal.component';
 import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/components/form/form.component';
 import { ZardInputDirective } from '@/components/input';
-import { ZardSelectImports } from '@/components/select/select.imports';
 import { ZardDialogService } from '@/components/dialog/dialog.service';
 import { LocationService, type LocationRecord } from '@/services/location.service';
-import { UserService } from '@/services/user.service';
-import type { User } from '@wastegrab/shared';
 
-type LocationModalMode = 'add' | 'assign' | 'edit' | null;
+type LocationModalMode = 'add' | 'edit' | null;
 
 @Component({
   selector: 'app-admin-collectors-page',
@@ -23,7 +20,6 @@ type LocationModalMode = 'add' | 'assign' | 'edit' | null;
     AppHeaderComponent,
     ...ZardTableImports,
     ZardButtonComponent,
-    ...ZardSelectImports,
     ZardModalComponent,
     ZardFormFieldComponent,
     ZardFormLabelComponent,
@@ -37,16 +33,6 @@ export class AdminCollectorsPage implements OnInit {
   private readonly dialogService = inject(ZardDialogService);
 
   protected readonly locations = signal<LocationRecord[]>([]);
-  protected readonly collectorsList = signal<User[]>([]);
-  protected readonly availableCollectors = computed(() => {
-    const locId = this.editingLocationId();
-    const all = this.collectorsList();
-    if (!locId) return all;
-
-    const loc = this.locations().find(l => l.id === locId);
-    const assignedIds = new Set((loc?.collectors ?? []).map((c: any) => c.collector.id));
-    return all.filter(u => !assignedIds.has(u.id));
-  });
   protected readonly modalMode = signal<LocationModalMode>(null);
   protected readonly editingLocationId = signal<string | null>(null);
 
@@ -56,23 +42,12 @@ export class AdminCollectorsPage implements OnInit {
     city: new FormControl('', { nonNullable: true }),
   });
 
-  protected readonly assignForm = new FormGroup({
-    collectorId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-  });
-
-  private readonly userService = inject(UserService);
-
   ngOnInit(): void {
     this.loadLocations();
-    this.loadCollectors();
   }
 
   private loadLocations(): void {
     this.locationService.listLocations().subscribe({ next: (list) => this.locations.set(list), error: () => this.locations.set([]) });
-  }
-
-  private loadCollectors(): void {
-    this.userService.listUsers().subscribe({ next: (list) => this.collectorsList.set(list.filter(u => u.role === 'COLLECTOR')), error: () => this.collectorsList.set([]) });
   }
 
   protected openAdd(): void {
@@ -85,12 +60,6 @@ export class AdminCollectorsPage implements OnInit {
     this.editingLocationId.set(location.id);
     this.createForm.reset({ name: location.name, address: location.address || '', city: location.city || '' });
     this.modalMode.set('edit');
-  }
-
-  protected openAssign(location: LocationRecord): void {
-    this.editingLocationId.set(location.id);
-    this.assignForm.reset({ collectorId: '' });
-    this.modalMode.set('assign');
   }
 
   protected closeModal(): void {
@@ -131,24 +100,10 @@ export class AdminCollectorsPage implements OnInit {
     });
   }
 
-  protected saveAssign(): void {
-    if (this.assignForm.invalid) {
-      this.assignForm.markAllAsTouched();
-      return;
-    }
-
-    const collectorId = this.assignForm.getRawValue().collectorId;
-    const locId = this.editingLocationId();
-    if (!locId) return;
-
-    this.locationService.assignCollector(locId, collectorId).subscribe({ next: () => this.loadLocations() });
-    this.closeModal();
-  }
-
   protected deleteLocation(location: LocationRecord): void {
     this.dialogService.create({
       zTitle: 'Delete Location',
-      zDescription: `Are you sure you want to delete ${location.name}? This will remove all assignments.`,
+      zDescription: `Are you sure you want to delete ${location.name}?`,
       zOkText: 'Delete',
       zOkDestructive: true,
       zCancelText: 'Cancel',
@@ -159,17 +114,4 @@ export class AdminCollectorsPage implements OnInit {
     });
   }
 
-  protected unassign(location: LocationRecord, assignment: any): void {
-    this.dialogService.create({
-      zTitle: 'Remove Collector',
-      zDescription: `Remove ${assignment.collector.name} from ${location.name}?`,
-      zOkText: 'Remove',
-      zOkDestructive: true,
-      zCancelText: 'Cancel',
-      zWidth: 'max-w-sm',
-      zOnOk: () => {
-        this.locationService.unassignCollector(location.id, assignment.collector.id).subscribe({ next: () => this.loadLocations() });
-      },
-    });
-  }
 }

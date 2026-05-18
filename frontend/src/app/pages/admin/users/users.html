@@ -26,7 +26,7 @@
             <th z-table-head>Role</th>
             <th z-table-head>Phone</th>
             <th z-table-head>Joined</th>
-            <th z-table-head class="text-right">Actions</th>
+            <th z-table-head class="w-44 !text-right">Actions</th>
           </tr>
         </thead>
 
@@ -55,8 +55,8 @@
                 <p class="text-slate-900">{{ user.createdAt | date: 'MMM dd, yyyy' }}</p>
               </td>
 
-              <td z-table-cell>
-                <div class="flex flex-wrap justify-end gap-2">
+              <td z-table-cell class="w-44 !text-right">
+                <div class="flex justify-end gap-2">
                   <button
                     z-button
                     zType="outline"
