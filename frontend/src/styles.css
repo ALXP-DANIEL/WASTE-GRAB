@@ -163,3 +163,7 @@
 .animate-wordFade {
   animation: wordFade 0.35s ease-out both;
 }
+
+.pac-container {
+  z-index: 10000;
+}

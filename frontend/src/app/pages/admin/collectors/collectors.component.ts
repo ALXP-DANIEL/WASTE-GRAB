@@ -9,6 +9,7 @@ import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponen
 import { ZardInputDirective } from '@/components/input';
 import { ZardDialogService } from '@/components/dialog/dialog.service';
 import { LocationService, type LocationRecord } from '@/services/location.service';
+import { GooglePlaceInputComponent, type GooglePlaceSelection } from '@/components/google-place-input/google-place-input.component';
 
 type LocationModalMode = 'add' | 'edit' | null;
 
@@ -25,6 +26,7 @@ type LocationModalMode = 'add' | 'edit' | null;
     ZardFormLabelComponent,
     ZardFormControlComponent,
     ZardInputDirective,
+    GooglePlaceInputComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -40,9 +42,15 @@ export class AdminCollectorsPage implements OnInit {
     name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     address: new FormControl('', { nonNullable: true }),
     city: new FormControl('', { nonNullable: true }),
+    state: new FormControl('', { nonNullable: true }),
+    postalCode: new FormControl('', { nonNullable: true }),
+    googlePlaceId: new FormControl('', { nonNullable: true }),
+    latitude: new FormControl<number | null>(null),
+    longitude: new FormControl<number | null>(null),
   });
 
   ngOnInit(): void {
+    this.disableGoogleLocationFields();
     this.loadLocations();
   }
 
@@ -52,19 +60,51 @@ export class AdminCollectorsPage implements OnInit {
 
   protected openAdd(): void {
     this.editingLocationId.set(null);
-    this.createForm.reset({ name: '', address: '', city: '' });
+    this.createForm.reset({ name: '', address: '', city: '', state: '', postalCode: '', googlePlaceId: '', latitude: null, longitude: null });
     this.modalMode.set('add');
+    this.disableGoogleLocationFields();
   }
 
   protected openEdit(location: LocationRecord): void {
     this.editingLocationId.set(location.id);
-    this.createForm.reset({ name: location.name, address: location.address || '', city: location.city || '' });
+    this.createForm.reset({
+      name: location.name,
+      address: location.address || '',
+      city: location.city || '',
+      state: location.state || '',
+      postalCode: location.postalCode || '',
+      googlePlaceId: location.googlePlaceId || '',
+      latitude: location.latitude ?? null,
+      longitude: location.longitude ?? null,
+    });
     this.modalMode.set('edit');
+    this.disableGoogleLocationFields();
   }
 
   protected closeModal(): void {
     this.modalMode.set(null);
     this.editingLocationId.set(null);
+    this.disableGoogleLocationFields();
+  }
+
+  private disableGoogleLocationFields(): void {
+    this.createForm.controls.address.disable({ emitEvent: false });
+    this.createForm.controls.city.disable({ emitEvent: false });
+    this.createForm.controls.state.disable({ emitEvent: false });
+    this.createForm.controls.postalCode.disable({ emitEvent: false });
+  }
+
+  protected applyLocationPlace(place: GooglePlaceSelection): void {
+    this.createForm.patchValue({
+      name: place.name || this.createForm.controls.name.value,
+      address: place.formattedAddress || place.addressLine,
+      city: place.city,
+      state: place.state,
+      postalCode: place.postalCode,
+      googlePlaceId: place.placeId,
+      latitude: place.latitude,
+      longitude: place.longitude,
+    });
   }
 
   protected saveCreate(): void {
@@ -74,7 +114,16 @@ export class AdminCollectorsPage implements OnInit {
     }
 
     const v = this.createForm.getRawValue();
-    this.locationService.createLocation({ name: v.name, address: v.address || undefined, city: v.city || undefined }).subscribe({
+    this.locationService.createLocation({
+      name: v.name,
+      address: v.address || undefined,
+      city: v.city || undefined,
+      state: v.state || undefined,
+      postalCode: v.postalCode || undefined,
+      googlePlaceId: v.googlePlaceId || undefined,
+      latitude: v.latitude,
+      longitude: v.longitude,
+    }).subscribe({
       next: (created) => {
         this.locations.update((list) => [created, ...list]);
         this.closeModal();
@@ -92,7 +141,16 @@ export class AdminCollectorsPage implements OnInit {
     if (!id) return;
 
     const v = this.createForm.getRawValue();
-    this.locationService.updateLocation(id, { name: v.name, address: v.address || undefined, city: v.city || undefined }).subscribe({
+    this.locationService.updateLocation(id, {
+      name: v.name,
+      address: v.address || undefined,
+      city: v.city || undefined,
+      state: v.state || undefined,
+      postalCode: v.postalCode || undefined,
+      googlePlaceId: v.googlePlaceId || undefined,
+      latitude: v.latitude,
+      longitude: v.longitude,
+    }).subscribe({
       next: (updated) => {
         this.locations.update((list) => list.map(l => (l.id === updated.id ? updated : l)));
         this.closeModal();

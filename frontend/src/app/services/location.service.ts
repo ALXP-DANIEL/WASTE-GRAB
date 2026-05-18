@@ -12,6 +12,7 @@ export interface LocationRecord {
   postalCode?: string | null;
   latitude?: number | null;
   longitude?: number | null;
+  googlePlaceId?: string | null;
   createdAt: string;
 }
 

@@ -14,6 +14,7 @@ import { ZardInputDirective } from '@/components/input';
 import { ZardTableImports } from '@/components/table';
 import { ProfileModalComponent } from './profile-modal.component';
 import { AddressService } from '@/services/address.service';
+import { GooglePlaceInputComponent, type GooglePlaceSelection } from '@/components/google-place-input/google-place-input.component';
 import type { Address } from '@wastegrab/shared';
 
 type AddressModalMode = 'add' | 'edit' | null;
@@ -36,6 +37,7 @@ type AddressItem = Address;
     ZardFormLabelComponent,
     ZardFormControlComponent,
     ZardInputDirective,
+    GooglePlaceInputComponent,
   ],
   templateUrl: './profile.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -76,12 +78,22 @@ export class ProfilePage implements OnInit {
       nonNullable: true,
       validators: [Validators.required, Validators.minLength(4)],
     }),
+    formattedAddress: new FormControl('', {
+      nonNullable: true,
+    }),
+    googlePlaceId: new FormControl('', {
+      nonNullable: true,
+    }),
+    latitude: new FormControl<number | null>(null),
+    longitude: new FormControl<number | null>(null),
     notes: new FormControl('', {
       nonNullable: true,
     }),
   });
 
   ngOnInit(): void {
+    this.disableGoogleAddressFields();
+
     if (!this.authService.hasLoadedSession()) {
       void this.authService.loadSession().subscribe();
     }
@@ -107,9 +119,14 @@ export class ProfilePage implements OnInit {
       city: '',
       state: '',
       postalCode: '',
+      formattedAddress: '',
+      googlePlaceId: '',
+      latitude: null,
+      longitude: null,
       notes: '',
     });
     this.addressModalMode.set('add');
+    this.disableGoogleAddressFields();
   }
 
   protected openEditAddress(address: AddressItem): void {
@@ -120,9 +137,14 @@ export class ProfilePage implements OnInit {
       city: address.city,
       state: address.state,
       postalCode: address.postalCode,
+      formattedAddress: address.formattedAddress ?? '',
+      googlePlaceId: address.googlePlaceId ?? '',
+      latitude: address.latitude,
+      longitude: address.longitude,
       notes: address.notes ?? '',
     });
     this.addressModalMode.set('edit');
+    this.disableGoogleAddressFields();
   }
 
   protected closeAddressModal(): void {
@@ -134,7 +156,32 @@ export class ProfilePage implements OnInit {
       city: '',
       state: '',
       postalCode: '',
+      formattedAddress: '',
+      googlePlaceId: '',
+      latitude: null,
+      longitude: null,
       notes: '',
+    });
+    this.disableGoogleAddressFields();
+  }
+
+  private disableGoogleAddressFields(): void {
+    this.addressForm.controls.street.disable({ emitEvent: false });
+    this.addressForm.controls.city.disable({ emitEvent: false });
+    this.addressForm.controls.state.disable({ emitEvent: false });
+    this.addressForm.controls.postalCode.disable({ emitEvent: false });
+  }
+
+  protected applyAddressPlace(place: GooglePlaceSelection): void {
+    this.addressForm.patchValue({
+      street: place.addressLine || place.formattedAddress,
+      city: place.city,
+      state: place.state,
+      postalCode: place.postalCode,
+      formattedAddress: place.formattedAddress,
+      googlePlaceId: place.placeId,
+      latitude: place.latitude,
+      longitude: place.longitude,
     });
   }
 
@@ -168,6 +215,24 @@ export class ProfilePage implements OnInit {
     this.addressService.setDefaultAddress(addressId).subscribe({
       next: (updated) => {
         this.address.update((list) => list.map((a) => ({ ...a, isDefault: a.id === updated.id })));
+      },
+    });
+  }
+
+  protected deleteAddress(address: AddressItem): void {
+    this.dialogService.create({
+      zTitle: 'Delete Address',
+      zDescription: `Are you sure you want to delete ${address.label}?`,
+      zOkText: 'Delete',
+      zOkDestructive: true,
+      zCancelText: 'Cancel',
+      zWidth: 'max-w-sm',
+      zOnOk: () => {
+        this.addressService.deleteAddress(address.id).subscribe({
+          next: () => {
+            this.address.update((list) => list.filter((item) => item.id !== address.id));
+          },
+        });
       },
     });
   }
