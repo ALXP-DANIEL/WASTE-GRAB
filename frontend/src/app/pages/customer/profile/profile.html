@@ -140,6 +140,16 @@
                       >
                         Edit
                       </button>
+
+                      <button
+                        z-button
+                        zType="destructive"
+                        zSize="sm"
+                        type="button"
+                        (click)="deleteAddress(address)"
+                      >
+                        Delete
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -200,6 +210,16 @@
       </z-form-field>
 
       <z-form-field class="sm:col-span-2">
+        <z-form-label>Search Address</z-form-label>
+        <z-form-control>
+          <app-google-place-input
+            placeholder="Search pickup address"
+            (placeSelected)="applyAddressPlace($event)"
+          />
+        </z-form-control>
+      </z-form-field>
+
+      <z-form-field class="sm:col-span-2">
         <z-form-label [zRequired]="true">Street Address</z-form-label>
         <z-form-control>
           <textarea
@@ -215,7 +235,7 @@
       <z-form-field>
         <z-form-label [zRequired]="true">City</z-form-label>
         <z-form-control>
-          <input z-input type="text" formControlName="city" placeholder="Jakarta" class="w-full" />
+          <input z-input type="text" formControlName="city" placeholder="Kuala Lumpur" class="w-full" />
         </z-form-control>
       </z-form-field>
 
@@ -226,7 +246,7 @@
             z-input
             type="text"
             formControlName="state"
-            placeholder="DKI Jakarta"
+            placeholder="Selangor"
             class="w-full"
           />
         </z-form-control>
@@ -239,7 +259,7 @@
             z-input
             type="text"
             formControlName="postalCode"
-            placeholder="12190"
+            placeholder="50450"
             class="w-full"
           />
         </z-form-control>

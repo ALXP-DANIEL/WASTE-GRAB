@@ -6,6 +6,10 @@ export type Address = {
   city: string;
   state: string;
   postalCode: string;
+  formattedAddress: string | null;
+  googlePlaceId: string | null;
+  latitude: number | null;
+  longitude: number | null;
   notes: string | null;
   isDefault: boolean;
   createdAt: string;
@@ -17,6 +21,10 @@ export type CreateAddressInput = {
   city: string;
   state: string;
   postalCode: string;
+  formattedAddress?: string | null;
+  googlePlaceId?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   notes?: string;
 };
 

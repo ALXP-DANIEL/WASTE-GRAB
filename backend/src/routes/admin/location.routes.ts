@@ -1,10 +1,20 @@
 import { Router, type Request, type Response } from "express";
 import type { ApiErrorResponse } from "@wastegrab/shared";
 import { getBody } from "../../utils/request.js";
+import { parseCreateCollectionLocationInput, parseUpdateCollectionLocationInput } from "../../utils/location-payload.js";
 import { getCurrentUserFromRequest } from "../../services/auth.service.js";
 import { prisma } from "../../prisma.js";
 
 const locationRouter = Router();
+
+function toLocationResponse(location: any) {
+  return {
+    ...location,
+    latitude: location.latitude === null ? null : Number(location.latitude),
+    longitude: location.longitude === null ? null : Number(location.longitude),
+    createdAt: location.createdAt.toISOString(),
+  };
+}
 
 // Middleware to check if user is admin
 async function requireAdmin(req: Request, res: Response, next: Function) {
@@ -23,10 +33,7 @@ locationRouter.get("/", requireAdmin, async (req: Request, res: Response) => {
       orderBy: { createdAt: "desc" },
     });
 
-    res.json(locations.map(l => ({
-      ...l,
-      createdAt: l.createdAt.toISOString(),
-    })));
+    res.json(locations.map(toLocationResponse));
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unable to fetch locations.";
     res.status(500).json({ error: message } as ApiErrorResponse);
@@ -43,7 +50,7 @@ locationRouter.get("/:id", requireAdmin, async (req: Request, res: Response) => 
       return;
     }
 
-    res.json({ ...location, createdAt: location.createdAt.toISOString() });
+    res.json(toLocationResponse(location));
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unable to fetch location.";
     res.status(500).json({ error: message } as ApiErrorResponse);
@@ -52,16 +59,9 @@ locationRouter.get("/:id", requireAdmin, async (req: Request, res: Response) => 
 
 // POST /api/admin/locations - create a location
 locationRouter.post("/", requireAdmin, async (req: Request, res: Response) => {
-  const body = getBody(req.body);
-  const name = typeof body.name === "string" ? body.name.trim() : "";
-  const address = typeof body.address === "string" ? body.address.trim() : undefined;
-  const city = typeof body.city === "string" ? body.city.trim() : undefined;
-  const state = typeof body.state === "string" ? body.state.trim() : undefined;
-  const postalCode = typeof body.postalCode === "string" ? body.postalCode.trim() : undefined;
-  const latitude = typeof body.latitude === "number" ? body.latitude : undefined;
-  const longitude = typeof body.longitude === "number" ? body.longitude : undefined;
+  const input = parseCreateCollectionLocationInput(getBody(req.body));
 
-  if (!name) {
+  if (!input.name) {
     res.status(400).json({ error: "Missing required field: name." } as ApiErrorResponse);
     return;
   }
@@ -71,18 +71,19 @@ locationRouter.post("/", requireAdmin, async (req: Request, res: Response) => {
 
     const location = await prisma.location.create({
       data: {
-        name,
-        address: address ?? null,
-        city: city ?? null,
-        state: state ?? null,
-        postalCode: postalCode ?? null,
-        latitude: latitude ?? undefined,
-        longitude: longitude ?? undefined,
+        name: input.name,
+        address: input.address ?? null,
+        city: input.city ?? null,
+        state: input.state ?? null,
+        postalCode: input.postalCode ?? null,
+        latitude: input.latitude ?? undefined,
+        longitude: input.longitude ?? undefined,
+        googlePlaceId: input.googlePlaceId ?? null,
         createdBy: currentUser?.id ?? null,
       },
     });
 
-    res.status(201).json({ ...location, createdAt: location.createdAt.toISOString() });
+    res.status(201).json(toLocationResponse(location));
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unable to create location.";
     res.status(400).json({ error: message } as ApiErrorResponse);
@@ -91,15 +92,7 @@ locationRouter.post("/", requireAdmin, async (req: Request, res: Response) => {
 
 // PATCH /api/admin/locations/:id - update location
 locationRouter.patch("/:id", requireAdmin, async (req: Request, res: Response) => {
-  const body = getBody(req.body);
-  const updateData: any = {};
-  if (typeof body.name === 'string') updateData.name = body.name.trim();
-  if (typeof body.address === 'string') updateData.address = body.address.trim();
-  if (typeof body.city === 'string') updateData.city = body.city.trim();
-  if (typeof body.state === 'string') updateData.state = body.state.trim();
-  if (typeof body.postalCode === 'string') updateData.postalCode = body.postalCode.trim();
-  if (typeof body.latitude === 'number') updateData.latitude = body.latitude;
-  if (typeof body.longitude === 'number') updateData.longitude = body.longitude;
+  const updateData = parseUpdateCollectionLocationInput(getBody(req.body));
 
   try {
     const existing = await prisma.location.findUnique({ where: { id: String(req.params.id) } });
@@ -113,10 +106,7 @@ locationRouter.patch("/:id", requireAdmin, async (req: Request, res: Response) =
       data: updateData,
     });
 
-    res.json({
-      ...updated,
-      createdAt: updated.createdAt.toISOString(),
-    });
+    res.json(toLocationResponse(updated));
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unable to update location.';
     res.status(400).json({ error: message } as ApiErrorResponse);
