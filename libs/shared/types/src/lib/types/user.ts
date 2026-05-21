@@ -38,3 +38,35 @@ export type LoginInput = {
 export type AuthResponse = {
   user: User;
 };
+
+export type ForgotPasswordInput = {
+  email: string;
+};
+
+export type ForgotPasswordResponse = {
+  message: string;
+};
+
+export type ResetPasswordInput = {
+  email: string;
+  password: string;
+};
+
+export type ResetPasswordResponse = {
+  message: string;
+};
+
+export type UpdateProfileInput = {
+  name?: string;
+  email?: string;
+  phone?: string;
+};
+
+export type UpdateProfileResponse = AuthResponse;
+
+export type ChangePasswordInput = {
+  currentPassword: string;
+  newPassword: string;
+};
+
+export type ChangePasswordResponse = AuthResponse;

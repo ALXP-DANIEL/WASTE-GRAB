@@ -6,7 +6,7 @@ import { ZardFormFieldComponent, ZardFormLabelComponent, ZardFormControlComponen
 import { ZardModalComponent } from '@/components/modal/modal.component';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '@/services/auth.service';
-import type { AuthResponse } from '@wastegrab/shared';
+import type { ChangePasswordInput, ChangePasswordResponse, UpdateProfileInput, UpdateProfileResponse } from '@wastegrab/shared';
 
 type ModalMode = 'edit-profile' | 'change-password' | null;
 
@@ -200,8 +200,9 @@ export class ProfileModalComponent {
     this.error.set('');
 
     const { name, phone } = this.editProfileForm.getRawValue();
-    this.http.patch<AuthResponse>('/api/auth/profile', { name, phone }).subscribe({
-      next: (response: AuthResponse) => {
+    const input: UpdateProfileInput = { name, phone };
+    this.http.patch<UpdateProfileResponse>('/api/auth/profile', input).subscribe({
+      next: (response: UpdateProfileResponse) => {
         this.isSubmitting.set(false);
         this.authService.currentUser.set(response.user);
         this.successUpdate.emit();
@@ -220,8 +221,8 @@ export class ProfileModalComponent {
       return;
     }
 
-    const newPassword = this.changePasswordForm.get('newPassword')?.value;
-    const confirmPassword = this.changePasswordForm.get('confirmPassword')?.value;
+    const newPassword = this.changePasswordForm.controls.newPassword.value;
+    const confirmPassword = this.changePasswordForm.controls.confirmPassword.value;
 
     if (newPassword !== confirmPassword) {
       this.error.set('Passwords do not match');
@@ -232,11 +233,12 @@ export class ProfileModalComponent {
     this.error.set('');
 
     const { currentPassword } = this.changePasswordForm.getRawValue();
-    this.http.post<AuthResponse>('/api/auth/change-password', { 
-      currentPassword, 
-      newPassword 
-    }).subscribe({
-      next: (response: AuthResponse) => {
+    const input: ChangePasswordInput = {
+      currentPassword,
+      newPassword,
+    };
+    this.http.post<ChangePasswordResponse>('/api/auth/change-password', input).subscribe({
+      next: (response: ChangePasswordResponse) => {
         this.isSubmitting.set(false);
         this.authService.currentUser.set(response.user);
         this.successUpdate.emit();

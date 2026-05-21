@@ -5,6 +5,10 @@ export type PlacePrediction = {
   secondaryText: string;
 };
 
+export type PlaceAutocompleteResponse = {
+  predictions: PlacePrediction[];
+};
+
 export type GooglePlaceSelection = {
   name: string;
   formattedAddress: string;

@@ -1,5 +1,5 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
-import type { ApiErrorResponse } from "@wastegrab/shared";
+import type { ApiErrorResponse, CollectionLocation } from "@wastegrab/shared";
 import { getBody } from "../../utils/request.js";
 import { parseCreateCollectionLocationInput, parseUpdateCollectionLocationInput } from "../../utils/location-payload.js";
 import { getCurrentUserFromRequest } from "../../services/auth.service.js";
@@ -7,7 +7,7 @@ import { prisma } from "../../prisma.js";
 
 const locationRouter = Router();
 
-function toLocationResponse(location: { id: string; name: string; address: string | null; city: string | null; state: string | null; postalCode: string | null; latitude: { toNumber?(): number } | number | string | null; longitude: { toNumber?(): number } | number | string | null; googlePlaceId: string | null; createdAt: Date; createdBy: string | null }) {
+function toLocationResponse(location: { id: string; name: string; address: string | null; city: string | null; state: string | null; postalCode: string | null; latitude: { toNumber?(): number } | number | string | null; longitude: { toNumber?(): number } | number | string | null; googlePlaceId: string | null; createdAt: Date; createdBy: string | null }): CollectionLocation {
   return {
     id: location.id,
     name: location.name,

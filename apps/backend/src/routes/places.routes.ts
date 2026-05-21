@@ -1,5 +1,5 @@
 import { Router, type Request, type Response } from "express";
-import type { ApiErrorResponse } from "@wastegrab/shared";
+import type { ApiErrorResponse, PlaceAutocompleteResponse } from "@wastegrab/shared";
 import { requireAuthenticatedUser } from "../middleware/require-auth.js";
 import { autocompletePlaces, getPlaceDetails } from "../services/places.service.js";
 
@@ -13,7 +13,8 @@ placesRouter.get("/autocomplete", async (req: Request, res: Response) => {
 
   try {
     const predictions = await autocompletePlaces(input, country);
-    res.json({ predictions });
+    const payload: PlaceAutocompleteResponse = { predictions };
+    res.json(payload);
   } catch (error) {
     sendPlacesError(res, error);
   }

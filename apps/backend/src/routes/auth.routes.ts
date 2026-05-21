@@ -2,8 +2,16 @@ import { Router, type Request, type Response } from "express";
 import type {
   ApiErrorResponse,
   AuthResponse,
+  ChangePasswordInput,
+  ChangePasswordResponse,
   CreateUserInput,
+  ForgotPasswordInput,
+  ForgotPasswordResponse,
   LoginInput,
+  ResetPasswordInput,
+  ResetPasswordResponse,
+  UpdateProfileInput,
+  UpdateProfileResponse,
 } from "@wastegrab/shared";
 import {
   changePassword,
@@ -105,7 +113,7 @@ authRouter.post("/logout", (req: Request, res: Response) => {
 });
 
 authRouter.post("/forgot-password", async (req: Request, res: Response) => {
-  const body = getBody(req.body) as Partial<{ email: string }>;
+  const body = getBody(req.body) as Partial<ForgotPasswordInput>;
   const email = normalizeEmail(body.email);
 
   if (!email || !email.includes("@")) {
@@ -115,7 +123,8 @@ authRouter.post("/forgot-password", async (req: Request, res: Response) => {
 
   try {
     await requestPasswordReset(email);
-    res.status(200).json({ message: "Password reset link has been sent to your email." });
+    const payload: ForgotPasswordResponse = { message: "Password reset link has been sent to your email." };
+    res.status(200).json(payload);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to request password reset.";
     res.status(400).json({ error: message });
@@ -123,7 +132,7 @@ authRouter.post("/forgot-password", async (req: Request, res: Response) => {
 });
 
 authRouter.post("/reset-password", async (req: Request, res: Response) => {
-  const body = getBody(req.body);
+  const body = getBody(req.body) as Partial<ResetPasswordInput>;
   const email = normalizeText(body.email);
   const password = normalizeText(body.password);
 
@@ -139,7 +148,8 @@ authRouter.post("/reset-password", async (req: Request, res: Response) => {
 
   try {
     await resetPassword(email, password);
-    res.status(200).json({ message: "Password reset successfully." });
+    const payload: ResetPasswordResponse = { message: "Password reset successfully." };
+    res.status(200).json(payload);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to reset password.";
     res.status(400).json({ error: message });
@@ -155,7 +165,7 @@ authRouter.patch("/profile", async (req: Request, res: Response) => {
     return;
   }
 
-  const body = getBody(req.body) as Partial<{ name?: string; email?: string; phone?: string }>;
+  const body = getBody(req.body) as UpdateProfileInput;
 
   try {
     const updatedUser = await updateProfile(user.id, {
@@ -164,7 +174,7 @@ authRouter.patch("/profile", async (req: Request, res: Response) => {
       phone: body.phone,
     });
 
-    const payload: AuthResponse = { user: updatedUser };
+    const payload: UpdateProfileResponse = { user: updatedUser };
     res.json(payload);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to update profile.";
@@ -182,10 +192,7 @@ authRouter.post("/change-password", async (req: Request, res: Response) => {
     return;
   }
 
-  const body = getBody(req.body) as Partial<{
-    currentPassword?: string;
-    newPassword?: string;
-  }>;
+  const body = getBody(req.body) as Partial<ChangePasswordInput>;
   const currentPassword = normalizeText(body.currentPassword);
   const newPassword = normalizeText(body.newPassword);
 
@@ -201,7 +208,7 @@ authRouter.post("/change-password", async (req: Request, res: Response) => {
 
   try {
     const updatedUser = await changePassword(user.id, currentPassword, newPassword);
-    const payload: AuthResponse = { user: updatedUser };
+    const payload: ChangePasswordResponse = { user: updatedUser };
     res.json(payload);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to change password.";

@@ -4,6 +4,7 @@ import type {
   AuthResponse,
   CreateUserInput,
   LoginInput,
+  UpdateProfileInput,
   UserRole,
   User,
 } from "@wastegrab/shared";
@@ -136,7 +137,7 @@ export async function resetPassword(email: string, newPassword: string): Promise
 
 export async function updateProfile(
   userId: string,
-  updates: { name?: string; email?: string; phone?: string },
+  updates: UpdateProfileInput,
 ): Promise<User> {
   const user = await prisma.user.findUnique({
     where: { id: userId },

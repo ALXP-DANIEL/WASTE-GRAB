@@ -1,4 +1,9 @@
-import type { CreateAddressInput, UpdateAddressInput } from "@wastegrab/shared";
+import type {
+  CreateAddressInput,
+  CreateCollectionLocationInput,
+  UpdateAddressInput,
+  UpdateCollectionLocationInput,
+} from "@wastegrab/shared";
 
 type Payload = Record<string, unknown>;
 
@@ -14,17 +19,6 @@ type GooglePlaceUpdateFields = {
   googlePlaceId?: string | null;
   latitude?: number | null;
   longitude?: number | null;
-};
-
-export type CollectionLocationCreateInput = {
-  name: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  postalCode?: string;
-  googlePlaceId?: string;
-  latitude?: number;
-  longitude?: number;
 };
 
 export function readTrimmedString(payload: Payload, key: string): string {
@@ -120,7 +114,7 @@ export function hasRequiredAddressFields(input: Pick<CreateAddressInput, "label"
   return Boolean(input.label && input.street && input.city && input.state && input.postalCode);
 }
 
-export function parseCreateCollectionLocationInput(payload: Payload): CollectionLocationCreateInput {
+export function parseCreateCollectionLocationInput(payload: Payload): CreateCollectionLocationInput {
   return {
     name: readTrimmedString(payload, "name"),
     address: readOptionalTrimmedString(payload, "address"),
@@ -131,8 +125,8 @@ export function parseCreateCollectionLocationInput(payload: Payload): Collection
   };
 }
 
-export function parseUpdateCollectionLocationInput(payload: Payload): Record<string, string | number | null> {
-  const updates: Record<string, string | number | null> = {};
+export function parseUpdateCollectionLocationInput(payload: Payload): UpdateCollectionLocationInput {
+  const updates: UpdateCollectionLocationInput = {};
   const stringFields = ["name", "address", "city", "state", "postalCode"] as const;
 
   for (const fieldName of stringFields) {
@@ -142,9 +136,9 @@ export function parseUpdateCollectionLocationInput(payload: Payload): Record<str
   }
 
   const placeFields = parseGooglePlaceUpdateFields(payload, false);
-  if (placeFields.googlePlaceId !== undefined) updates["googlePlaceId"] = placeFields.googlePlaceId;
-  if (placeFields.latitude !== undefined) updates["latitude"] = placeFields.latitude;
-  if (placeFields.longitude !== undefined) updates["longitude"] = placeFields.longitude;
+  if (placeFields.googlePlaceId !== undefined) updates.googlePlaceId = placeFields.googlePlaceId;
+  if (placeFields.latitude !== undefined) updates.latitude = placeFields.latitude;
+  if (placeFields.longitude !== undefined) updates.longitude = placeFields.longitude;
 
   return updates;
 }

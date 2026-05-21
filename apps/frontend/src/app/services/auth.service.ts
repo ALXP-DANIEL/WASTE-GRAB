@@ -1,6 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { UserRole, type AuthResponse, type CreateUserInput, type LoginInput, type User } from '@wastegrab/shared';
+import {
+  UserRole,
+  type AuthResponse,
+  type CreateUserInput,
+  type ForgotPasswordInput,
+  type ForgotPasswordResponse,
+  type LoginInput,
+  type ResetPasswordInput,
+  type ResetPasswordResponse,
+  type User,
+} from '@wastegrab/shared';
 import { map, of, tap, catchError } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -52,13 +62,13 @@ export class AuthService {
   }
 
   forgotPassword(email: string) {
-    return this.http.post<{ message: string }>(`${this.apiUrl}/forgot-password`, { email }, this.requestOptions);
+    const input: ForgotPasswordInput = { email };
+    return this.http.post<ForgotPasswordResponse>(`${this.apiUrl}/forgot-password`, input, this.requestOptions);
   }
 
   resetPassword(email: string, password: string) {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/reset-password`, { email, password }, this.requestOptions).pipe(
-      map((response) => this.ensureValidUser(response.user)),
-    );
+    const input: ResetPasswordInput = { email, password };
+    return this.http.post<ResetPasswordResponse>(`${this.apiUrl}/reset-password`, input, this.requestOptions);
   }
 
   getDefaultRouteForRole(role: User['role']): string {

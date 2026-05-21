@@ -1,20 +1,14 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import type { Observable } from 'rxjs';
+import type {
+  CollectionLocation,
+  CreateCollectionLocationInput,
+  UpdateCollectionLocationInput,
+} from '@wastegrab/shared';
 import { environment } from '../../environments/environment';
 
-export interface LocationRecord {
-  id: string;
-  name: string;
-  address?: string | null;
-  city?: string | null;
-  state?: string | null;
-  postalCode?: string | null;
-  latitude?: number | null;
-  longitude?: number | null;
-  googlePlaceId?: string | null;
-  createdAt: string;
-}
+export type LocationRecord = CollectionLocation;
 
 @Injectable({ providedIn: 'root' })
 export class LocationService {
@@ -30,11 +24,11 @@ export class LocationService {
     return this.http.get<LocationRecord>(`${this.apiUrl}/${id}`, this.opts);
   }
 
-  createLocation(payload: Partial<LocationRecord>) {
+  createLocation(payload: CreateCollectionLocationInput) {
     return this.http.post<LocationRecord>(this.apiUrl, payload, this.opts);
   }
 
-  updateLocation(id: string, payload: Partial<LocationRecord>) {
+  updateLocation(id: string, payload: UpdateCollectionLocationInput) {
     return this.http.patch<LocationRecord>(`${this.apiUrl}/${id}`, payload, this.opts);
   }
 
