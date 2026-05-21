@@ -1,0 +1,58 @@
+services:
+  database:
+    image: mariadb:11
+    environment:
+      MYSQL_DATABASE: wastegrab
+      MYSQL_USER: wastegrab
+      MYSQL_PASSWORD: wastegrab
+      MYSQL_ROOT_PASSWORD: wastegrab-root
+    ports:
+      - "3306:3306"
+    volumes:
+      - wastegrab-db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    environment:
+      PORT: ${PORT:-3000}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
+      DATABASE_URL: ${DOCKER_DATABASE_URL:-mysql://wastegrab:wastegrab@database:3306/wastegrab}
+      AUTH_SECRET: ${AUTH_SECRET:-change-me-in-production}
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-}
+    ports:
+      - "3000:3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+      target: build
+    command: npx nx run backend:db:push
+    environment:
+      DATABASE_URL: ${DOCKER_DATABASE_URL:-mysql://wastegrab:wastegrab@database:3306/wastegrab}
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: "no"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  wastegrab-db:

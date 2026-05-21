@@ -1,4 +1,0 @@
-- After frontend changes, run cd frontend && npm run build.
-- After backend changes, run cd backend && npm run build.
-- Keep shared layout and page shells visually consistent.
-- Prefer Zard UI components if need new components look zard ui components catalogue online.
