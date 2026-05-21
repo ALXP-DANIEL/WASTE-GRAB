@@ -7,7 +7,7 @@
     "serve:backend": "nx serve backend",
     "serve:frontend": "nx serve frontend",
     "build": "nx run-many --target=build --projects=backend,frontend",
-    "typecheck": "nx run-many --target=typecheck --projects=frontend",
+    "typecheck": "nx run-many --target=typecheck --all",
     "prisma:generate": "nx run backend:prisma:generate",
     "prisma:migrate": "nx run backend:prisma:migrate",
     "prisma:studio": "nx run backend:prisma:studio",
