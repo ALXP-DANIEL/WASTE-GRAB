@@ -7,7 +7,7 @@ services:
       MYSQL_PASSWORD: wastegrab
       MYSQL_ROOT_PASSWORD: wastegrab-root
     ports:
-      - "3306:3306"
+      - "${DATABASE_PORT:-3307}:3306"
     volumes:
       - wastegrab-db:/var/lib/mysql
     healthcheck:
