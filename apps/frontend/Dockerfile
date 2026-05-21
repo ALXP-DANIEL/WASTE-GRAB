@@ -11,7 +11,9 @@ RUN npx nx build frontend --configuration=production
 
 FROM docker.io/nginx:1.27-alpine AS runtime
 
-COPY apps/frontend/nginx.conf /etc/nginx/conf.d/default.conf
+ENV API_UPSTREAM=http://backend:3000
+
+COPY apps/frontend/nginx.conf /etc/nginx/templates/default.conf.template
 COPY --from=build /workspace/dist/apps/frontend/browser /usr/share/nginx/html
 
 EXPOSE 80

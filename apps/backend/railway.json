@@ -1,0 +1,21 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "apps/backend/Dockerfile",
+    "watchPatterns": [
+      "apps/backend/**",
+      "libs/shared/**",
+      "package.json",
+      "package-lock.json",
+      "nx.json",
+      "tsconfig.base.json"
+    ]
+  },
+  "deploy": {
+    "healthcheckPath": "/api/health",
+    "healthcheckTimeout": 120,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
