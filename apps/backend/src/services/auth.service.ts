@@ -146,7 +146,7 @@ export async function updateProfile(
     throw new Error("User not found.");
   }
 
-  const data: any = {};
+  const data: { name?: string; email?: string; phone?: string | null } = {};
 
   if (updates.name) {
     data.name = normalizeName(updates.name);

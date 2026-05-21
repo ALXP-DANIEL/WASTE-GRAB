@@ -325,13 +325,17 @@
           <div class="flex gap-2">
             @for (slide of slides; let i = $index; track i) {
               <button
+                type="button"
+                [attr.aria-label]="'Show testimonial ' + (i + 1)"
                 (click)="goToSlide(i)"
                 [class.w-12]="currentSlide() === i"
                 class="h-1 rounded-full transition-all duration-300"
                 [ngClass]="
                   currentSlide() === i ? 'bg-emerald-500 w-12' : 'bg-white/40 w-6 hover:bg-white/60'
                 "
-              ></button>
+              >
+                <span class="sr-only">Show testimonial {{ i + 1 }}</span>
+              </button>
             }
           </div>
 

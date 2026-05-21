@@ -51,7 +51,7 @@ export async function updateAddress(id: string, updates: UpdateAddressInput): Pr
     }
   }
 
-  const updated = await prisma.address.update({ where: { id }, data: { ...updates } as any });
+  const updated = await prisma.address.update({ where: { id }, data: updates });
 
   return toAddressResponse(updated);
 }
@@ -74,7 +74,7 @@ export async function setDefaultAddress(userId: string, addressId: string): Prom
   return toAddressResponse(updated);
 }
 
-function toAddressResponse(row: any): Address {
+function toAddressResponse(row: { id: string; userId: string; label: string; street: string; city: string; state: string; postalCode: string; formattedAddress: string | null; googlePlaceId: string | null; latitude: { toNumber?(): number } | number | string | null; longitude: { toNumber?(): number } | number | string | null; notes: string | null; isDefault: boolean; createdAt: Date }): Address {
   return {
     id: row.id,
     userId: row.userId,

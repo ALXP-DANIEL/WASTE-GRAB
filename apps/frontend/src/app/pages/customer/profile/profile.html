@@ -20,17 +20,17 @@
       <!-- User Info -->
       <div class="space-y-4 border-t pt-6">
         <div class="grid gap-2">
-          <label class="text-sm font-medium text-slate-700">Full Name</label>
+          <div class="text-sm font-medium text-slate-700">Full Name</div>
           <p class="text-slate-900">{{ user.name }}</p>
         </div>
 
         <div class="grid gap-2">
-          <label class="text-sm font-medium text-slate-700">Email</label>
+          <div class="text-sm font-medium text-slate-700">Email</div>
           <p class="text-slate-900">{{ user.email }}</p>
         </div>
 
         <div class="grid gap-2">
-          <label class="text-sm font-medium text-slate-700">Member Since</label>
+          <div class="text-sm font-medium text-slate-700">Member Since</div>
           <p class="text-slate-900">{{ user.createdAt | date: 'MMM dd, yyyy' }}</p>
         </div>
       </div>

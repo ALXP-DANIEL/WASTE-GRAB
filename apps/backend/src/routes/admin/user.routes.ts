@@ -1,5 +1,5 @@
-import { Router, type Request, type Response } from "express";
-import type { ApiErrorResponse, User, CreateUserInput, UpdateUserInput } from "@wastegrab/shared";
+import { Router, type Request, type Response, type NextFunction } from "express";
+import type { ApiErrorResponse, User, CreateUserInput, UpdateUserInput, UserRole } from "@wastegrab/shared";
 import { getBody } from "../../utils/request.js";
 import { getCurrentUserFromRequest } from "../../services/auth.service.js";
 import { prisma } from "../../prisma.js";
@@ -7,7 +7,7 @@ import { prisma } from "../../prisma.js";
 const userRouter = Router();
 
 // Middleware to check if user is admin
-async function requireAdmin(req: Request, res: Response, next: Function) {
+async function requireAdmin(req: Request, res: Response, next: NextFunction) {
   const user = await getCurrentUserFromRequest(req);
   if (!user || user.role !== "ADMIN") {
     res.status(403).json({ error: "Forbidden. Admin access required." } as ApiErrorResponse);
@@ -108,7 +108,7 @@ userRouter.patch("/:id", requireAdmin, async (req: Request, res: Response) => {
       return;
     }
 
-    const updateData: any = {};
+    const updateData: { name?: string; phone?: string | null; role?: UserRole } = {};
     if (body.name) updateData.name = body.name.trim();
     if (body.phone !== undefined) updateData.phone = body.phone ? body.phone.trim() : null;
     if (body.role) updateData.role = body.role;
@@ -160,13 +160,13 @@ userRouter.delete("/:id", requireAdmin, async (req: Request, res: Response) => {
   }
 });
 
-function toUserResponse(user: any): User {
+function toUserResponse(user: { id: string; name: string; email: string; phone: string | null; role: string; createdAt: Date }): User {
   return {
     id: user.id,
     name: user.name,
     email: user.email,
     phone: user.phone ?? null,
-    role: user.role,
+    role: user.role as UserRole,
     createdAt: user.createdAt.toISOString(),
   };
 }

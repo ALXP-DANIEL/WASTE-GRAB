@@ -1,4 +1,4 @@
-import type { NextFunction, Request, Response } from "express";
+import type { Request, Response } from "express";
 import type { ApiErrorResponse } from "@wastegrab/shared";
 
 export function notFoundHandler(req: Request, res: Response): void {
@@ -8,9 +8,7 @@ export function notFoundHandler(req: Request, res: Response): void {
 
 export function errorHandler(
   err: unknown,
-  req: Request,
   res: Response,
-  next: NextFunction,
 ): void {
   if (err instanceof SyntaxError && isObject(err) && "body" in err) {
     res.status(400).json({ error: "Invalid JSON body." });

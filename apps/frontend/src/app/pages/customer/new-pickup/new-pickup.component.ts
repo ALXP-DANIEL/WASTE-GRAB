@@ -1,5 +1,5 @@
 import { AppHeaderComponent } from '@/components/header/header.component';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 
@@ -45,9 +45,8 @@ export class CustomerNewPickupPage {
   }
 
   protected clearImages(): void {
-    this.images().forEach(() => {});
-    this.images.set([]);
     this.previews().forEach(url => URL.revokeObjectURL(url));
+    this.images.set([]);
     this.previews.set([]);
     this.aiSuggestions.set([]);
   }
@@ -88,7 +87,6 @@ export class CustomerNewPickupPage {
     };
 
     // For now: mock submit — in future hook to backend service
-    // eslint-disable-next-line no-console
     console.log('Submitting pickup request', payload);
     alert('Pickup request submitted (mock).');
     this.form.reset({ location: this.addresses[0].id });

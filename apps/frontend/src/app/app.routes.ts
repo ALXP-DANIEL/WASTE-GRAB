@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import { CanActivateFn, Routes } from '@angular/router';
 import { Type } from '@angular/core';
 import { AppLayout } from './layouts/app-layout.component';
 import { AuthPage } from './pages/auth/auth.component';
@@ -24,9 +24,9 @@ import { CustomerPage } from './pages/customer/customer.component';
 // Route metadata - Single source of truth
 interface RouteConfig {
   path: string;
-  component: Type<any>;
+  component?: Type<unknown>;
   title: string;
-  guards?: any[];
+  guards?: CanActivateFn[];
   roles?: UserRole[];
   children?: RouteConfig[];
 }
@@ -57,7 +57,6 @@ const ROUTE_CONFIG: RouteConfig[] = [
   },
   {
     path: 'customer',
-    component: null as any, // Parent route
     title: 'Customer',
     guards: [authGuard],
     roles: [UserRole.CUSTOMER],
@@ -111,7 +110,6 @@ const ROUTE_CONFIG: RouteConfig[] = [
   },
   {
     path: 'admin',
-    component: null as any, // Parent route
     title: 'Admin',
     guards: [authGuard],
     roles: [UserRole.ADMIN],
@@ -145,7 +143,6 @@ const ROUTE_CONFIG: RouteConfig[] = [
   },
   {
     path: 'collector',
-    component: null as any, // Parent route
     title: 'Collector',
     guards: [authGuard],
     roles: [UserRole.COLLECTOR],
@@ -202,7 +199,7 @@ export const ROUTE_PATHS = {
 function buildRoutes(configs: RouteConfig[]): Routes {
   return configs.map(config => ({
     path: config.path,
-    component: config.component,
+    ...(config.component && { component: config.component }),
     canActivate: config.guards,
     data: {
       title: config.title,

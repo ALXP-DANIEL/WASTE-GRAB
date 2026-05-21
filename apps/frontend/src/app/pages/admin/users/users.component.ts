@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 
@@ -13,7 +13,7 @@ import { ZardSelectImports } from '@/components/select/select.imports';
 import { ZardDialogService } from '@/components/dialog/dialog.service';
 import { UserService } from '@/services/user.service';
 import { DisplayRolePipe, RoleBadgeTypePipe } from '@/utils/role.pipe';
-import type { User, CreateUserInput } from '@wastegrab/shared';
+import type { User } from '@wastegrab/shared';
 import { UserRole } from '@wastegrab/shared';
 
 type UserModalMode = 'add' | 'edit' | null;

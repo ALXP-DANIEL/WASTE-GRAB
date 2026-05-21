@@ -1,4 +1,4 @@
-import { Router, type Request, type Response } from "express";
+import { Router, type Request, type Response, type NextFunction } from "express";
 import type { ApiErrorResponse } from "@wastegrab/shared";
 import { getBody } from "../../utils/request.js";
 import { parseCreateCollectionLocationInput, parseUpdateCollectionLocationInput } from "../../utils/location-payload.js";
@@ -7,17 +7,24 @@ import { prisma } from "../../prisma.js";
 
 const locationRouter = Router();
 
-function toLocationResponse(location: any) {
+function toLocationResponse(location: { id: string; name: string; address: string | null; city: string | null; state: string | null; postalCode: string | null; latitude: { toNumber?(): number } | number | string | null; longitude: { toNumber?(): number } | number | string | null; googlePlaceId: string | null; createdAt: Date; createdBy: string | null }) {
   return {
-    ...location,
+    id: location.id,
+    name: location.name,
+    address: location.address,
+    city: location.city,
+    state: location.state,
+    postalCode: location.postalCode,
+    googlePlaceId: location.googlePlaceId,
     latitude: location.latitude === null ? null : Number(location.latitude),
     longitude: location.longitude === null ? null : Number(location.longitude),
     createdAt: location.createdAt.toISOString(),
+    createdBy: location.createdBy,
   };
 }
 
 // Middleware to check if user is admin
-async function requireAdmin(req: Request, res: Response, next: Function) {
+async function requireAdmin(req: Request, res: Response, next: NextFunction) {
   const user = await getCurrentUserFromRequest(req);
   if (!user || user.role !== "ADMIN") {
     res.status(403).json({ error: "Forbidden. Admin access required." } as ApiErrorResponse);

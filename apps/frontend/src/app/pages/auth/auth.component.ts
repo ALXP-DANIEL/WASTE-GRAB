@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, Validators, FormControl, FormGroup } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronLeft, lucideChevronRight } from '@ng-icons/lucide';
-import { ZardBadgeComponent } from '@/components/badge/badge.component';
 import { ZardButtonComponent } from '@/components/button/button.component';
 import { ZardCardComponent } from '@/components/card/card.component';
 import { ZardInputDirective } from '@/components/input';
@@ -43,7 +42,7 @@ export class AuthPage {
   protected readonly isSubmitting = signal(false);
   protected readonly error = signal('');
   protected readonly currentSlide = signal(0);
-  protected autoplayInterval: any = null;
+  protected autoplayInterval: ReturnType<typeof setInterval> | null = null;
   
   // Forgot password state
   protected readonly showForgotPasswordStep = signal<'email' | 'password' | null>(null);
@@ -215,7 +214,11 @@ export class AuthPage {
     this.forgotPasswordSubmitting.set(true);
     this.forgotPasswordError.set('');
     
-    this.authService.resetPassword(this.forgotPasswordEmail(), password!).subscribe({
+      if (!password) {
+        this.forgotPasswordSubmitting.set(false);
+        return;
+      }
+      this.authService.resetPassword(this.forgotPasswordEmail(), password).subscribe({
       next: () => {
         this.dialogService.create({
           zTitle: 'Success',

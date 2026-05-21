@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject, signal, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, Validators, FormControl, FormGroup } from '@angular/forms';
-import { ZardButtonComponent } from '@/components/button/button.component';
 import { ZardInputDirective } from '@/components/input';
 import { ZardFormFieldComponent, ZardFormLabelComponent, ZardFormControlComponent } from '@/components/form/form.component';
 import { ZardModalComponent } from '@/components/modal/modal.component';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '@/services/auth.service';
+import type { AuthResponse } from '@wastegrab/shared';
 
 type ModalMode = 'edit-profile' | 'change-password' | null;
 
@@ -35,7 +35,7 @@ type ModalMode = 'edit-profile' | 'change-password' | null;
       [error]="error()"
       size="md"
       (ok)="submitEditProfile()"
-      (cancel)="close()"
+      (dismissed)="close()"
     >
       <form [formGroup]="editProfileForm" class="space-y-4">
         <z-form-field>
@@ -79,7 +79,7 @@ type ModalMode = 'edit-profile' | 'change-password' | null;
       [error]="error()"
       size="md"
       (ok)="submitChangePassword()"
-      (cancel)="close()"
+      (dismissed)="close()"
     >
       <form [formGroup]="changePasswordForm" class="space-y-4">
         <z-form-field>
@@ -200,14 +200,14 @@ export class ProfileModalComponent {
     this.error.set('');
 
     const { name, phone } = this.editProfileForm.getRawValue();
-    this.http.patch('/api/auth/profile', { name, phone }).subscribe({
-      next: (response: any) => {
+    this.http.patch<AuthResponse>('/api/auth/profile', { name, phone }).subscribe({
+      next: (response: AuthResponse) => {
         this.isSubmitting.set(false);
         this.authService.currentUser.set(response.user);
         this.successUpdate.emit();
         this.close();
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         this.isSubmitting.set(false);
         this.error.set(err.error?.error || 'Failed to update profile');
       },
@@ -232,21 +232,20 @@ export class ProfileModalComponent {
     this.error.set('');
 
     const { currentPassword } = this.changePasswordForm.getRawValue();
-    this.http.post('/api/auth/change-password', { 
+    this.http.post<AuthResponse>('/api/auth/change-password', { 
       currentPassword, 
       newPassword 
     }).subscribe({
-      next: (response: any) => {
+      next: (response: AuthResponse) => {
         this.isSubmitting.set(false);
         this.authService.currentUser.set(response.user);
         this.successUpdate.emit();
         this.close();
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         this.isSubmitting.set(false);
         this.error.set(err.error?.error || 'Failed to change password');
       },
     });
   }
 }
-

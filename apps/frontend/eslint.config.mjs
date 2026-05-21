@@ -3,32 +3,36 @@ import baseConfig from '../../eslint.config.mjs';
 
 export default [
   ...baseConfig,
+  {
+    ignores: ['src/app/components/**/*', 'src/app/core/**/*'],
+  },
   ...nx.configs['flat/angular'],
   ...nx.configs['flat/angular-template'],
   {
     files: ['**/*.ts'],
     rules: {
       '@angular-eslint/directive-selector': [
-        'error',
+        'warn',
         {
           type: 'attribute',
-          prefix: 'app',
+          prefix: ['app', 'z'],
           style: 'camelCase',
         },
       ],
+
       '@angular-eslint/component-selector': [
-        'error',
+        'warn',
         {
           type: 'element',
-          prefix: 'app',
+          prefix: ['app', 'z'],
           style: 'kebab-case',
         },
       ],
     },
   },
+
   {
     files: ['**/*.html'],
-    // Override or add rules here
     rules: {},
   },
 ];

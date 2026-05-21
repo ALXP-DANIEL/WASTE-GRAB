@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { UserRole, type AuthResponse, type CreateUserInput, type LoginInput, type User } from '@wastegrab/shared';
-import { finalize, map, of, tap, catchError } from 'rxjs';
+import { map, of, tap, catchError } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 @Injectable({
