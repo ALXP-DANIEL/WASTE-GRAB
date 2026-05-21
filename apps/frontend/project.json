@@ -87,6 +87,11 @@
         "spa": true
       }
     },
+    "test": {
+      "options": {
+        "command": "vitest --passWithNoTests=true"
+      }
+    },
     "docker:build": {
       "executor": "nx:run-commands",
       "options": {

@@ -20,6 +20,8 @@ services:
     build:
       context: .
       dockerfile: apps/backend/Dockerfile
+      args:
+        DATABASE_URL: ${DOCKER_DATABASE_URL:-mysql://wastegrab:wastegrab@database:3306/wastegrab}
     environment:
       PORT: ${PORT:-3000}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
@@ -37,6 +39,8 @@ services:
       context: .
       dockerfile: apps/backend/Dockerfile
       target: build
+      args:
+        DATABASE_URL: ${DOCKER_DATABASE_URL:-mysql://wastegrab:wastegrab@database:3306/wastegrab}
     command: npx nx run backend:db:push
     environment:
       DATABASE_URL: ${DOCKER_DATABASE_URL:-mysql://wastegrab:wastegrab@database:3306/wastegrab}

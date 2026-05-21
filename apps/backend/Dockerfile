@@ -7,7 +7,8 @@ RUN npm ci
 
 COPY . .
 
-ENV DATABASE_URL=mysql://root:password@localhost:3306/wastegrab
+ARG DATABASE_URL=mysql://wastegrab:wastegrab@database:3306/wastegrab
+ENV DATABASE_URL=${DATABASE_URL}
 RUN npx nx build backend --configuration=production
 
 FROM docker.io/node:22-alpine AS runtime

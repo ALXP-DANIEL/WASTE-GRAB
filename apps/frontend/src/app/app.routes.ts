@@ -1,31 +1,38 @@
-import { CanActivateFn, Routes } from '@angular/router';
-import { Type } from '@angular/core';
+import { CanActivateFn, Route, Routes } from '@angular/router';
 import { AppLayout } from './layouts/app-layout.component';
-import { AuthPage } from './pages/auth/auth.component';
-import { HomePage } from './pages/home/home.component';
-import { ProfilePage } from './pages/customer/profile/profile.component';
-import { SettingsPage } from './pages/customer/settings/settings.component';
-import { AdminPage } from './pages/admin/admin.component';
-import { CollectorPage } from './pages/collector/collector.component';
-import { CustomerNewPickupPage } from './pages/customer/new-pickup/new-pickup.component';
-import { CustomerPickupsPage } from './pages/customer/pickups/pickups.component';
-import { CustomerPickupDetailPage } from './pages/customer/pickups/pickup-detail.component';
-import { CustomerVouchersPage } from './pages/customer/vouchers/vouchers.component';
-import { AdminCollectorsPage } from './pages/admin/collectors/collectors.component';
-import { AdminPickupsPage } from './pages/admin/pickups/pickups.component';
-import { AdminUsersPage } from './pages/admin/users/users.component';
-import { AdminVouchersPage } from './pages/admin/vouchers/vouchers.component';
-import { CollectorEarningsPage } from './pages/collector/earnings/earnings.component';
-import { CollectorPickupsPage } from './pages/collector/pickups/pickups.component';
 import { UserRole } from '@wastegrab/shared';
 import { authGuard, guestGuard } from './services/auth.guard';
-import { CustomerPage } from './pages/customer/customer.component';
 
-// Route metadata - Single source of truth
+type LazyPage = NonNullable<Route['loadComponent']>;
+
+const pages = {
+  home: () => import('./pages/home/home.component').then((m) => m.HomePage),
+  auth: () => import('./pages/auth/auth.component').then((m) => m.AuthPage),
+  profile: () => import('./pages/customer/profile/profile.component').then((m) => m.ProfilePage),
+  settings: () => import('./pages/customer/settings/settings.component').then((m) => m.SettingsPage),
+  customerDashboard: () => import('./pages/customer/customer.component').then((m) => m.CustomerPage),
+  customerNewPickup: () =>
+    import('./pages/customer/new-pickup/new-pickup.component').then((m) => m.CustomerNewPickupPage),
+  customerPickups: () => import('./pages/customer/pickups/pickups.component').then((m) => m.CustomerPickupsPage),
+  customerPickupDetail: () =>
+    import('./pages/customer/pickups/pickup-detail.component').then((m) => m.CustomerPickupDetailPage),
+  customerVouchers: () => import('./pages/customer/vouchers/vouchers.component').then((m) => m.CustomerVouchersPage),
+  adminDashboard: () => import('./pages/admin/admin.component').then((m) => m.AdminPage),
+  adminCollectors: () => import('./pages/admin/collectors/collectors.component').then((m) => m.AdminCollectorsPage),
+  adminPickups: () => import('./pages/admin/pickups/pickups.component').then((m) => m.AdminPickupsPage),
+  adminUsers: () => import('./pages/admin/users/users.component').then((m) => m.AdminUsersPage),
+  adminVouchers: () => import('./pages/admin/vouchers/vouchers.component').then((m) => m.AdminVouchersPage),
+  collectorDashboard: () => import('./pages/collector/collector.component').then((m) => m.CollectorPage),
+  collectorEarnings: () =>
+    import('./pages/collector/earnings/earnings.component').then((m) => m.CollectorEarningsPage),
+  collectorPickups: () =>
+    import('./pages/collector/pickups/pickups.component').then((m) => m.CollectorPickupsPage),
+} satisfies Record<string, LazyPage>;
+
 interface RouteConfig {
   path: string;
-  component?: Type<unknown>;
   title: string;
+  loadComponent?: LazyPage;
   guards?: CanActivateFn[];
   roles?: UserRole[];
   children?: RouteConfig[];
@@ -34,25 +41,25 @@ interface RouteConfig {
 const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: '',
-    component: HomePage,
     title: 'Home',
+    loadComponent: pages.home,
   },
   {
     path: 'auth',
-    component: AuthPage,
     title: 'Login',
+    loadComponent: pages.auth,
     guards: [guestGuard],
   },
   {
     path: 'profile',
-    component: ProfilePage,
     title: 'Profile',
+    loadComponent: pages.profile,
     guards: [authGuard],
   },
   {
     path: 'settings',
-    component: SettingsPage,
     title: 'Settings',
+    loadComponent: pages.settings,
     guards: [authGuard],
   },
   {
@@ -63,48 +70,48 @@ const ROUTE_CONFIG: RouteConfig[] = [
     children: [
       {
         path: '',
-        component: CustomerPage,
         title: 'Dashboard',
+        loadComponent: pages.customerDashboard,
       },
       {
         path: 'new-pickup',
-        component: CustomerNewPickupPage,
         title: 'New Pickup',
+        loadComponent: pages.customerNewPickup,
       },
       {
         path: 'pickups',
-        component: CustomerPickupsPage,
         title: 'My Pickups',
+        loadComponent: pages.customerPickups,
       },
       {
         path: 'pickups/:pickupId',
-        component: CustomerPickupDetailPage,
         title: 'Pickup Details',
+        loadComponent: pages.customerPickupDetail,
       },
       {
         path: 'vouchers',
-        component: CustomerVouchersPage,
         title: 'My Vouchers',
+        loadComponent: pages.customerVouchers,
       },
       {
         path: 'my-requests',
-        component: CustomerPickupsPage,
         title: 'My Requests',
+        loadComponent: pages.customerPickups,
       },
       {
         path: 'rewards',
-        component: CustomerVouchersPage,
         title: 'Rewards',
+        loadComponent: pages.customerVouchers,
       },
       {
         path: 'profile',
-        component: ProfilePage,
         title: 'Profile',
+        loadComponent: pages.profile,
       },
       {
         path: 'settings',
-        component: SettingsPage,
         title: 'Settings',
+        loadComponent: pages.settings,
       },
     ],
   },
@@ -116,28 +123,28 @@ const ROUTE_CONFIG: RouteConfig[] = [
     children: [
       {
         path: '',
-        component: AdminPage,
         title: 'Admin Dashboard',
+        loadComponent: pages.adminDashboard,
       },
       {
         path: 'locations',
-        component: AdminCollectorsPage,
         title: 'Manage Collection Locations',
+        loadComponent: pages.adminCollectors,
       },
       {
         path: 'pickups',
-        component: AdminPickupsPage,
         title: 'Manage Pickups',
+        loadComponent: pages.adminPickups,
       },
       {
         path: 'users',
-        component: AdminUsersPage,
         title: 'Manage Users',
+        loadComponent: pages.adminUsers,
       },
       {
         path: 'vouchers',
-        component: AdminVouchersPage,
         title: 'Manage Vouchers',
+        loadComponent: pages.adminVouchers,
       },
     ],
   },
@@ -149,18 +156,18 @@ const ROUTE_CONFIG: RouteConfig[] = [
     children: [
       {
         path: '',
-        component: CollectorPage,
         title: 'Collector Dashboard',
+        loadComponent: pages.collectorDashboard,
       },
       {
         path: 'earnings',
-        component: CollectorEarningsPage,
         title: 'Collector Earnings',
+        loadComponent: pages.collectorEarnings,
       },
       {
         path: 'pickups',
-        component: CollectorPickupsPage,
         title: 'Collector Pickups',
+        loadComponent: pages.collectorPickups,
       },
     ],
   },
@@ -199,7 +206,7 @@ export const ROUTE_PATHS = {
 function buildRoutes(configs: RouteConfig[]): Routes {
   return configs.map(config => ({
     path: config.path,
-    ...(config.component && { component: config.component }),
+    ...(config.loadComponent && { loadComponent: config.loadComponent }),
     canActivate: config.guards,
     data: {
       title: config.title,

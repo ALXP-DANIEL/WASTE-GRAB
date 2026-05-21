@@ -67,6 +67,9 @@
         "passWithNoTests": true
       }
     },
+    "typecheck": {
+      "dependsOn": ["prisma:generate"]
+    },
     "prisma:generate": {
       "executor": "nx:run-commands",
       "options": {
