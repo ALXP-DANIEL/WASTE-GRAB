@@ -1,0 +1,11 @@
+.git
+.nx
+coverage
+dist
+node_modules
+tmp
+apps/backend/dist
+apps/backend/src/generated
+apps/frontend/.angular
+apps/frontend/dist
+npm-debug.log
