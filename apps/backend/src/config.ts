@@ -15,6 +15,11 @@ const port = Number(process.env.PORT || 3000);
 const databaseUrl = process.env.DATABASE_URL;
 const authSecret = process.env.AUTH_SECRET || "wastegrab-dev-auth-secret";
 const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY?.trim() || "";
+const isProduction = process.env.NODE_ENV === "production";
+const authCookieSecure =
+  process.env.AUTH_COOKIE_SECURE === undefined
+    ? isProduction
+    : process.env.AUTH_COOKIE_SECURE === "true";
 
 if (!Number.isInteger(port) || port <= 0) {
   throw new Error("PORT must be a positive number.");
@@ -30,5 +35,6 @@ export const config = {
   databaseUrl,
   authSecret,
   googleMapsApiKey,
-  isProduction: process.env.NODE_ENV === "production",
+  isProduction,
+  authCookieSecure,
 };

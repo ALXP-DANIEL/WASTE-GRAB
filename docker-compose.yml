@@ -27,6 +27,7 @@ services:
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
       DATABASE_URL: ${DOCKER_DATABASE_URL:-mysql://wastegrab:wastegrab@database:3306/wastegrab}
       AUTH_SECRET: ${AUTH_SECRET:-change-me-in-production}
+      AUTH_COOKIE_SECURE: "false"
       GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-}
     ports:
       - "3000:3000"

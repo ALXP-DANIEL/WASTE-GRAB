@@ -20,7 +20,8 @@ WORKDIR /app
 
 COPY --from=build /workspace/apps/backend/dist ./
 
-RUN npm --omit=dev --ignore-scripts install
+RUN node -e "const fs = require('node:fs'); const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8')); pkg.dependencies = { ...pkg.dependencies, '@prisma/client': '7.8.0' }; fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));" \
+  && npm --omit=dev --ignore-scripts install
 
 EXPOSE 3000
 

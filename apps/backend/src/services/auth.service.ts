@@ -305,7 +305,7 @@ function serializeCookie(name: string, value: string, maxAgeMs: number): string 
     `Max-Age=${Math.floor(maxAgeMs / 1000)}`,
   ];
 
-  if (config.isProduction) {
+  if (config.authCookieSecure) {
     parts.push("Secure");
   }
 
