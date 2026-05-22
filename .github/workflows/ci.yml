@@ -14,8 +14,8 @@ permissions:
 
 env:
   NODE_VERSION: 24
-  RAILWAY_BACKEND_URL: https://backend-production-9db8.up.railway.app
-  RAILWAY_FRONTEND_URL: https://frontend-production-f783.up.railway.app
+  RAILWAY_BACKEND_URL: https://api.wastegrab.alifdaniel.dpdns.org
+  RAILWAY_FRONTEND_URL: https://wastegrab.alifdaniel.dpdns.org
 
 jobs:
   shared-types-check:
