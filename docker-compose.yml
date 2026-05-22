@@ -19,7 +19,8 @@ services:
   backend:
     build:
       context: .
-      dockerfile: apps/backend/Dockerfile
+      dockerfile: Dockerfile
+      target: backend
       args:
         DATABASE_URL: ${DOCKER_DATABASE_URL:-mysql://wastegrab:wastegrab@database:3306/wastegrab}
     environment:
@@ -38,8 +39,8 @@ services:
   migrate:
     build:
       context: .
-      dockerfile: apps/backend/Dockerfile
-      target: build
+      dockerfile: Dockerfile
+      target: backend-build
       args:
         DATABASE_URL: ${DOCKER_DATABASE_URL:-mysql://wastegrab:wastegrab@database:3306/wastegrab}
     command: npx nx run backend:db:push
@@ -53,7 +54,8 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: apps/frontend/Dockerfile
+      dockerfile: Dockerfile
+      target: frontend
       args:
         API_BASE_URL: ${DOCKER_API_BASE_URL:-http://localhost:3001/api}
         APP_BANNER_ENABLED: "true"
