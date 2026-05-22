@@ -56,6 +56,8 @@ services:
       dockerfile: apps/frontend/Dockerfile
       args:
         API_BASE_URL: ${DOCKER_API_BASE_URL:-http://localhost:3001/api}
+        APP_BANNER_ENABLED: "true"
+        APP_BANNER_LABEL: DOCKER
     ports:
       - "8080:80"
     depends_on:
