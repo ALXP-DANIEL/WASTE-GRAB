@@ -17,6 +17,9 @@ type NewPickupForm = FormGroup<{
   imports: [CommonModule, ReactiveFormsModule, AppHeaderComponent],
 })
 export class CustomerNewPickupPage {
+
+  constructor(private http:HttpClient){}
+
   protected readonly images = signal<File[]>([]);
   protected readonly previews = signal<string[]>([]);
   protected readonly isAnalyzing = signal(false);
