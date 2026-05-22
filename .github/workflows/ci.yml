@@ -9,10 +9,13 @@ on:
 permissions:
   actions: read
   contents: read
+  deployments: write
   packages: write
 
 env:
   NODE_VERSION: 22
+  RAILWAY_BACKEND_URL: https://backend-production-9db8.up.railway.app
+  RAILWAY_FRONTEND_URL: https://frontend-production-f783.up.railway.app
 
 jobs:
   shared-types-check:
@@ -138,6 +141,43 @@ jobs:
 
           npm exec --yes --package=@railway/cli -- railway redeploy --service "$RAILWAY_SERVICE" --yes
 
+      - name: Record backend deployment
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IMAGE_TAGS: ${{ steps.meta.outputs.tags }}
+        shell: bash
+        run: |
+          image_tag="$(printf '%s\n' "$IMAGE_TAGS" | head -n 1)"
+          deployment_id="$(
+            jq -n \
+              --arg ref "$GITHUB_SHA" \
+              --arg environment "backend / production" \
+              --arg description "Backend image published to GHCR and Railway redeploy requested" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                description: $description,
+                auto_merge: false,
+                required_contexts: [],
+                production_environment: true
+              }' |
+              gh api "repos/$GITHUB_REPOSITORY/deployments" --method POST --input - --jq '.id'
+          )"
+
+          jq -n \
+            --arg state "success" \
+            --arg environment_url "$RAILWAY_BACKEND_URL" \
+            --arg log_url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            --arg description "Published $image_tag" \
+            '{
+              state: $state,
+              environment_url: $environment_url,
+              log_url: $log_url,
+              description: $description
+            }' |
+            gh api "repos/$GITHUB_REPOSITORY/deployments/$deployment_id/statuses" --method POST --input -
+
   frontend-image:
     name: Frontend Docker image
     runs-on: ubuntu-latest
@@ -210,3 +250,40 @@ jobs:
           fi
 
           npm exec --yes --package=@railway/cli -- railway redeploy --service "$RAILWAY_SERVICE" --yes
+
+      - name: Record frontend deployment
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IMAGE_TAGS: ${{ steps.meta.outputs.tags }}
+        shell: bash
+        run: |
+          image_tag="$(printf '%s\n' "$IMAGE_TAGS" | head -n 1)"
+          deployment_id="$(
+            jq -n \
+              --arg ref "$GITHUB_SHA" \
+              --arg environment "frontend / production" \
+              --arg description "Frontend image published to GHCR and Railway redeploy requested" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                description: $description,
+                auto_merge: false,
+                required_contexts: [],
+                production_environment: true
+              }' |
+              gh api "repos/$GITHUB_REPOSITORY/deployments" --method POST --input - --jq '.id'
+          )"
+
+          jq -n \
+            --arg state "success" \
+            --arg environment_url "$RAILWAY_FRONTEND_URL" \
+            --arg log_url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            --arg description "Published $image_tag" \
+            '{
+              state: $state,
+              environment_url: $environment_url,
+              log_url: $log_url,
+              description: $description
+            }' |
+            gh api "repos/$GITHUB_REPOSITORY/deployments/$deployment_id/statuses" --method POST --input -
