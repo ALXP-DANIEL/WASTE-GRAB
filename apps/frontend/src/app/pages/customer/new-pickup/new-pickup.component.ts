@@ -1,4 +1,4 @@
-import { AppHeaderComponent } from '@/components/header/header.component';
+import { AppHeaderComponent } from '@/ui/header/header.component';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';

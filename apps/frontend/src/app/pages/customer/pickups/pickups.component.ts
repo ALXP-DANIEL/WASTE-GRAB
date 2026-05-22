@@ -1,4 +1,4 @@
-import { AppHeaderComponent } from '@/components/header/header.component';
+import { AppHeaderComponent } from '@/ui/header/header.component';
 import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';

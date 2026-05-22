@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject, signal, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, Validators, FormControl, FormGroup } from '@angular/forms';
-import { ZardInputDirective } from '@/components/input';
-import { ZardFormFieldComponent, ZardFormLabelComponent, ZardFormControlComponent } from '@/components/form/form.component';
-import { ZardModalComponent } from '@/components/modal/modal.component';
+import { ZardInputDirective } from '@/ui/zard/input';
+import { ZardFormFieldComponent, ZardFormLabelComponent, ZardFormControlComponent } from '@/ui/zard/form/form.component';
+import { ZardModalComponent } from '@/ui/zard/modal/modal.component';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '@/services/auth.service';
 import type { ChangePasswordInput, ChangePasswordResponse, UpdateProfileInput, UpdateProfileResponse } from '@wastegrab/shared';

@@ -3,18 +3,18 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal, v
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '@/services/auth.service';
-import { ZardDialogService } from '@/components/dialog/dialog.service';
-import { ZardAvatarComponent } from '@/components/avatar/avatar.component';
-import { ZardButtonComponent } from '@/components/button/button.component';
-import { ZardBadgeComponent } from '@/components/badge';
-import { AppHeaderComponent } from '@/components/header/header.component';
-import { ZardModalComponent } from '@/components/modal/modal.component';
-import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/components/form/form.component';
-import { ZardInputDirective } from '@/components/input';
-import { ZardTableImports } from '@/components/table';
+import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
+import { ZardAvatarComponent } from '@/ui/zard/avatar/avatar.component';
+import { ZardButtonComponent } from '@/ui/zard/button/button.component';
+import { ZardBadgeComponent } from '@/ui/zard/badge';
+import { AppHeaderComponent } from '@/ui/header/header.component';
+import { ZardModalComponent } from '@/ui/zard/modal/modal.component';
+import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/ui/zard/form/form.component';
+import { ZardInputDirective } from '@/ui/zard/input';
+import { ZardTableImports } from '@/ui/zard/table';
 import { ProfileModalComponent } from './profile-modal.component';
 import { AddressService } from '@/services/address.service';
-import { GooglePlaceInputComponent, type GooglePlaceSelection } from '@/components/google-place-input/google-place-input.component';
+import { GooglePlaceInputComponent, type GooglePlaceSelection } from '@/ui/google-place-input/google-place-input.component';
 import type { Address } from '@wastegrab/shared';
 
 type AddressModalMode = 'add' | 'edit' | null;

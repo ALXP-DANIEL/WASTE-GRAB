@@ -9,7 +9,7 @@
   },
   "baseUrl": "apps/frontend/src/app",
   "aliases": {
-    "components": "@/components",
+    "components": "@/ui/zard",
     "utils": "@/utils",
     "core": "@/core",
     "services": "@/services"

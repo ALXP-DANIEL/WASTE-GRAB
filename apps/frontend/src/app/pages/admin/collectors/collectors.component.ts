@@ -1,15 +1,15 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { AppHeaderComponent } from '@/components/header/header.component';
-import { ZardTableImports } from '@/components/table';
-import { ZardButtonComponent } from '@/components/button/button.component';
-import { ZardModalComponent } from '@/components/modal/modal.component';
-import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/components/form/form.component';
-import { ZardInputDirective } from '@/components/input';
-import { ZardDialogService } from '@/components/dialog/dialog.service';
+import { AppHeaderComponent } from '@/ui/header/header.component';
+import { ZardTableImports } from '@/ui/zard/table';
+import { ZardButtonComponent } from '@/ui/zard/button/button.component';
+import { ZardModalComponent } from '@/ui/zard/modal/modal.component';
+import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/ui/zard/form/form.component';
+import { ZardInputDirective } from '@/ui/zard/input';
+import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
 import { LocationService, type LocationRecord } from '@/services/location.service';
-import { GooglePlaceInputComponent, type GooglePlaceSelection } from '@/components/google-place-input/google-place-input.component';
+import { GooglePlaceInputComponent, type GooglePlaceSelection } from '@/ui/google-place-input/google-place-input.component';
 
 type LocationModalMode = 'add' | 'edit' | null;
 

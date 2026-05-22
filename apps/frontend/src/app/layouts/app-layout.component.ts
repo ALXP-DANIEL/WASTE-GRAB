@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { AppNavbarComponent } from '@/components/navbar/navbar.component';
+import { AppNavbarComponent } from '@/ui/navbar/navbar.component';
 import { AuthService } from '@/services/auth.service';
 
 @Component({

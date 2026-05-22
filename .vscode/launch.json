@@ -11,5 +11,15 @@
       "internalConsoleOptions": "neverOpen",
       "skipFiles": ["<node_internals>/**"]
     },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Start WasteGrab Project in Docker",
+      "runtimeExecutable": "docker",
+      "runtimeArgs": ["compose", "-f", "docker-compose.yml", "up"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**"]
+    }
   ]
 }

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { AuthService } from '@/services/auth.service';
 import { ThemeService } from '@/services/theme.service';
-import { AppHeaderComponent } from '@/components/header/header.component';
+import { AppHeaderComponent } from '@/ui/header/header.component';
 
 @Component({
   selector: 'app-settings-page',

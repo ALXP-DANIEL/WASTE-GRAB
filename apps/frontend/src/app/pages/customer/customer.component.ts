@@ -1,4 +1,4 @@
-import { AppHeaderComponent } from '@/components/header/header.component';
+import { AppHeaderComponent } from '@/ui/header/header.component';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { RouterLink } from '@angular/router';
@@ -15,7 +15,7 @@ import {
   lucidePlus,
 } from '@ng-icons/lucide';
 
-import { ZardButtonComponent } from '@/components/button/button.component';
+import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { ROUTE_PATHS } from '@/app.routes';
 import { customerPickups, pickupStatusColors, pickupStatusLabels, type Pickup } from './pickups/pickup-data';
 

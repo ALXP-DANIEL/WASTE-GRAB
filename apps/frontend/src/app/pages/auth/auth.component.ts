@@ -4,12 +4,12 @@ import { ReactiveFormsModule, Validators, FormControl, FormGroup } from '@angula
 import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronLeft, lucideChevronRight } from '@ng-icons/lucide';
-import { ZardButtonComponent } from '@/components/button/button.component';
-import { ZardCardComponent } from '@/components/card/card.component';
-import { ZardInputDirective } from '@/components/input';
-import { ZardFormFieldComponent, ZardFormLabelComponent, ZardFormControlComponent } from '@/components/form/form.component';
-import { ZardModalComponent } from '@/components/modal/modal.component';
-import { ZardDialogService } from '@/components/dialog/dialog.service';
+import { ZardButtonComponent } from '@/ui/zard/button/button.component';
+import { ZardCardComponent } from '@/ui/zard/card/card.component';
+import { ZardInputDirective } from '@/ui/zard/input';
+import { ZardFormFieldComponent, ZardFormLabelComponent, ZardFormControlComponent } from '@/ui/zard/form/form.component';
+import { ZardModalComponent } from '@/ui/zard/modal/modal.component';
+import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
 import { AuthService } from '@/services/auth.service';
 
 type AuthMode = 'login' | 'register';

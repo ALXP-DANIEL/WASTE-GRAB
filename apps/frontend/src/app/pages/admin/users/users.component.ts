@@ -2,15 +2,15 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 
-import { AppHeaderComponent } from '@/components/header/header.component';
-import { ZardTableImports } from '@/components/table';
-import { ZardButtonComponent } from '@/components/button/button.component';
-import { ZardBadgeComponent } from '@/components/badge';
-import { ZardModalComponent } from '@/components/modal/modal.component';
-import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/components/form/form.component';
-import { ZardInputDirective } from '@/components/input';
-import { ZardSelectImports } from '@/components/select/select.imports';
-import { ZardDialogService } from '@/components/dialog/dialog.service';
+import { AppHeaderComponent } from '@/ui/header/header.component';
+import { ZardTableImports } from '@/ui/zard/table';
+import { ZardButtonComponent } from '@/ui/zard/button/button.component';
+import { ZardBadgeComponent } from '@/ui/zard/badge';
+import { ZardModalComponent } from '@/ui/zard/modal/modal.component';
+import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/ui/zard/form/form.component';
+import { ZardInputDirective } from '@/ui/zard/input';
+import { ZardSelectImports } from '@/ui/zard/select/select.imports';
+import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
 import { UserService } from '@/services/user.service';
 import { DisplayRolePipe, RoleBadgeTypePipe } from '@/utils/role.pipe';
 import type { User } from '@wastegrab/shared';

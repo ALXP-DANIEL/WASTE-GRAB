@@ -46,7 +46,7 @@ import {
   lucideCircleCheck,
 } from '@ng-icons/lucide';
 
-import { ZardButtonComponent } from '@/components/button/button.component';
+import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 
 type NavLink = {
   href: string;
