@@ -24,7 +24,7 @@ services:
         DATABASE_URL: ${DOCKER_DATABASE_URL:-mysql://wastegrab:wastegrab@database:3306/wastegrab}
     environment:
       PORT: ${PORT:-3000}
-      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
+      CORS_ORIGIN: ${DOCKER_CORS_ORIGIN:-http://localhost:8080}
       DATABASE_URL: ${DOCKER_DATABASE_URL:-mysql://wastegrab:wastegrab@database:3306/wastegrab}
       AUTH_SECRET: ${AUTH_SECRET:-change-me-in-production}
       AUTH_COOKIE_SECURE: "false"
@@ -54,6 +54,8 @@ services:
     build:
       context: .
       dockerfile: apps/frontend/Dockerfile
+      args:
+        API_BASE_URL: ${DOCKER_API_BASE_URL:-http://localhost:3000/api}
     ports:
       - "8080:80"
     depends_on:

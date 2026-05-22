@@ -20,6 +20,7 @@ const authCookieSecure =
   process.env.AUTH_COOKIE_SECURE === undefined
     ? isProduction
     : process.env.AUTH_COOKIE_SECURE === "true";
+const authCookieSameSite = parseCookieSameSite(process.env.AUTH_COOKIE_SAME_SITE);
 
 if (!Number.isInteger(port) || port <= 0) {
   throw new Error("PORT must be a positive number.");
@@ -37,4 +38,17 @@ export const config = {
   googleMapsApiKey,
   isProduction,
   authCookieSecure,
+  authCookieSameSite,
 };
+
+function parseCookieSameSite(value: string | undefined): "Lax" | "Strict" | "None" {
+  if (!value) {
+    return "Lax";
+  }
+
+  if (value === "Lax" || value === "Strict" || value === "None") {
+    return value;
+  }
+
+  throw new Error("AUTH_COOKIE_SAME_SITE must be Lax, Strict, or None.");
+}

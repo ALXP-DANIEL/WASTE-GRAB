@@ -301,7 +301,7 @@ function serializeCookie(name: string, value: string, maxAgeMs: number): string 
     `${name}=${value}`,
     "Path=/",
     "HttpOnly",
-    "SameSite=Lax",
+    `SameSite=${config.authCookieSameSite}`,
     `Max-Age=${Math.floor(maxAgeMs / 1000)}`,
   ];
 
