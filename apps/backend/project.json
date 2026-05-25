@@ -95,7 +95,14 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "apps/backend",
-        "command": "prisma db push"
+        "command": "tsx scripts/db-push-local.ts"
+      }
+    },
+    "seed:local": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/backend",
+        "command": "tsx scripts/seed-local-users.ts"
       }
     },
     "docker:build": {

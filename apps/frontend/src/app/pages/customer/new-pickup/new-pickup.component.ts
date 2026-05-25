@@ -1,9 +1,10 @@
 import { AppHeaderComponent } from '@/ui/header/header.component';
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import type { AnalyzeImageResponse, WasteCategory } from '@wastegrab/shared';
 
 type NewPickupForm = FormGroup<{
   wasteCategory: FormControl<string>;
@@ -20,8 +21,8 @@ type NewPickupForm = FormGroup<{
 })
 export class CustomerNewPickupPage {
 
-  constructor(private http:HttpClient){}
-
+  protected readonly http = inject(HttpClient);
+  protected readonly wasteCategories = signal<WasteCategory[]>([]);
   protected readonly images = signal<File[]>([]);
   protected readonly previews = signal<string[]>([]);
   protected readonly isAnalyzing = signal(false);
@@ -38,6 +39,22 @@ export class CustomerNewPickupPage {
     estimatedQuantity: new FormControl<number | null>(null),
     location: new FormControl(this.addresses[0].id, { nonNullable: true }),
   });
+
+  constructor() {
+    void this.loadWasteCategories();
+  }
+
+  private async loadWasteCategories(): Promise<void> {
+    try {
+      const categories = await firstValueFrom(
+        this.http.get<WasteCategory[]>('/api/waste-categories')
+      );
+
+      this.wasteCategories.set(categories);
+    } catch (err) {
+      console.error('Failed to load waste categories:', err);
+    }
+  }
 
   protected onFilesSelected(ev: Event): void {
     const input = ev.target as HTMLInputElement;
@@ -56,25 +73,6 @@ export class CustomerNewPickupPage {
     this.aiSuggestions.set([]);
   }
 
-  // protected analyzeImagesMock(): void {
-  //   const imgs = this.images();
-  //   if (!imgs.length) return;
-  //   this.isAnalyzing.set(true);
-  //   this.aiSuggestions.set([]);
-
-  //   // Mock AI analysis — produce simple heuristic suggestions
-  //   setTimeout(() => {
-  //     const suggestions: Array<{category: string; estimatedQuantity: number}> = [];
-  //     // simple heuristic: count images and randomize categories
-  //     const cats = ['Plastic Bottles', 'Mixed Recyclables', 'Organic Waste', 'Paper/Cardboard', 'Metal Cans'];
-  //     const main = cats[Math.floor(Math.random() * cats.length)];
-  //     const qty = Math.max(1, Math.round(imgs.length * (1 + Math.random())));
-  //     suggestions.push({ category: main, estimatedQuantity: qty });
-  //     this.aiSuggestions.set(suggestions);
-  //     this.isAnalyzing.set(false);
-  //   }, 900);
-  // }
-
   protected async analyzeImagesMock(): Promise<void> {
 
     const imgs = this.images();
@@ -89,9 +87,9 @@ export class CustomerNewPickupPage {
       const formData = new FormData();
       formData.append('image', imgs[0]);
 
-      const response: any = await firstValueFrom(
-        this.http.post(
-          'http://localhost:3000/api/roboflow-ai/analyze-image',
+      const response = await firstValueFrom(
+        this.http.post<AnalyzeImageResponse>(
+          '/api/roboflow-ai/analyze-image',
           formData
         )
       );
@@ -106,7 +104,10 @@ export class CustomerNewPickupPage {
       // Convert backend result → suggestion format
       const suggestions = [
         {
-          category: result.detectedWaste.join(', ') || 'Mixed Recyclables',
+          category:
+            result.detectedCategories?.[0]?.name ??
+            result.detectedWaste[0] ??
+            'Mixed Recyclables',
           estimatedQuantity: Math.ceil(result.estimatedWeight) || 1
         }
       ];

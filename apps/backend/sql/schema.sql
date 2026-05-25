@@ -37,10 +37,15 @@ CREATE TABLE address (
 --   name VARCHAR(100) NOT NULL,
 --   pricePerKg DECIMAL(10, 2) NOT NULL,
 --   pointsPerKg INT DEFAULT 1,
+--   average_weight_kg DECIMAL(10, 3) DEFAULT 0.050,
 --   isBanned BOOLEAN DEFAULT false,
+--   is_hazardous BOOLEAN DEFAULT false,
+--   is_ai_detectable BOOLEAN DEFAULT true,
 --   description LONGTEXT,
 --   INDEX idx_name (name),
---   INDEX idx_isBanned (isBanned)
+--   INDEX idx_isBanned (isBanned),
+--   INDEX idx_is_hazardous (is_hazardous),
+--   INDEX idx_is_ai_detectable (is_ai_detectable)
 -- );
 
 -- -- Pickup Requests table
@@ -109,9 +114,9 @@ CREATE TABLE address (
 -- );
 
 -- -- Sample data for waste categories
--- INSERT INTO waste_categories (id, name, pricePerKg, pointsPerKg, description) VALUES
---   (UUID(), 'Plastic', 5.00, 2, 'All types of plastic waste including bottles, bags, and containers'),
---   (UUID(), 'Metal', 15.00, 3, 'Aluminum, steel, and other metal waste'),
---   (UUID(), 'Paper', 2.00, 1, 'Newspapers, magazines, cardboard, and paper waste'),
---   (UUID(), 'Glass', 3.00, 1, 'Glass bottles and jars'),
---   (UUID(), 'Organic', 1.00, 1, 'Food waste and biodegradable materials');
+-- INSERT INTO waste_categories (id, name, pricePerKg, pointsPerKg, average_weight_kg, description) VALUES
+--   (UUID(), 'Plastic', 5.00, 2, 0.030, 'All types of plastic waste including bottles, bags, and containers'),
+--   (UUID(), 'Metal', 15.00, 3, 0.100, 'Aluminum, steel, and other metal waste'),
+--   (UUID(), 'Paper', 2.00, 1, 0.020, 'Newspapers, magazines, cardboard, and paper waste'),
+--   (UUID(), 'Glass', 3.00, 1, 0.150, 'Glass bottles and jars'),
+--   (UUID(), 'Organic', 1.00, 1, 0.050, 'Food waste and biodegradable materials');

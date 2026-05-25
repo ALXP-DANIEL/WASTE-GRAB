@@ -58,13 +58,16 @@ model User {
 }
 
 model WasteCategory {
-  id          String       @id @default(uuid())
-  name        String       @db.VarChar(100)
-  pricePerKg  Decimal      @db.Decimal(10, 2)
-  pointsPerKg Int          @default(1)
-  isBanned    Boolean      @default(false)
-  description String?      @db.Text
-  pickupItems PickupItem[]
+  id              String       @id @default(uuid())
+  name            String       @db.VarChar(100)
+  pricePerKg      Decimal      @db.Decimal(10, 2)
+  pointsPerKg     Int          @default(1)
+  averageWeightKg Decimal      @default(0.05) @map("average_weight_kg") @db.Decimal(10, 3)
+  isBanned        Boolean      @default(false)
+  isHazardous     Boolean      @default(false) @map("is_hazardous")
+  isAiDetectable  Boolean      @default(true) @map("is_ai_detectable")
+  description     String?      @db.Text
+  pickupItems     PickupItem[]
 
   @@map("waste_categories")
 }
