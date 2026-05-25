@@ -1,16 +1,39 @@
-console.log('Roboflow route loaded');
 import express, { type Request, type Response } from 'express';
 import multer from 'multer';
-import fs from 'fs';
+import { promises as fs } from 'fs';
 import axios from 'axios';
+import type { AnalyzeImageResponse } from '@wastegrab/shared';
+import { prisma } from '../prisma.js';
 
-type WasteType = 'PAPER' | 'PLASTIC' | 'GLASS' | 'METAL';
 type RoboflowRequest = Request & { file?: Express.Multer.File };
+type RoboflowPrediction = { class: string };
+type RoboflowResponse = {
+  outputs?: Array<{
+    predictions?: {
+      predictions?: RoboflowPrediction[];
+    };
+  }>;
+};
+
+function normalizeCategoryName(value: string): string {
+  return value.trim().toLowerCase();
+}
 
 const router = express.Router();
 
 const upload = multer({
-  dest: 'uploads/'
+  dest: 'uploads/',
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+      return;
+    }
+
+    cb(new Error('Only image uploads are supported'));
+  },
 });
 
 router.post(
@@ -18,10 +41,9 @@ router.post(
   upload.single('image'),
 
   async (req: RoboflowRequest, res: Response) => {
+    const imagePath = req.file?.path;
 
     try {
-
-      const imagePath = req.file?.path;
       if (!imagePath) {
         return res.status(400).json({
           success: false,
@@ -29,143 +51,146 @@ router.post(
         });
       }
 
-      // Convert image to base64
-      const image =
-        fs.readFileSync(imagePath, {
-          encoding: 'base64'
+      const apiKey = process.env.ROBOFLOW_API_KEY;
+      if (!apiKey) {
+        return res.status(500).json({
+          success: false,
+          error: 'Roboflow API key is not configured',
         });
+      }
 
-      // Roboflow API request
-      const response = await axios.post(
+      const image = await fs.readFile(imagePath, { encoding: 'base64' });
+      const categories = await prisma.wasteCategory.findMany({
+        where: {
+          isBanned: false,
+          isHazardous: false,
+          isAiDetectable: true,
+        },
+        orderBy: {
+          name: 'asc',
+        },
+        select: {
+          id: true,
+          name: true,
+          pointsPerKg: true,
+          averageWeightKg: true,
+        },
+      });
 
-            'https://serverless.roboflow.com/harith-haiqal-syaiful-eksan/workflows/general-segmentation-api-3',
+      if (!categories.length) {
+        return res.status(500).json({
+          success: false,
+          error: 'No active waste categories are configured',
+        });
+      }
 
-            {
-                api_key: process.env.ROBOFLOW_API_KEY,
+      const categoriesByName = new Map(
+        categories.map((category) => [
+          normalizeCategoryName(category.name),
+          category,
+        ]),
+      );
 
-                inputs: {
-
-                image: {
-                    type: 'base64',
-                    value: image
-                },
-
-                classes:
-                    'PAPER, PLASTIC, GLASS, METAL, OIL'
-                }
-
+      const response = await axios.post<RoboflowResponse>(
+        'https://serverless.roboflow.com/harith-haiqal-syaiful-eksan/workflows/general-segmentation-api-3',
+        {
+          api_key: apiKey,
+          inputs: {
+            image: {
+              type: 'base64',
+              value: image,
             },
+            classes: categories.map((category) => category.name).join(', '),
+          },
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
 
-            {
-                headers: {
-                'Content-Type':
-                    'application/json'
-                }
-            }
-        );
+      const predictions =
+        response.data.outputs?.[0]?.predictions?.predictions ?? [];
 
-      const predictions = (response.data.outputs?.[0]?.predictions?.predictions ?? []) as Array<{ class: string }>;
+      const counts = categories.reduce<Record<string, number>>(
+        (acc, category) => ({
+          ...acc,
+          [category.name]: 0,
+        }),
+        {},
+      );
 
-            // Counts from AI
-            const counts: Record<WasteType, number> = {
-                PAPER: 0,
-                PLASTIC: 0,
-                GLASS: 0,
-                METAL: 0
-                };
+      predictions.forEach((item) => {
+        const category = categoriesByName.get(normalizeCategoryName(item.class));
 
-                // Count each detected object
-                predictions.forEach(item => {
+        if (category) {
+          counts[category.name]++;
+        }
+      });
 
-                const detectedClass =
-                    item.class.trim().toUpperCase() as WasteType;
+      const detectedCategories = categories
+        .map((category) => {
+          const count = counts[category.name] ?? 0;
+          const estimatedWeight = Number(
+            (count * Number(category.averageWeightKg)).toFixed(2),
+          );
 
-                if (detectedClass in counts) {
-                    counts[detectedClass]++;
-                }
+          return {
+            id: category.id,
+            name: category.name,
+            count,
+            estimatedWeight,
+            points: Math.round(estimatedWeight * category.pointsPerKg),
+          };
+        })
+        .filter((category) => category.count > 0);
 
-            });
+      const totalItems = detectedCategories.reduce(
+        (total, category) => total + category.count,
+        0,
+      );
 
-            // Total items
-            const totalItems =
+      const estimatedWeight = Number(
+        detectedCategories
+          .reduce((total, category) => total + category.estimatedWeight, 0)
+          .toFixed(2),
+      );
+      const points = detectedCategories.reduce(
+        (total, category) => total + category.points,
+        0,
+      );
+      const size =
+        estimatedWeight > 10 ? 'Large' : estimatedWeight > 5 ? 'Medium' : 'Small';
+      const detectedWaste = detectedCategories.map((category) => category.name);
 
-            counts.PAPER +
-            counts.PLASTIC +
-            counts.GLASS +
-            counts.METAL;
+      const payload: AnalyzeImageResponse = {
+        success: true,
+        result: {
+          detectedWaste,
+          detectedCategories,
+          counts,
+          totalItems,
+          estimatedWeight,
+          points,
+          size,
+          recyclable: 'Yes',
+        },
+      };
 
-            // Eco points
-            // const points =
-
-            // (counts.PAPER * 1) +
-            // (counts.PLASTIC * 2) +
-            // (counts.GLASS * 3) +
-            // (counts.METAL * 4);
-
-            // Average weights (kg per item)
-            const averageWeightKg = {
-            PAPER: 0.02,
-            PLASTIC: 0.03,
-            GLASS: 0.15,
-            METAL: 0.10
-            };
-
-            // Weight per material
-            const weightByMaterial = {
-            PAPER: counts.PAPER * averageWeightKg.PAPER,
-            PLASTIC: counts.PLASTIC * averageWeightKg.PLASTIC,
-            GLASS: counts.GLASS * averageWeightKg.GLASS,
-            METAL: counts.METAL * averageWeightKg.METAL
-            };
-
-            // Total estimated weight (rounded)
-            const estimatedWeight = Number(
-            (
-                weightByMaterial.PAPER +
-                weightByMaterial.PLASTIC +
-                weightByMaterial.GLASS +
-                weightByMaterial.METAL
-            ).toFixed(2)
-            );
-
-            const points = Math.round(estimatedWeight * 100);
-
-            // Size estimation
-            let size = 'Small';
-
-            if(estimatedWeight > 10){
-            size = 'Large';
-            }
-            else if(estimatedWeight > 5){
-            size = 'Medium';
-            }
-
-            // Convert detected categories
-            const detectedWaste = (Object.keys(counts) as WasteType[])
-                .filter(key => counts[key] > 0);
-
-            res.json({
-                success: true,
-                result: {
-                    detectedWaste,
-                    counts,
-                    totalItems,
-                    estimatedWeight,
-                    points,
-                    size,
-                    recyclable: 'Yes'
-                }
-            });
-    //   console.log(JSON.stringify(response.data, null, 2));
+      res.json(payload);
 
     } catch (err: unknown) {
-
       console.error(err);
 
       res.status(500).json({
         success: false,
         error: err instanceof Error ? err.message : String(err),
       });
+    } finally {
+      if (imagePath) {
+        await fs.unlink(imagePath).catch(() => undefined);
+      }
     }
 });
 

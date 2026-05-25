@@ -8,11 +8,11 @@ import { AuthService } from '@/services/auth.service';
   selector: 'app-layout',
   imports: [AppNavbarComponent, RouterOutlet, NgClass],
   template: `
-    <div class="h-dvh flex flex-col-reverse lg:grid" [ngClass]="authService.currentUser() ? 'lg:grid-cols-[16rem_1fr]' : ''">
+    <div class="h-dvh flex min-w-0 flex-col-reverse lg:grid" [ngClass]="authService.currentUser() ? 'lg:grid-cols-[16rem_minmax(0,1fr)]' : ''">
       @if (authService.currentUser()) {
         <app-navbar />
       }
-      <main class="flex-1 overflow-y-auto flex flex-col min-h-0" [ngClass]="authService.currentUser() ? 'lg:pb-0 bg-orange-50 m-2 rounded-2xl border-dashed border-2 border-slate-300' : 'lg:pb-0 bg-slate-50'">
+      <main class="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto" [ngClass]="authService.currentUser() ? 'lg:pb-0 bg-orange-50 m-2 rounded-2xl border-dashed border-2 border-slate-300' : 'lg:pb-0 bg-slate-50'">
         <router-outlet />
       </main>
     </div>
