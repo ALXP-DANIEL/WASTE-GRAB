@@ -73,6 +73,23 @@ export type ListPickupRequestsResponse = {
   pickupRequests: PickupRequestWithDetails[];
 };
 
+export type AdminPickupRequest = PickupRequestWithDetails & {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  collector: {
+    id: string;
+    name: string;
+    email: string;
+  } | null;
+};
+
+export type ListAdminPickupRequestsResponse = {
+  pickupRequests: AdminPickupRequest[];
+};
+
 export type GetPickupRequestResponse = {
   pickupRequest: PickupRequestWithDetails;
 };

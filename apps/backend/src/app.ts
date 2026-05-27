@@ -8,7 +8,7 @@ import { config } from "./config.js";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler.js";
 import authRouter from "./routes/auth.routes.js";
 import placesRouter from "./routes/places.routes.js";
-import { adminUserRouter, adminLocationRouter, adminNotificationRouter, adminWasteCategoryRouter, adminVoucherRouter, customerAddressRouter, customerPickupRouter, customerVoucherRouter, notificationRouter } from "./routes/index.js";
+import { adminUserRouter, adminLocationRouter, adminNotificationRouter, adminPickupRouter, adminWasteCategoryRouter, adminVoucherRouter, customerAddressRouter, customerPickupRouter, customerVoucherRouter, notificationRouter } from "./routes/index.js";
 import roboflowAI from "./routes/roboflow-ai.js";
 import wasteCategoryRouter from "./routes/waste-category.routes.js";
 
@@ -47,6 +47,7 @@ app.use("/api/places", placesRouter);
 app.use("/api/admin/users", adminUserRouter);
 app.use("/api/admin/locations", adminLocationRouter);
 app.use("/api/admin/notifications", adminNotificationRouter);
+app.use("/api/admin/pickups", adminPickupRouter);
 app.use("/api/admin/waste-categories", adminWasteCategoryRouter);
 app.use("/api/admin/vouchers", adminVoucherRouter);
 app.use("/api/customer/address", customerAddressRouter);
