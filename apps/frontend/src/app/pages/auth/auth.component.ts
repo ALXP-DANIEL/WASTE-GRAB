@@ -114,6 +114,10 @@ export class AuthPage {
   });
 
   protected readonly resetPasswordForm = new FormGroup({
+    token: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
     password: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required, Validators.minLength(8)],
@@ -183,11 +187,15 @@ export class AuthPage {
     const emailValue = this.forgotPasswordForm.get('email')?.value;
     if (emailValue) {
       this.authService.forgotPassword(emailValue).subscribe({
-        next: () => {
+        next: (response) => {
           this.forgotPasswordEmail.set(emailValue);
           this.showForgotPasswordStep.set('password');
           this.forgotPasswordSubmitting.set(false);
-          this.resetPasswordForm.reset();
+          this.resetPasswordForm.reset({
+            token: response.resetToken ?? '',
+            password: '',
+            confirmPassword: '',
+          });
         },
         error: (err) => {
           this.forgotPasswordError.set(err.error?.error || 'An error occurred while requesting password reset.');
@@ -203,8 +211,14 @@ export class AuthPage {
       return;
     }
 
+    const token = this.resetPasswordForm.get('token')?.value;
     const password = this.resetPasswordForm.get('password')?.value;
     const confirmPassword = this.resetPasswordForm.get('confirmPassword')?.value;
+
+    if (!token) {
+      this.forgotPasswordError.set('Password reset token is required.');
+      return;
+    }
 
     if (password !== confirmPassword) {
       this.forgotPasswordError.set('Passwords do not match.');
@@ -218,7 +232,7 @@ export class AuthPage {
         this.forgotPasswordSubmitting.set(false);
         return;
       }
-      this.authService.resetPassword(this.forgotPasswordEmail(), password).subscribe({
+      this.authService.resetPassword(token, password).subscribe({
       next: () => {
         this.dialogService.create({
           zTitle: 'Success',

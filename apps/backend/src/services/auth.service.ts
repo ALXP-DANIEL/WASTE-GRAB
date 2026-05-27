@@ -1,4 +1,4 @@
-import { createHmac, randomBytes, scryptSync, timingSafeEqual } from "crypto";
+import { createHash, createHmac, randomBytes, scryptSync, timingSafeEqual } from "crypto";
 import type { Request } from "express";
 import type {
   AuthResponse,
@@ -14,6 +14,7 @@ import { prisma } from "../prisma.js";
 
 const authCookieName = "wastegrab_auth";
 const sessionLifetimeMs = 1000 * 60 * 60 * 24 * 7;
+const passwordResetTokenLifetimeMs = 1000 * 60 * 30;
 
 type AuthSession = AuthResponse & {
   token: string;
@@ -91,7 +92,7 @@ export async function getCurrentUserFromRequest(
   return toUserResponse(user);
 }
 
-export async function requestPasswordReset(email: string): Promise<void> {
+export async function requestPasswordReset(email: string): Promise<string | null> {
   const normalizedEmail = normalizeEmail(email);
   
   const user = await prisma.user.findUnique({
@@ -99,34 +100,78 @@ export async function requestPasswordReset(email: string): Promise<void> {
   });
 
   if (!user) {
-    throw new Error("Email not found.");
+    return null;
   }
 
-  // In a real app, you would send a reset email here.
+  return createPasswordResetToken(user.id);
 }
 
-export async function resetPassword(email: string, newPassword: string): Promise<AuthSession> {
-  const normalizedEmail = normalizeEmail(email);
+export async function createPasswordResetToken(userId: string): Promise<string> {
+  const token = randomBytes(32).toString("base64url");
+  const tokenHash = hashPasswordResetToken(token);
+  const expiresAt = new Date(Date.now() + passwordResetTokenLifetimeMs);
+
+  await prisma.passwordResetToken.create({
+    data: {
+      userId,
+      tokenHash,
+      expiresAt,
+    },
+  });
+
+  return token;
+}
+
+export async function resetPassword(token: string, newPassword: string): Promise<AuthSession> {
+  const normalizedToken = normalizePasswordResetToken(token);
   const password = normalizePassword(newPassword);
 
   if (password.length < 8) {
     throw new Error("Password must be at least 8 characters.");
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email: normalizedEmail },
+  const resetToken = await prisma.passwordResetToken.findUnique({
+    where: { tokenHash: hashPasswordResetToken(normalizedToken) },
+    include: { user: true },
   });
 
-  if (!user) {
-    throw new Error("User not found.");
+  if (
+    !resetToken ||
+    resetToken.usedAt !== null ||
+    resetToken.expiresAt.getTime() < Date.now()
+  ) {
+    throw new Error("Invalid or expired password reset token.");
   }
 
-  // Update password
-  const updatedUser = await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      passwordHash: hashPassword(password),
-    },
+  const updatedUser = await prisma.$transaction(async (tx) => {
+    const consumedToken = await tx.passwordResetToken.updateMany({
+      where: {
+        id: resetToken.id,
+        usedAt: null,
+        expiresAt: { gt: new Date() },
+      },
+      data: { usedAt: new Date() },
+    });
+
+    if (consumedToken.count !== 1) {
+      throw new Error("Invalid or expired password reset token.");
+    }
+
+    await tx.passwordResetToken.updateMany({
+      where: {
+        userId: resetToken.userId,
+        usedAt: null,
+        id: { not: resetToken.id },
+      },
+      data: { usedAt: new Date() },
+    });
+
+    return tx.user.update({
+      where: { id: resetToken.userId },
+      data: {
+        passwordHash: hashPassword(password),
+      },
+    });
   });
 
   return {
@@ -285,11 +330,25 @@ function verifySessionToken(token: string): string | null {
   }
 }
 
-function hashPassword(password: string): string {
+export function hashPassword(password: string): string {
   const salt = randomBytes(16).toString("hex");
   const derivedKey = scryptSync(password, salt, 64) as Buffer;
 
   return `${salt}:${derivedKey.toString("hex")}`;
+}
+
+function hashPasswordResetToken(token: string): string {
+  return createHash("sha256").update(token).digest("hex");
+}
+
+function normalizePasswordResetToken(value: string): string {
+  const token = normalizePassword(value);
+
+  if (!token) {
+    throw new Error("Password reset token is required.");
+  }
+
+  return token;
 }
 
 function verifyPassword(password: string, passwordHash: string): boolean {

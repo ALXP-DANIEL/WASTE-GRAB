@@ -103,7 +103,7 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "apps/backend",
-        "command": "tsx scripts/seed-local-users.ts"
+        "command": "tsx scripts/seed-local-data.ts"
       }
     },
     "docker:build": {

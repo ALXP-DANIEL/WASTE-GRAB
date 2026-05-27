@@ -66,8 +66,8 @@ export class AuthService {
     return this.http.post<ForgotPasswordResponse>(`${this.apiUrl}/forgot-password`, input, this.requestOptions);
   }
 
-  resetPassword(email: string, password: string) {
-    const input: ResetPasswordInput = { email, password };
+  resetPassword(token: string, password: string) {
+    const input: ResetPasswordInput = { token, password };
     return this.http.post<ResetPasswordResponse>(`${this.apiUrl}/reset-password`, input, this.requestOptions);
   }
 

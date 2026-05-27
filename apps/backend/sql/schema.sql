@@ -31,6 +31,18 @@ CREATE TABLE address (
   INDEX idx_is_default (is_default)
 );
 
+CREATE TABLE password_reset_tokens (
+  id CHAR(36) PRIMARY KEY,
+  user_id CHAR(36) NOT NULL,
+  token_hash VARCHAR(64) NOT NULL UNIQUE,
+  expires_at DATETIME NOT NULL,
+  used_at DATETIME,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_user_created_at (user_id, created_at),
+  INDEX idx_expires_at (expires_at)
+);
+
 -- -- Waste Categories table
 -- CREATE TABLE waste_categories (
 --   id CHAR(36) PRIMARY KEY,

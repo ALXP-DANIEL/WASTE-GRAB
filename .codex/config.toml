@@ -2,17 +2,17 @@
 command = "npx"
 args = [ "nx", "mcp", "--minimal" ]
 
+[mcp_servers.caveman]
+command = "uvx"
+args = [ "caveman-mcp" ]
+
+[mcp_servers.serena]
+command = "uvx"
+args = [ "--from", "serena-agent", "serena", "start-mcp-server", "--project-from-cwd" ]
+
 [features]
 multi_agent = true
 
 [agents.ci-monitor-subagent]
 description = "CI helper for /monitor-ci. Fetches CI status, retrieves fix details, or updates self-healing fixes. Executes one MCP tool call and returns the result."
 config_file = "agents/ci-monitor-subagent.toml"
-
-[mcp_servers.caveman]
-command = "uvx"
-args = ["caveman-mcp"]
-
-[mcp_servers.serena]
-command = "uvx"
-args = ["--from", "serena-agent", "serena", "start-mcp-server", "--project-from-cwd"]

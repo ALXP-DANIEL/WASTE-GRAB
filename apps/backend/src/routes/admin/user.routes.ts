@@ -1,7 +1,7 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
 import type { ApiErrorResponse, User, CreateUserInput, UpdateUserInput, UserRole } from "@wastegrab/shared";
 import { getBody } from "../../utils/request.js";
-import { getCurrentUserFromRequest } from "../../services/auth.service.js";
+import { getCurrentUserFromRequest, hashPassword } from "../../services/auth.service.js";
 import { prisma } from "../../prisma.js";
 
 const userRouter = Router();
@@ -73,15 +73,11 @@ userRouter.post("/", requireAdmin, async (req: Request, res: Response) => {
       return;
     }
 
-    // Import crypto for hashing
-    const { scryptSync } = await import("crypto");
-    const passwordHash = scryptSync(password, "wastegrab", 64).toString("hex");
-
     const user = await prisma.user.create({
       data: {
         name,
         email,
-        passwordHash,
+        passwordHash: hashPassword(password),
         phone: phone || null,
         role,
       },

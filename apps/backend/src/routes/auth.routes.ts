@@ -27,6 +27,7 @@ import {
   updateAvatar,
   updateProfile,
 } from "../services/auth.service.js";
+import { config } from "../config.js";
 import { uploadPublicAvatar } from "../services/supabase-storage.service.js";
 import { getBody } from "../utils/request.js";
 
@@ -141,8 +142,11 @@ authRouter.post("/forgot-password", async (req: Request, res: Response) => {
   }
 
   try {
-    await requestPasswordReset(email);
-    const payload: ForgotPasswordResponse = { message: "Password reset link has been sent to your email." };
+    const resetToken = await requestPasswordReset(email);
+    const payload: ForgotPasswordResponse = {
+      message: "If an account exists for that email, a password reset link has been sent.",
+      ...(resetToken && !config.isProduction ? { resetToken } : {}),
+    };
     res.status(200).json(payload);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to request password reset.";
@@ -152,11 +156,11 @@ authRouter.post("/forgot-password", async (req: Request, res: Response) => {
 
 authRouter.post("/reset-password", async (req: Request, res: Response) => {
   const body = getBody(req.body) as Partial<ResetPasswordInput>;
-  const email = normalizeText(body.email);
+  const token = normalizeText(body.token);
   const password = normalizeText(body.password);
 
-  if (!email || !email.includes("@")) {
-    res.status(400).json({ error: "A valid email is required." });
+  if (!token) {
+    res.status(400).json({ error: "Password reset token is required." });
     return;
   }
 
@@ -166,7 +170,7 @@ authRouter.post("/reset-password", async (req: Request, res: Response) => {
   }
 
   try {
-    await resetPassword(email, password);
+    await resetPassword(token, password);
     const payload: ResetPasswordResponse = { message: "Password reset successfully." };
     res.status(200).json(payload);
   } catch (error) {

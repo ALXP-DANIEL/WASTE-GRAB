@@ -46,10 +46,11 @@ export type ForgotPasswordInput = {
 
 export type ForgotPasswordResponse = {
   message: string;
+  resetToken?: string;
 };
 
 export type ResetPasswordInput = {
-  email: string;
+  token: string;
   password: string;
 };
 
