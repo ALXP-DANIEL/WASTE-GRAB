@@ -290,7 +290,7 @@ jobs:
             }' |
             gh api "repos/$GITHUB_REPOSITORY/deployments/$deployment_id/statuses" --method POST --input -
 
-notify-whatsapp-unofficial:
+  notify-whatsapp-unofficial:
     name: Notify WhatsApp Group
     runs-on: ubuntu-latest
 
