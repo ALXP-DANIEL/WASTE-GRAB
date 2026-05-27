@@ -33,7 +33,7 @@ jobs:
           cache: npm
 
       - run: npm ci
-      - run: npm exec -- nx run-many -t lint test typecheck -p shared-types --outputStyle=static
+      - run: npm exec -- nx run-many -t lint test typecheck build -p shared-types --outputStyle=static
       - run: npm exec -- nx fix-ci
         if: always()
 

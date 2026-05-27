@@ -12,6 +12,7 @@
     "prisma:migrate": "nx run backend:prisma:migrate",
     "prisma:studio": "nx run backend:prisma:studio",
     "db:push": "nx run backend:db:push",
+    "prisma:migrate:deploy": "prisma migrate deploy --schema=apps/backend/prisma/schema.prisma",
     "docker:build": "nx run-many --target=docker:build --projects=backend,frontend",
     "docker:up": "docker compose up --build"
   },
