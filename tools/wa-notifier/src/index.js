@@ -9,7 +9,6 @@ import makeWASocket, {
 } from '@whiskeysockets/baileys';
 
 const PORT = Number(process.env.PORT || 3000);
-const HOST = process.env.HOST || '0.0.0.0';
 const AUTH_DIR = process.env.WA_AUTH_DIR || './auth';
 const NOTIFY_TOKEN = process.env.NOTIFY_TOKEN || '';
 const WHATSAPP_GROUP_JID = process.env.WHATSAPP_GROUP_JID || '';
@@ -26,20 +25,6 @@ function log(message, data = {}) {
       ...data,
     }),
   );
-}
-
-function withTimeout(promise, ms, errorMessage) {
-  let timeoutId;
-
-  const timeout = new Promise((_, reject) => {
-    timeoutId = setTimeout(() => {
-      reject(new Error(errorMessage));
-    }, ms);
-  });
-
-  return Promise.race([promise, timeout]).finally(() => {
-    clearTimeout(timeoutId);
-  });
 }
 
 function requireAuth(req, res, next) {
@@ -70,11 +55,7 @@ async function listGroups() {
     throw new Error('WhatsApp is not ready yet');
   }
 
-  const groups = await withTimeout(
-    sock.groupFetchAllParticipating(),
-    15000,
-    'Listing WhatsApp groups timed out',
-  );
+  const groups = await sock.groupFetchAllParticipating();
 
   return Object.entries(groups).map(([jid, group]) => ({
     jid,
@@ -96,13 +77,9 @@ async function sendGroupMessage(text) {
     throw new Error('WHATSAPP_GROUP_JID must end with @g.us');
   }
 
-  return await withTimeout(
-    sock.sendMessage(WHATSAPP_GROUP_JID, {
-      text: String(text).slice(0, 4096),
-    }),
-    20000,
-    'Sending WhatsApp message timed out',
-  );
+  return await sock.sendMessage(WHATSAPP_GROUP_JID, {
+    text: text.slice(0, 4096),
+  });
 }
 
 function buildMessage(payload) {
@@ -160,7 +137,6 @@ async function connectWhatsApp() {
       browser: ['WasteGrab CI Bot', 'Chrome', '1.0.0'],
       markOnlineOnConnect: false,
       syncFullHistory: false,
-      printQRInTerminal: false,
     });
 
     sock.ev.on('creds.update', saveCreds);
@@ -177,7 +153,6 @@ async function connectWhatsApp() {
       if (connection === 'open') {
         isReady = true;
         isConnecting = false;
-
         log('WhatsApp connected');
 
         try {
@@ -189,9 +164,7 @@ async function connectWhatsApp() {
             console.log(`${group.subject} => ${group.jid}`);
           }
 
-          console.log('\nCurrent WHATSAPP_GROUP_JID:');
-          console.log(WHATSAPP_GROUP_JID || 'not set');
-          console.log('');
+          console.log('\nCopy the correct group JID into WHATSAPP_GROUP_JID.\n');
         } catch (error) {
           log('Could not list groups', {
             error: error.message,
@@ -245,29 +218,11 @@ const app = express();
 
 app.use(express.json({ limit: '256kb' }));
 
-app.use((req, res, next) => {
-  log('HTTP request', {
-    method: req.method,
-    url: req.url,
-  });
-
-  next();
-});
-
-app.get('/', (req, res) => {
-  res.json({
-    ok: true,
-    service: 'WasteGrab WhatsApp notifier',
-  });
-});
-
 app.get('/health', (req, res) => {
   res.json({
     ok: true,
     whatsappReady: isReady,
-    hasSocket: Boolean(sock),
     hasGroupJid: Boolean(WHATSAPP_GROUP_JID),
-    groupJid: WHATSAPP_GROUP_JID || null,
   });
 });
 
@@ -292,11 +247,6 @@ app.post('/notify', requireAuth, async (req, res) => {
     const payload = req.body || {};
     const message = payload.text ? String(payload.text) : buildMessage(payload);
 
-    log('Sending WhatsApp notification', {
-      groupJid: WHATSAPP_GROUP_JID,
-      messageLength: message.length,
-    });
-
     const result = await sendGroupMessage(message);
 
     res.json({
@@ -304,10 +254,6 @@ app.post('/notify', requireAuth, async (req, res) => {
       messageId: result?.key?.id || null,
     });
   } catch (error) {
-    log('Notify failed', {
-      error: error.message,
-    });
-
     res.status(500).json({
       ok: false,
       error: error.message,
@@ -315,18 +261,8 @@ app.post('/notify', requireAuth, async (req, res) => {
   }
 });
 
-app.use((req, res) => {
-  res.status(404).json({
-    ok: false,
-    error: 'Route not found',
-    method: req.method,
-    path: req.path,
-  });
-});
-
-app.listen(PORT, HOST, () => {
+app.listen(PORT, () => {
   log('WA notifier started', {
-    host: HOST,
     port: PORT,
     authDir: AUTH_DIR,
   });
