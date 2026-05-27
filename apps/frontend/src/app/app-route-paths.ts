@@ -19,6 +19,7 @@ export const ROUTE_PATHS = {
     users: 'users',
     wasteCategories: 'waste-categories',
     vouchers: 'vouchers',
+    notifications: 'notifications',
   },
   collector: {
     base: 'collector',

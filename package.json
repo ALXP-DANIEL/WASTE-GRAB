@@ -12,6 +12,7 @@
     "prisma:migrate": "nx run backend:prisma:migrate",
     "prisma:studio": "nx run backend:prisma:studio",
     "db:push": "nx run backend:db:push",
+    "prisma:migrate:deploy": "prisma migrate deploy --schema=apps/backend/prisma/schema.prisma",
     "docker:build": "nx run-many --target=docker:build --projects=backend,frontend",
     "docker:up": "docker compose up --build"
   },
@@ -48,6 +49,7 @@
     "sharp": "^0.34.5",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.0",
+    "web-push": "^3.6.7",
     "zone.js": "0.16.0"
   },
   "devDependencies": {
@@ -83,6 +85,7 @@
     "@types/multer": "^2.1.0",
     "@types/node": "20.19.9",
     "@types/supertest": "^6.0.3",
+    "@types/web-push": "^3.6.4",
     "@typescript-eslint/utils": "^8.40.0",
     "@vitest/coverage-v8": "4.0.9",
     "@vitest/ui": "4.0.9",

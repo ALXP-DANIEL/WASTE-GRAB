@@ -22,6 +22,7 @@ import {
 import type { Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../../prisma.js";
 import { getCurrentUserFromRequest } from "../../services/auth.service.js";
+import { createNotification } from "../../services/notification.service.js";
 import { removeImages, uploadPublicImage } from "../../services/supabase-storage.service.js";
 
 type PickupRequestUpload = Request & { files?: Express.Multer.File[] };
@@ -371,6 +372,14 @@ pickupRouter.post(
         const payload: CreatePickupRequestResponse = {
           pickupRequest: toPickupRequestWithDetails(created),
         };
+
+        await createNotification({
+          userId: user.id,
+          title: "Pickup request created",
+          message: "Your pickup request is waiting for collector review.",
+          type: "PICKUP_CREATED",
+          actionUrl: `/customer/pickups/${created.id}`,
+        });
 
         res.status(201).json(payload);
       } catch (err) {

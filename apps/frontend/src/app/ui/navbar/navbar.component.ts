@@ -15,6 +15,7 @@ import {
   lucideTruck,
   lucideUsers,
   lucideRecycle,
+  lucideBell,
 } from '@ng-icons/lucide';
 
 import { UserRole, type User } from '@wastegrab/shared';
@@ -96,6 +97,12 @@ const ROLE_NAV = {
       icon: 'lucideGift',
       showOnMobile: false,
     },
+    {
+      label: 'Notifications',
+      route: routePath(ROUTE_PATHS.admin.base, ROUTE_PATHS.admin.notifications),
+      icon: 'lucideBell',
+      showOnMobile: false,
+    },
   ],
   [UserRole.COLLECTOR]: [
     {
@@ -137,6 +144,7 @@ function getInitials(name?: string | null): string {
   viewProviders: [
     provideIcons({
       lucideRecycle,
+      lucideBell,
       lucideGift,
       lucideLayoutDashboard,
       lucidePlus,

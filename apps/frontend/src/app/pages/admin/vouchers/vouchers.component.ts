@@ -14,10 +14,12 @@ import {
 
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
+import { ZardDatePickerComponent } from '@/ui/zard/date-picker';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
 import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/ui/zard/form/form.component';
 import { ZardInputDirective } from '@/ui/zard/input';
 import { ZardModalComponent } from '@/ui/zard/modal/modal.component';
+import { ZardSelectImports } from '@/ui/zard/select/select.imports';
 import { ZardTableImports } from '@/ui/zard/table';
 import { AdminVoucherService } from '@/services/admin-voucher.service';
 import {
@@ -38,12 +40,14 @@ type VoucherModalMode = 'add' | 'edit' | null;
     ReactiveFormsModule,
     AppHeaderComponent,
     ZardButtonComponent,
+    ZardDatePickerComponent,
     ZardModalComponent,
     ZardFormFieldComponent,
     ZardFormLabelComponent,
     ZardFormControlComponent,
     ZardInputDirective,
     NgIcon,
+    ...ZardSelectImports,
     ...ZardTableImports,
   ],
   viewProviders: [
@@ -64,6 +68,11 @@ export class AdminVouchersPage implements OnInit {
   private readonly dialogService = inject(ZardDialogService);
 
   protected readonly VoucherStatus = VoucherStatus;
+  protected readonly statusOptions = [
+    { value: VoucherStatus.ACTIVE, label: 'Active' },
+    { value: VoucherStatus.INACTIVE, label: 'Inactive' },
+    { value: VoucherStatus.EXPIRED, label: 'Expired' },
+  ];
   protected readonly activeTab = signal<VoucherTab>('catalog');
   protected readonly vouchers = signal<Voucher[]>([]);
   protected readonly redemptions = signal<AdminVoucherRedemptionLog[]>([]);
@@ -78,8 +87,8 @@ export class AdminVouchersPage implements OnInit {
     code: new FormControl('', { nonNullable: true }),
     stock: new FormControl<number | null>(null),
     status: new FormControl<VoucherStatus>(VoucherStatus.ACTIVE, { nonNullable: true }),
-    startsAt: new FormControl('', { nonNullable: true }),
-    expiresAt: new FormControl('', { nonNullable: true }),
+    startsAt: new FormControl<Date | null>(null),
+    expiresAt: new FormControl<Date | null>(null),
   });
 
   ngOnInit(): void {
@@ -101,8 +110,8 @@ export class AdminVouchersPage implements OnInit {
       code: '',
       stock: null,
       status: VoucherStatus.ACTIVE,
-      startsAt: '',
-      expiresAt: '',
+      startsAt: null,
+      expiresAt: null,
     });
     this.modalMode.set('add');
   }
@@ -116,8 +125,8 @@ export class AdminVouchersPage implements OnInit {
       code: voucher.code ?? '',
       stock: voucher.stock,
       status: voucher.status,
-      startsAt: toDatetimeLocal(voucher.startsAt),
-      expiresAt: toDatetimeLocal(voucher.expiresAt),
+      startsAt: toDate(voucher.startsAt),
+      expiresAt: toDate(voucher.expiresAt),
     });
     this.modalMode.set('edit');
   }
@@ -225,8 +234,8 @@ export class AdminVouchersPage implements OnInit {
         ? null
         : Number(value.stock),
       status: value.status,
-      startsAt: value.startsAt ? new Date(value.startsAt).toISOString() : null,
-      expiresAt: value.expiresAt ? new Date(value.expiresAt).toISOString() : null,
+      startsAt: toStartOfDayIso(value.startsAt),
+      expiresAt: toEndOfDayIso(value.expiresAt),
     };
   }
 
@@ -241,11 +250,24 @@ export class AdminVouchersPage implements OnInit {
   }
 }
 
-function toDatetimeLocal(value: string | null): string {
-  if (!value) return '';
+function toDate(value: string | null): Date | null {
+  if (!value) return null;
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  return date.toISOString().slice(0, 16);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function toStartOfDayIso(date: Date | null): string | null {
+  if (!date) return null;
+  const value = new Date(date);
+  value.setHours(0, 0, 0, 0);
+  return value.toISOString();
+}
+
+function toEndOfDayIso(date: Date | null): string | null {
+  if (!date) return null;
+  const value = new Date(date);
+  value.setHours(23, 59, 59, 999);
+  return value.toISOString();
 }
 
 function getErrorMessage(err: unknown): string | null {

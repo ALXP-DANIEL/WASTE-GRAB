@@ -16,6 +16,7 @@ import {
 import { Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../../prisma.js";
 import { getCurrentUserFromRequest } from "../../services/auth.service.js";
+import { createNotification } from "../../services/notification.service.js";
 
 const voucherRouter = Router();
 
@@ -205,6 +206,14 @@ voucherRouter.post(
       });
 
       const payload: RedeemVoucherResponse = result;
+      await createNotification({
+        userId: user.id,
+        title: "Voucher redeemed",
+        message: `You redeemed ${result.redemption.voucher.title} for ${result.redemption.pointsSpent} points.`,
+        type: "VOUCHER_REDEEMED",
+        actionUrl: "/customer/vouchers",
+      });
+
       res.status(201).json(payload);
     } catch (err) {
       if (err instanceof RedeemVoucherError) {

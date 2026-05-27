@@ -27,6 +27,8 @@ import { PickupStatus, type Address, type AnalyzeImageResponse, type WasteCatego
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { PickupRequestService } from '@/services/pickup-request.service';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
+import { ZardInputDirective } from '@/ui/zard/input';
+import { ZardSelectImports } from '@/ui/zard/select/select.imports';
 
 type NewPickupForm = FormGroup<{
   items: FormArray<PickupItemForm>;
@@ -84,7 +86,14 @@ type StepMeta = {
   selector: 'app-customer-new-pickup-page',
   templateUrl: './new-pickup.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, ReactiveFormsModule, AppHeaderComponent, NgIcon],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    AppHeaderComponent,
+    NgIcon,
+    ZardInputDirective,
+    ...ZardSelectImports,
+  ],
   viewProviders: [
     provideIcons({
       lucideArrowLeft,

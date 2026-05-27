@@ -226,16 +226,16 @@
                   <div class="grid gap-3 sm:grid-cols-[1fr_11rem]">
                     <div class="grid gap-2">
                       <label [for]="'categoryId-' + index" class="text-sm font-medium">Category</label>
-                      <select
+                      <z-select
                         [id]="'categoryId-' + index"
                         formControlName="categoryId"
-                        class="h-11 rounded-md border border-input bg-background px-3 text-sm outline-none transition-shadow focus:ring-2 focus:ring-ring/30"
+                        class="w-full"
+                        zPlaceholder="Select category"
                       >
-                        <option value="">Select category</option>
                         @for (category of wasteCategories(); track category.id) {
-                          <option [value]="category.id">{{ category.name }}</option>
+                          <z-select-item [zValue]="category.id">{{ category.name }}</z-select-item>
                         }
-                      </select>
+                      </z-select>
                     </div>
 
                     <div class="grid gap-2">
@@ -243,12 +243,13 @@
                       <div class="relative">
                         <ng-icon name="lucideScale" class="absolute left-3 top-1/2 size-4! -translate-y-1/2 text-muted-foreground" />
                         <input
+                          z-input
                           [id]="'estimatedWeight-' + index"
                           type="number"
                           min="0.01"
                           step="0.01"
                           formControlName="estimatedWeight"
-                          class="h-11 w-full rounded-md border border-input bg-background pl-9 pr-12 text-sm outline-none transition-shadow focus:ring-2 focus:ring-ring/30"
+                          class="w-full pl-9 pr-12"
                         />
                         <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground">kg</span>
                       </div>
@@ -271,18 +272,18 @@
           <div class="grid gap-4 p-4">
             <div class="grid gap-2">
               <label for="addressId" class="text-sm font-medium">Saved address</label>
-              <select
+              <z-select
                 id="addressId"
                 formControlName="addressId"
-                class="h-11 rounded-md border border-input bg-background px-3 text-sm outline-none transition-shadow focus:ring-2 focus:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-60"
-                (change)="onAddressChanged()"
-                [disabled]="!addresses().length"
+                class="w-full"
+                zPlaceholder="Select saved address"
+                [zDisabled]="!addresses().length"
+                (zSelectionChange)="onAddressChanged()"
               >
-                <option value="">Select saved address</option>
                 @for (address of addresses(); track address.id) {
-                  <option [value]="address.id">{{ addressLabel(address) }}</option>
+                  <z-select-item [zValue]="address.id">{{ addressLabel(address) }}</z-select-item>
                 }
-              </select>
+              </z-select>
 
               @if (!addresses().length) {
                 <p class="text-xs text-destructive">Add a saved address in your profile before requesting a pickup.</p>
@@ -302,10 +303,11 @@
             <div class="grid gap-2">
               <label for="description" class="text-sm font-medium">Notes</label>
               <textarea
+                z-input
                 id="description"
                 rows="4"
                 formControlName="description"
-                class="min-h-28 resize-none rounded-md border border-input bg-background px-3 py-2 text-sm outline-none transition-shadow focus:ring-2 focus:ring-ring/30"
+                class="min-h-28 resize-none"
               ></textarea>
             </div>
           </div>

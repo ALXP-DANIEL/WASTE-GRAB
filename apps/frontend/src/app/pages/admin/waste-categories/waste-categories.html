@@ -308,30 +308,15 @@
       </z-form-field>
 
       <div class="grid gap-3 rounded border border-slate-200 p-3 sm:col-span-2">
-        <label class="flex items-center gap-2 text-sm text-slate-700">
-          <input
-            type="checkbox"
-            formControlName="isBanned"
-            class="size-4 rounded border-slate-300"
-          />
+        <z-checkbox formControlName="isBanned" class="text-sm text-slate-700">
           Banned category
-        </label>
-        <label class="flex items-center gap-2 text-sm text-slate-700">
-          <input
-            type="checkbox"
-            formControlName="isHazardous"
-            class="size-4 rounded border-slate-300"
-          />
+        </z-checkbox>
+        <z-checkbox formControlName="isHazardous" class="text-sm text-slate-700">
           Hazardous category
-        </label>
-        <label class="flex items-center gap-2 text-sm text-slate-700">
-          <input
-            type="checkbox"
-            formControlName="isAiDetectable"
-            class="size-4 rounded border-slate-300"
-          />
+        </z-checkbox>
+        <z-checkbox formControlName="isAiDetectable" class="text-sm text-slate-700">
           Available for AI image detection
-        </label>
+        </z-checkbox>
       </div>
 
       <z-form-field class="sm:col-span-2">
