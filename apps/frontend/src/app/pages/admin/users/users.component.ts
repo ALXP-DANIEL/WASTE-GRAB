@@ -1,6 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucidePencil, lucidePlus, lucideShield, lucideTrash2, lucideTruck, lucideUsers } from '@ng-icons/lucide';
 
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { ZardTableImports } from '@/ui/zard/table';
@@ -36,6 +38,17 @@ type UserModalMode = 'add' | 'edit' | null;
     ...ZardSelectImports,
     DisplayRolePipe,
     RoleBadgeTypePipe,
+    NgIcon,
+  ],
+  viewProviders: [
+    provideIcons({
+      lucidePencil,
+      lucidePlus,
+      lucideShield,
+      lucideTrash2,
+      lucideTruck,
+      lucideUsers,
+    }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -46,6 +59,9 @@ export class AdminUsersPage implements OnInit {
   protected readonly users = signal<User[]>([]);
   protected readonly userModalMode = signal<UserModalMode>(null);
   protected readonly editingUserId = signal<string | null>(null);
+  protected readonly adminCount = computed(() => this.users().filter((user) => user.role === UserRole.ADMIN).length);
+  protected readonly collectorCount = computed(() => this.users().filter((user) => user.role === UserRole.COLLECTOR).length);
+  protected readonly customerCount = computed(() => this.users().filter((user) => user.role === UserRole.CUSTOMER).length);
 
   protected readonly userForm = new FormGroup({
     name: new FormControl('', {
@@ -180,4 +196,3 @@ export class AdminUsersPage implements OnInit {
     });
   }
 }
-

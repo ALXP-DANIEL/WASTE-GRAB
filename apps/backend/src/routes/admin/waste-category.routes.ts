@@ -55,11 +55,11 @@ wasteCategoryRouter.get("/:id", requireAdmin, async (req: Request, res: Response
 wasteCategoryRouter.post("/", requireAdmin, async (req: Request, res: Response) => {
   const input = getBody(req.body) as Partial<CreateWasteCategoryInput>;
   const name = typeof input.name === "string" ? input.name.trim() : "";
-  const pricePerKg = normalizeDecimalInput(input.pricePerKg);
+  const pointsPerKg = normalizeIntegerInput(input.pointsPerKg);
   const averageWeightKg = normalizeDecimalInput(input.averageWeightKg ?? "0.05");
 
-  if (!name || !pricePerKg) {
-    res.status(400).json({ error: "Missing required fields: name, pricePerKg." } as ApiErrorResponse);
+  if (!name || pointsPerKg === undefined) {
+    res.status(400).json({ error: "Missing required fields: name, pointsPerKg." } as ApiErrorResponse);
     return;
   }
 
@@ -72,8 +72,7 @@ wasteCategoryRouter.post("/", requireAdmin, async (req: Request, res: Response) 
     const category = await prisma.wasteCategory.create({
       data: {
         name,
-        pricePerKg,
-        pointsPerKg: normalizeIntegerInput(input.pointsPerKg) ?? 1,
+        pointsPerKg,
         averageWeightKg,
         isBanned: Boolean(input.isBanned),
         isHazardous: Boolean(input.isHazardous),
@@ -106,15 +105,6 @@ wasteCategoryRouter.patch("/:id", requireAdmin, async (req: Request, res: Respon
 
     if (typeof input.name === "string") {
       data.name = input.name.trim();
-    }
-
-    if (input.pricePerKg !== undefined) {
-      const pricePerKg = normalizeDecimalInput(input.pricePerKg);
-      if (!pricePerKg) {
-        res.status(400).json({ error: "pricePerKg must be a valid number." } as ApiErrorResponse);
-        return;
-      }
-      data.pricePerKg = pricePerKg;
     }
 
     if (input.pointsPerKg !== undefined) {
@@ -205,7 +195,6 @@ function normalizeOptionalString(value: unknown): string | null {
 function toWasteCategoryResponse(category: {
   id: string;
   name: string;
-  pricePerKg: { toString(): string };
   pointsPerKg: number;
   averageWeightKg: { toString(): string };
   isBanned: boolean;
@@ -216,7 +205,6 @@ function toWasteCategoryResponse(category: {
   return {
     id: category.id,
     name: category.name,
-    pricePerKg: category.pricePerKg.toString(),
     pointsPerKg: category.pointsPerKg,
     averageWeightKg: category.averageWeightKg.toString(),
     isBanned: category.isBanned,

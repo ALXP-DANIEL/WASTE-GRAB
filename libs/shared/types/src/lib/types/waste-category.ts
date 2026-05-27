@@ -1,7 +1,6 @@
 export type WasteCategory = {
   id: string;
   name: string;
-  pricePerKg: string; // Decimal as string
   pointsPerKg: number;
   averageWeightKg: string; // Decimal as string
   isBanned: boolean;
@@ -12,7 +11,6 @@ export type WasteCategory = {
 
 export type CreateWasteCategoryInput = {
   name: string;
-  pricePerKg: string;
   pointsPerKg?: number;
   averageWeightKg?: string;
   isBanned?: boolean;
@@ -23,7 +21,6 @@ export type CreateWasteCategoryInput = {
 
 export type UpdateWasteCategoryInput = {
   name?: string;
-  pricePerKg?: string;
   pointsPerKg?: number;
   averageWeightKg?: string;
   isBanned?: boolean;

@@ -1,5 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideMapPin, lucideNavigation, lucidePencil, lucidePlus, lucideTrash2 } from '@ng-icons/lucide';
 
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { ZardTableImports } from '@/ui/zard/table';
@@ -27,6 +29,16 @@ type LocationModalMode = 'add' | 'edit' | null;
     ZardFormControlComponent,
     ZardInputDirective,
     GooglePlaceInputComponent,
+    NgIcon,
+  ],
+  viewProviders: [
+    provideIcons({
+      lucideMapPin,
+      lucideNavigation,
+      lucidePencil,
+      lucidePlus,
+      lucideTrash2,
+    }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -37,6 +49,12 @@ export class AdminCollectorsPage implements OnInit {
   protected readonly locations = signal<LocationRecord[]>([]);
   protected readonly modalMode = signal<LocationModalMode>(null);
   protected readonly editingLocationId = signal<string | null>(null);
+  protected readonly mappedCount = computed(() => this.locations().filter((location) => (
+    location.latitude !== null && location.longitude !== null
+  )).length);
+  protected readonly cityCount = computed(() => new Set(this.locations()
+    .map((location) => location.city)
+    .filter(Boolean)).size);
 
   protected readonly createForm = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
@@ -170,6 +188,10 @@ export class AdminCollectorsPage implements OnInit {
         this.locationService.deleteLocation(location.id).subscribe({ next: () => this.loadLocations() });
       },
     });
+  }
+
+  protected shortCoordinate(value: number | null): string {
+    return value === null ? '-' : value.toFixed(4);
   }
 
 }

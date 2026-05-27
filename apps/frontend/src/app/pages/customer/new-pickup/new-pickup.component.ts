@@ -217,14 +217,6 @@ export class CustomerNewPickupPage {
     return this.wasteCategories().find((category) => category.id === categoryId);
   }
 
-  protected estimatedValue(): number {
-    return this.pickupItems().reduce((total, item) => {
-      const category = this.selectedCategory(item);
-      const estimatedWeight = Number(item.controls.estimatedWeight.value ?? 0);
-      return total + (category ? Number(category.pricePerKg) * estimatedWeight : 0);
-    }, 0);
-  }
-
   protected estimatedPoints(): number {
     return this.pickupItems().reduce((total, item) => {
       const category = this.selectedCategory(item);

@@ -1,5 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideBrain, lucideCircleSlash, lucidePencil, lucidePlus, lucideSparkles, lucideTrash2 } from '@ng-icons/lucide';
 
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { ZardTableImports } from '@/ui/zard/table';
@@ -28,6 +30,17 @@ type WasteCategoryModalMode = 'add' | 'edit' | null;
     ZardFormLabelComponent,
     ZardFormControlComponent,
     ZardInputDirective,
+    NgIcon,
+  ],
+  viewProviders: [
+    provideIcons({
+      lucideBrain,
+      lucideCircleSlash,
+      lucidePencil,
+      lucidePlus,
+      lucideSparkles,
+      lucideTrash2,
+    }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -38,10 +51,14 @@ export class AdminWasteCategoriesPage implements OnInit {
   protected readonly categories = signal<WasteCategory[]>([]);
   protected readonly modalMode = signal<WasteCategoryModalMode>(null);
   protected readonly editingCategoryId = signal<string | null>(null);
+  protected readonly activeCount = computed(() => this.categories().filter((category) => !category.isBanned).length);
+  protected readonly aiCount = computed(() => this.categories().filter((category) => category.isAiDetectable).length);
+  protected readonly restrictedCount = computed(() => this.categories().filter((category) => (
+    category.isBanned || category.isHazardous
+  )).length);
 
   protected readonly form = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    pricePerKg: new FormControl('0.00', { nonNullable: true, validators: [Validators.required] }),
     pointsPerKg: new FormControl(1, { nonNullable: true, validators: [Validators.required, Validators.min(0)] }),
     averageWeightKg: new FormControl('0.050', { nonNullable: true, validators: [Validators.required] }),
     isBanned: new FormControl(false, { nonNullable: true }),
@@ -58,7 +75,6 @@ export class AdminWasteCategoriesPage implements OnInit {
     this.editingCategoryId.set(null);
     this.form.reset({
       name: '',
-      pricePerKg: '0.00',
       pointsPerKg: 1,
       averageWeightKg: '0.050',
       isBanned: false,
@@ -73,7 +89,6 @@ export class AdminWasteCategoriesPage implements OnInit {
     this.editingCategoryId.set(category.id);
     this.form.reset({
       name: category.name,
-      pricePerKg: category.pricePerKg,
       pointsPerKg: category.pointsPerKg,
       averageWeightKg: category.averageWeightKg,
       isBanned: category.isBanned,
@@ -137,6 +152,18 @@ export class AdminWasteCategoriesPage implements OnInit {
         });
       },
     });
+  }
+
+  protected statusLabel(category: WasteCategory): string {
+    if (category.isBanned) return 'Banned';
+    if (category.isHazardous) return 'Hazardous';
+    return 'Active';
+  }
+
+  protected statusClass(category: WasteCategory): string {
+    if (category.isBanned) return 'bg-rose-100 text-rose-700';
+    if (category.isHazardous) return 'bg-amber-100 text-amber-700';
+    return 'bg-emerald-100 text-emerald-700';
   }
 
   private loadCategories(): void {
