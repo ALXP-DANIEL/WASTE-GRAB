@@ -304,7 +304,7 @@
                         <span>•</span>
                         <span class="flex items-center gap-1">
                           <ng-icon name="lucideSparkles" class="size-3.5!" />
-                          RM {{ (item.estimatedWeight * item.pricePerKg).toFixed(2) }}
+                          {{ item.estimatedWeight * item.pointsPerKg | number:'1.0-0' }} pts
                         </span>
                       </div>
                     </div>
@@ -313,14 +313,10 @@
               </div>
 
               <div class="mt-4 rounded-2xl border border-primary/20 bg-primary/5 p-4">
-                <div class="grid grid-cols-3 gap-4 text-center">
+                <div class="grid grid-cols-2 gap-4 text-center">
                   <div>
                     <p class="text-2xl font-bold">{{ totalWeight.toFixed(1) }} kg</p>
                     <p class="text-xs text-muted-foreground">Total Weight</p>
-                  </div>
-                  <div>
-                    <p class="text-2xl font-bold text-primary">RM {{ totalValue.toFixed(2) }}</p>
-                    <p class="text-xs text-muted-foreground">Est. Value</p>
                   </div>
                   <div>
                     <p class="text-2xl font-bold text-accent-foreground">{{ totalPoints }}</p>
@@ -735,7 +731,7 @@
                   item of [
                     'Complete a pickup request',
                     'Collector verifies and weighs your recyclables',
-                    'Points are credited to your account (1 point = RM 0.01)',
+                    'Points are credited to your account after verification',
                     'Redeem points for vouchers anytime',
                   ];
                   track item
@@ -767,7 +763,7 @@
                   <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
                     <ng-icon [name]="voucher.icon" class="size-5! text-muted-foreground" />
                   </div>
-                  <span class="text-lg font-bold text-primary">{{ voucher.value }}</span>
+                  <span class="text-lg font-bold text-primary">{{ voucher.reward }}</span>
                 </div>
                 <h4 class="mt-3 font-semibold">{{ voucher.name }}</h4>
                 <p class="text-sm text-muted-foreground">{{ voucher.partner }}</p>

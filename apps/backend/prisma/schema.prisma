@@ -103,7 +103,6 @@ model PasswordResetToken {
 model WasteCategory {
   id              String       @id @default(uuid())
   name            String       @db.VarChar(100)
-  pricePerKg      Decimal      @db.Decimal(10, 2)
   pointsPerKg     Int          @default(1)
   averageWeightKg Decimal      @default(0.05) @map("average_weight_kg") @db.Decimal(10, 3)
   isBanned        Boolean      @default(false)
@@ -148,8 +147,6 @@ model PickupRequest {
   aiSuggestedPayload    Json?    @map("ai_suggested_payload")
 
   notes          String?  @db.Text
-  estimatedPrice Decimal? @map("estimated_price") @db.Decimal(10, 2)
-  finalPrice     Decimal? @map("final_price") @db.Decimal(10, 2)
 
   createdAt   DateTime  @default(now()) @map("created_at")
   completedAt DateTime? @map("completed_at")

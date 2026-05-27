@@ -16,7 +16,6 @@ wasteCategoryRouter.get('/', async (_, res: Response) => {
     select: {
       id: true,
       name: true,
-      pricePerKg: true,
       pointsPerKg: true,
       averageWeightKg: true,
       isBanned: true,
@@ -29,7 +28,6 @@ wasteCategoryRouter.get('/', async (_, res: Response) => {
   res.json(
     categories.map((category): WasteCategory => ({
       ...category,
-      pricePerKg: category.pricePerKg.toString(),
       averageWeightKg: category.averageWeightKg.toString(),
     })),
   );

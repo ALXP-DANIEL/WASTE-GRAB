@@ -292,10 +292,8 @@ pickupRouter.post(
         select: {
           id: true,
           name: true,
-          pricePerKg: true,
         },
       });
-      const categoriesById = new Map(categories.map((category) => [category.id, category]));
 
       if (categories.length !== requestedItems.length) {
         res.status(400).json({ error: "One or more waste categories are not available." } as ApiErrorResponse);
@@ -337,10 +335,6 @@ pickupRouter.post(
           uploadedImages.push({ imageUrl, imageType: PrismaImageType.USER_UPLOAD });
         }
 
-        const estimatedPrice = requestedItems.reduce((total, item) => {
-          const category = categoriesById.get(item.categoryId);
-          return total + Number(category?.pricePerKg ?? 0) * item.estimatedWeight;
-        }, 0);
         const classificationLabel = categories
           .map((category) => category.name)
           .join(", ")
@@ -355,7 +349,6 @@ pickupRouter.post(
             notes,
             aiClassificationLabel: classificationLabel,
             aiSuggestedPayload,
-            estimatedPrice: estimatedPrice.toFixed(2),
             items: {
               create: requestedItems.map((item) => ({
                 categoryId: item.categoryId,
@@ -517,8 +510,6 @@ function toPickupRequestWithDetails(row: {
   aiClassificationLabel: string | null;
   aiConfidence: unknown | null;
   aiSuggestedPayload: unknown | null;
-  estimatedPrice: unknown | null;
-  finalPrice: unknown | null;
   createdAt: Date;
   completedAt: Date | null;
   items?: Array<{
@@ -551,8 +542,6 @@ function toPickupRequestWithDetails(row: {
     aiClassificationLabel: row.aiClassificationLabel,
     aiConfidence: stringifyDecimal(row.aiConfidence),
     aiSuggestedPayload: row.aiSuggestedPayload,
-    estimatedPrice: stringifyDecimal(row.estimatedPrice),
-    finalPrice: stringifyDecimal(row.finalPrice),
     createdAt: row.createdAt.toISOString(),
     completedAt: row.completedAt?.toISOString() ?? null,
   };

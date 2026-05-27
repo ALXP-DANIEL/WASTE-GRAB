@@ -22,8 +22,6 @@ export type PickupRequest = {
   aiClassificationLabel: string | null;
   aiConfidence: string | null; // Decimal as string
   aiSuggestedPayload: unknown | null;
-  estimatedPrice: string | null; // Decimal as string
-  finalPrice: string | null; // Decimal as string
   createdAt: string;
   completedAt: string | null;
 };
@@ -84,6 +82,4 @@ export type UpdatePickupRequestInput = {
   collectorId?: string;
   aiClassificationLabel?: string;
   aiConfidence?: string;
-  estimatedPrice?: string;
-  finalPrice?: string;
 };

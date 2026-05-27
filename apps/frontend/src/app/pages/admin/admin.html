@@ -2,14 +2,19 @@
   <app-header mode="route" />
 
   <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-    <a
-      [routerLink]="notificationRoute"
-      class="rounded-lg border border-border bg-card p-5 shadow-sm transition-colors hover:bg-muted/30"
-    >
-      <p class="text-sm font-semibold text-foreground">Notifications</p>
-      <p class="mt-2 text-sm leading-6 text-muted-foreground">
-        Send announcements, manage pinned messages, and review notification logs.
-      </p>
-    </a>
+    @for (shortcut of shortcuts; track shortcut.route) {
+      <a
+        [routerLink]="shortcut.route"
+        class="group flex min-h-36 flex-col justify-between rounded-lg border border-border bg-card p-5 shadow-sm transition-colors hover:bg-muted/30"
+      >
+        <span class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary">
+          <ng-icon [name]="shortcut.icon" class="size-5!" />
+        </span>
+        <span>
+          <span class="block text-sm font-semibold text-foreground">{{ shortcut.label }}</span>
+          <span class="mt-2 block text-sm leading-6 text-muted-foreground">{{ shortcut.description }}</span>
+        </span>
+      </a>
+    }
   </section>
 </section>

@@ -48,7 +48,6 @@ const seedIds = {
 const seedWasteCategories = [
   {
     name: "Plastic",
-    pricePerKg: "5.00",
     pointsPerKg: 2,
     averageWeightKg: "0.030",
     isBanned: false,
@@ -58,7 +57,6 @@ const seedWasteCategories = [
   },
   {
     name: "Metal",
-    pricePerKg: "15.00",
     pointsPerKg: 3,
     averageWeightKg: "0.100",
     isBanned: false,
@@ -68,7 +66,6 @@ const seedWasteCategories = [
   },
   {
     name: "Paper",
-    pricePerKg: "2.00",
     pointsPerKg: 1,
     averageWeightKg: "0.020",
     isBanned: false,
@@ -78,7 +75,6 @@ const seedWasteCategories = [
   },
   {
     name: "Glass",
-    pricePerKg: "3.00",
     pointsPerKg: 1,
     averageWeightKg: "0.150",
     isBanned: false,
@@ -88,7 +84,6 @@ const seedWasteCategories = [
   },
   {
     name: "Organic",
-    pricePerKg: "1.00",
     pointsPerKg: 1,
     averageWeightKg: "0.050",
     isBanned: false,
@@ -98,7 +93,6 @@ const seedWasteCategories = [
   },
   {
     name: "E-Waste",
-    pricePerKg: "8.00",
     pointsPerKg: 2,
     averageWeightKg: "0.300",
     isBanned: false,
@@ -108,7 +102,6 @@ const seedWasteCategories = [
   },
   {
     name: "Medical Waste",
-    pricePerKg: "0.00",
     pointsPerKg: 0,
     averageWeightKg: "0.050",
     isBanned: true,
@@ -337,8 +330,6 @@ export async function seedLocalVouchersAndRewards() {
       status: PickupStatus.COMPLETED,
       aiClassificationLabel: "Paper, Glass, Plastic",
       notes: "Seed completed pickup for reward ledger demo.",
-      estimatedPrice: "18.50",
-      finalPrice: "21.10",
       completedAt: new Date("2026-05-20T04:30:00.000Z"),
       items: {
         deleteMany: {},
@@ -369,8 +360,6 @@ export async function seedLocalVouchersAndRewards() {
       status: PickupStatus.COMPLETED,
       aiClassificationLabel: "Paper, Glass, Plastic",
       notes: "Seed completed pickup for reward ledger demo.",
-      estimatedPrice: "18.50",
-      finalPrice: "21.10",
       completedAt: new Date("2026-05-20T04:30:00.000Z"),
       items: {
         create: [

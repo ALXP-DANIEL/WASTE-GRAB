@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -76,7 +77,7 @@ type DetectedItem = {
   id: string;
   category: string;
   estimatedWeight: number;
-  pricePerKg: number;
+  pointsPerKg: number;
   confidence: number;
 };
 
@@ -109,7 +110,7 @@ type Voucher = {
   icon: string;
   name: string;
   points: number;
-  value: string;
+  reward: string;
   partner: string;
   popular: boolean;
 };
@@ -121,7 +122,7 @@ type FooterGroup = {
 
 @Component({
   selector: 'app-home-page',
-  imports: [RouterLink, ZardButtonComponent, NgIcon],
+  imports: [DecimalPipe, RouterLink, ZardButtonComponent, NgIcon],
   templateUrl: './home.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   viewProviders: [
@@ -184,19 +185,19 @@ export class HomePage {
   readonly heroStats: Stat[] = [
     { value: '50K+', label: 'Active Users' },
     { value: '120T', label: 'Waste Collected' },
-    { value: 'RM 2M+', label: 'Rewards Given' },
+    { value: '2M+', label: 'Points Given' },
   ];
 
   readonly heroSteps: Step[] = [
     { step: '01', icon: 'lucideUpload', title: 'Upload Photo', description: 'Take a picture of your recyclables and upload it to our app.' },
-    { step: '02', icon: 'lucideSparkles', title: 'AI Detection', description: 'Our AI instantly identifies materials and estimates value.' },
+    { step: '02', icon: 'lucideSparkles', title: 'AI Detection', description: 'Our AI instantly identifies materials and estimates points.' },
     { step: '03', icon: 'lucideTruck', title: 'Free Pickup', description: 'Schedule a convenient pickup time at your location.' },
     { step: '04', icon: 'lucideGift', title: 'Earn Rewards', description: 'Get points for every pickup and redeem vouchers.' },
   ];
 
   readonly howItWorksSteps: Step[] = [
     { step: '01', icon: 'lucideCamera', title: 'Upload Waste Images', description: 'Take photos of your recyclable materials - plastic bottles, cardboard, electronics, or anything else you want to recycle.' },
-    { step: '02', icon: 'lucideSparkles', title: 'AI Analysis', description: 'Our AI instantly identifies the type of waste, estimates weight, calculates value, and detects any hazardous materials.' },
+    { step: '02', icon: 'lucideSparkles', title: 'AI Analysis', description: 'Our AI instantly identifies the type of waste, estimates weight, calculates points, and detects any hazardous materials.' },
     { step: '03', icon: 'lucideEdit3', title: 'Review & Edit', description: 'Review the AI-generated details. You can edit quantities, add more items, or adjust the pickup location.' },
     { step: '04', icon: 'lucideCheckCircle2', title: 'Submit Request', description: 'Confirm your pickup request. Available collectors can accept and complete the collection.' },
     { step: '05', icon: 'lucideTruck', title: 'Collector Pickup', description: 'A verified collector arrives at your location, verifies the waste, and completes the collection.' },
@@ -205,7 +206,7 @@ export class HomePage {
 
   readonly featureCards: Feature[] = [
     { icon: 'lucideCamera', title: 'Easy Image Upload', description: 'Simply snap a photo of your recyclables. Support for multiple images per request.', accentClass: 'bg-primary/10 text-primary' },
-    { icon: 'lucideBrain', title: 'AI-Powered Detection', description: 'Our AI automatically identifies waste types, estimates weight, and calculates value.', accentClass: 'bg-accent/20 text-accent-foreground' },
+    { icon: 'lucideBrain', title: 'AI-Powered Detection', description: 'Our AI automatically identifies waste types, estimates weight, and calculates points.', accentClass: 'bg-accent/20 text-accent-foreground' },
     { icon: 'lucideMapPin', title: 'Flexible Drop-Off', description: 'Collectors can bring verified recyclables to any available collection location.', accentClass: 'bg-primary/10 text-primary' },
     { icon: 'lucideCoins', title: 'Reward Points System', description: 'Earn points for every successful pickup. Redeem for food, shopping, or cashback vouchers.', accentClass: 'bg-accent/20 text-accent-foreground' },
     { icon: 'lucideShield', title: 'Hazard Detection', description: 'AI flags potentially hazardous materials to ensure safe handling and disposal.', accentClass: 'bg-primary/10 text-primary' },
@@ -213,16 +214,16 @@ export class HomePage {
   ];
 
   readonly detectedItems: DetectedItem[] = [
-    { id: '1', category: 'Plastic Bottles (PET)', estimatedWeight: 2.5, pricePerKg: 0.8, confidence: 94 },
-    { id: '2', category: 'Cardboard', estimatedWeight: 1.2, pricePerKg: 0.3, confidence: 88 },
-    { id: '3', category: 'Aluminum Cans', estimatedWeight: 0.8, pricePerKg: 3.5, confidence: 91 },
+    { id: '1', category: 'Plastic Bottles (PET)', estimatedWeight: 2.5, pointsPerKg: 80, confidence: 94 },
+    { id: '2', category: 'Cardboard', estimatedWeight: 1.2, pointsPerKg: 30, confidence: 88 },
+    { id: '3', category: 'Aluminum Cans', estimatedWeight: 0.8, pointsPerKg: 350, confidence: 91 },
   ];
 
   readonly dashboardStats: DashboardStat[] = [
     { label: 'Total Pickups', value: '24', icon: 'lucidePackage', accentClass: 'bg-primary/10 text-primary' },
     { label: 'Total Weight', value: '128.5 kg', icon: 'lucideTrendingUp', accentClass: 'bg-accent/20 text-accent-foreground' },
     { label: 'Reward Points', value: '12,850', icon: 'lucideGift', accentClass: 'bg-primary/10 text-primary' },
-    { label: 'Total Earned', value: 'RM 128.50', icon: 'lucideRecycle', accentClass: 'bg-accent/20 text-accent-foreground' },
+    { label: 'Points Redeemed', value: '8,400', icon: 'lucideRecycle', accentClass: 'bg-accent/20 text-accent-foreground' },
   ];
 
   readonly recentPickups: Pickup[] = [
@@ -241,12 +242,12 @@ export class HomePage {
   ];
 
   readonly vouchers: Voucher[] = [
-    { icon: 'lucideCoffee', name: 'Coffee Voucher', points: 500, value: 'RM 5', partner: 'Starbucks', popular: true },
-    { icon: 'lucideShoppingBag', name: 'Shopping Credit', points: 1000, value: 'RM 10', partner: 'Shopee', popular: false },
-    { icon: 'lucideUtensils', name: 'Food Voucher', points: 800, value: 'RM 8', partner: 'GrabFood', popular: true },
-    { icon: 'lucideCreditCard', name: 'Cashback', points: 2000, value: 'RM 20', partner: 'Touch n Go', popular: false },
-    { icon: 'lucideFuel', name: 'Fuel Rebate', points: 1500, value: 'RM 15', partner: 'Petronas', popular: false },
-    { icon: 'lucideSmartphone', name: 'Phone Credit', points: 1200, value: 'RM 12', partner: 'Hotlink', popular: false },
+    { icon: 'lucideCoffee', name: 'Coffee Voucher', points: 500, reward: '500 pts', partner: 'Starbucks', popular: true },
+    { icon: 'lucideShoppingBag', name: 'Shopping Credit', points: 1000, reward: '1,000 pts', partner: 'Shopee', popular: false },
+    { icon: 'lucideUtensils', name: 'Food Voucher', points: 800, reward: '800 pts', partner: 'GrabFood', popular: true },
+    { icon: 'lucideCreditCard', name: 'Cashback', points: 2000, reward: '2,000 pts', partner: 'Touch n Go', popular: false },
+    { icon: 'lucideFuel', name: 'Fuel Rebate', points: 1500, reward: '1,500 pts', partner: 'Petronas', popular: false },
+    { icon: 'lucideSmartphone', name: 'Phone Credit', points: 1200, reward: '1,200 pts', partner: 'Hotlink', popular: false },
   ];
 
   readonly footerLinks: FooterGroup[] = [
@@ -291,11 +292,7 @@ export class HomePage {
     return this.detectedItems.reduce((sum, item) => sum + item.estimatedWeight, 0);
   }
 
-  get totalValue(): number {
-    return this.detectedItems.reduce((sum, item) => sum + item.estimatedWeight * item.pricePerKg, 0);
-  }
-
   get totalPoints(): number {
-    return Math.round(this.totalValue * 100);
+    return this.detectedItems.reduce((sum, item) => sum + Math.round(item.estimatedWeight * item.pointsPerKg), 0);
   }
 }

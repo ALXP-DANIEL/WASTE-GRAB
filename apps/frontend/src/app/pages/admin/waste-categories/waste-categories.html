@@ -1,86 +1,92 @@
-<section class="grid min-w-0 gap-3 p-4 lg:p-8">
-  <app-header mode="route" />
+<section class="grid min-w-0 gap-4 p-4 lg:p-8">
+  <app-header mode="route">
+    <button z-button type="button" rightSide class="gap-2" (click)="openAdd()">
+      <ng-icon name="lucidePlus" class="size-4!" />
+      New Category
+    </button>
+  </app-header>
 
-  <div class="min-w-0 space-y-6 rounded-lg bg-white p-4 shadow lg:p-6">
-    <div
-      class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between"
-    >
-      <div class="space-y-1">
-        <h2 class="text-lg font-semibold text-slate-900">
-          Waste Category Management
-        </h2>
-        <p class="text-sm text-slate-500">
-          Manage pickup categories, AI detection, pricing, and category
-          restrictions
-        </p>
+  <div class="grid gap-3 sm:grid-cols-3">
+    <article class="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
+      <span class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary">
+        <ng-icon name="lucideSparkles" class="size-5!" />
+      </span>
+      <span>
+        <span class="block font-semibold">Active</span>
+        <span class="block text-sm text-muted-foreground">{{ activeCount() }} usable categories</span>
+      </span>
+    </article>
+    <article class="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
+      <span class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary">
+        <ng-icon name="lucideBrain" class="size-5!" />
+      </span>
+      <span>
+        <span class="block font-semibold">AI Detectable</span>
+        <span class="block text-sm text-muted-foreground">{{ aiCount() }} image matches</span>
+      </span>
+    </article>
+    <article class="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
+      <span class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary">
+        <ng-icon name="lucideCircleSlash" class="size-5!" />
+      </span>
+      <span>
+        <span class="block font-semibold">Restricted</span>
+        <span class="block text-sm text-muted-foreground">{{ restrictedCount() }} flagged categories</span>
+      </span>
+    </article>
+  </div>
+
+  <section class="min-w-0 rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">
+    <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <h2 class="text-lg font-semibold">Waste Categories</h2>
+        <p class="text-sm text-muted-foreground">Manage pickup categories, point rewards, AI detection, and restrictions.</p>
       </div>
-
-      <button z-button type="button" (click)="openAdd()">New Category</button>
+      <button z-button type="button" class="gap-2" (click)="openAdd()">
+        <ng-icon name="lucidePlus" class="size-4!" />
+        New Category
+      </button>
     </div>
 
     <div class="grid gap-3 lg:hidden">
       @for (category of categories(); track category.id) {
       <article
-        class="rounded-lg border border-slate-200 bg-white p-3 shadow-sm"
+        class="rounded-lg border border-border p-3"
       >
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
-            <p class="truncate font-medium text-slate-900">
+            <p class="truncate font-semibold">
               {{ category.name }}
             </p>
-            <p class="mt-1 text-sm text-slate-500">
+            <p class="mt-1 text-sm text-muted-foreground">
               {{ category.description || 'No description provided' }}
             </p>
           </div>
-          <span
-            class="shrink-0 rounded-full px-2 py-1 text-xs font-medium"
-            [class.bg-emerald-100]="category.isAiDetectable"
-            [class.text-emerald-700]="category.isAiDetectable"
-            [class.bg-slate-100]="!category.isAiDetectable"
-            [class.text-slate-600]="!category.isAiDetectable"
-          >
+          <span class="shrink-0 rounded-md px-2 py-1 text-xs font-semibold"
+            [class]="category.isAiDetectable ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'">
             {{ category.isAiDetectable ? 'AI' : 'No AI' }}
           </span>
         </div>
 
         <dl class="mt-3 grid grid-cols-2 gap-3 text-sm">
           <div>
-            <dt class="text-xs font-medium text-slate-500">Price</dt>
-            <dd class="mt-0.5 text-slate-900">
-              RM {{ category.pricePerKg }} / kg
-            </dd>
-          </div>
-          <div>
-            <dt class="text-xs font-medium text-slate-500">Points</dt>
-            <dd class="mt-0.5 text-slate-900">
+            <dt class="text-xs text-muted-foreground">Reward</dt>
+            <dd class="mt-0.5 font-semibold text-primary">
               {{ category.pointsPerKg }} pts/kg
             </dd>
           </div>
           <div>
-            <dt class="text-xs font-medium text-slate-500">Avg Weight</dt>
-            <dd class="mt-0.5 text-slate-900">
+            <dt class="text-xs text-muted-foreground">Avg Weight</dt>
+            <dd class="mt-0.5 font-semibold">
               {{ category.averageWeightKg }} kg/item
             </dd>
           </div>
           <div>
-            <dt class="text-xs font-medium text-slate-500">Status</dt>
-            <dd class="mt-0.5 flex flex-wrap gap-1">
-              @if (category.isBanned) {
-              <span
-                class="rounded-full bg-rose-100 px-2 py-0.5 text-xs font-medium text-rose-700"
-                >Banned</span
-              >
-              } @if (category.isHazardous) {
-              <span
-                class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700"
-                >Hazardous</span
-              >
-              } @if (!category.isBanned && !category.isHazardous) {
-              <span
-                class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700"
-                >Active</span
-              >
-              }
+            <dt class="text-xs text-muted-foreground">Status</dt>
+            <dd class="mt-0.5">
+              <span class="rounded-md px-2 py-1 text-xs font-semibold" [class]="statusClass(category)">
+                {{ statusLabel(category) }}
+              </span>
             </dd>
           </div>
         </dl>
@@ -93,6 +99,7 @@
             type="button"
             (click)="openEdit(category)"
           >
+            <ng-icon name="lucidePencil" class="size-4!" />
             Edit
           </button>
           <button
@@ -102,14 +109,15 @@
             type="button"
             (click)="deleteCategory(category)"
           >
+            <ng-icon name="lucideTrash2" class="size-4!" />
             Delete
           </button>
         </div>
       </article>
       } @empty {
-      <div class="rounded-lg border border-slate-200 p-6 text-center">
-        <p class="font-medium text-slate-900">No waste categories found.</p>
-        <p class="mt-1 text-sm text-slate-500">
+      <div class="rounded-lg border border-dashed border-border p-8 text-center">
+        <p class="font-semibold">No waste categories found.</p>
+        <p class="mt-1 text-sm text-muted-foreground">
           Create a category before customers request pickups.
         </p>
         <div class="mt-4">
@@ -121,18 +129,16 @@
       }
     </div>
 
-    <div
-      class="hidden max-w-full overflow-x-auto rounded-2xl border border-slate-200 lg:block"
-    >
-      <table z-table class="min-w-[68rem] bg-white">
+    <div class="hidden max-w-full overflow-x-auto rounded-lg border border-border lg:block">
+      <table z-table class="min-w-[68rem] bg-card">
         <caption z-table-caption class="sr-only">
           Waste category management table
         </caption>
 
         <thead z-table-header>
           <tr z-table-row>
-            <th z-table-head>Name</th>
-            <th z-table-head>Rate</th>
+            <th z-table-head>Category</th>
+            <th z-table-head>Reward</th>
             <th z-table-head>AI</th>
             <th z-table-head>Status</th>
             <th z-table-head class="w-44 !text-right">Actions</th>
@@ -143,51 +149,31 @@
           @for (category of categories(); track category.id) {
           <tr z-table-row>
             <td z-table-cell>
-              <p class="font-medium text-slate-900">{{ category.name }}</p>
-              <p class="text-xs text-slate-500">
+              <p class="font-semibold">{{ category.name }}</p>
+              <p class="max-w-md truncate text-xs text-muted-foreground">
                 {{ category.description || 'No description provided' }}
               </p>
             </td>
 
             <td z-table-cell>
-              <p class="text-slate-900">RM {{ category.pricePerKg }} / kg</p>
-              <p class="text-xs text-slate-500">
-                {{ category.pointsPerKg }} pts/kg · {{ category.averageWeightKg
-                }} kg/item
-              </p>
+              <span class="inline-flex items-center gap-1 font-semibold text-primary">
+                <ng-icon name="lucideSparkles" class="size-4!" />
+                {{ category.pointsPerKg }} pts/kg
+              </span>
+              <p class="text-xs text-muted-foreground">{{ category.averageWeightKg }} kg/item average</p>
             </td>
 
             <td z-table-cell>
-              <span
-                class="rounded-full px-2 py-1 text-xs font-medium"
-                [class.bg-emerald-100]="category.isAiDetectable"
-                [class.text-emerald-700]="category.isAiDetectable"
-                [class.bg-slate-100]="!category.isAiDetectable"
-                [class.text-slate-600]="!category.isAiDetectable"
-              >
+              <span class="rounded-md px-2 py-1 text-xs font-semibold"
+                [class]="category.isAiDetectable ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'">
                 {{ category.isAiDetectable ? 'Detectable' : 'Ignored' }}
               </span>
             </td>
 
             <td z-table-cell>
-              <div class="flex flex-wrap gap-2">
-                @if (category.isBanned) {
-                <span
-                  class="rounded-full bg-rose-100 px-2 py-1 text-xs font-medium text-rose-700"
-                  >Banned</span
-                >
-                } @if (category.isHazardous) {
-                <span
-                  class="rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700"
-                  >Hazardous</span
-                >
-                } @if (!category.isBanned && !category.isHazardous) {
-                <span
-                  class="rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700"
-                  >Active</span
-                >
-                }
-              </div>
+              <span class="rounded-md px-2 py-1 text-xs font-semibold" [class]="statusClass(category)">
+                {{ statusLabel(category) }}
+              </span>
             </td>
 
             <td z-table-cell class="w-44 !text-right">
@@ -199,6 +185,7 @@
                   type="button"
                   (click)="openEdit(category)"
                 >
+                  <ng-icon name="lucidePencil" class="size-4!" />
                   Edit
                 </button>
                 <button
@@ -208,6 +195,7 @@
                   type="button"
                   (click)="deleteCategory(category)"
                 >
+                  <ng-icon name="lucideTrash2" class="size-4!" />
                   Delete
                 </button>
               </div>
@@ -216,10 +204,10 @@
           } @empty {
           <tr z-table-row>
             <td z-table-cell colspan="5" class="py-10 text-center">
-              <p class="font-medium text-slate-900">
+              <p class="font-semibold">
                 No waste categories found.
               </p>
-              <p class="mt-1 text-sm text-slate-500">
+              <p class="mt-1 text-sm text-muted-foreground">
                 Create a category before customers request pickups.
               </p>
               <div class="mt-4">
@@ -238,13 +226,13 @@
         </tbody>
       </table>
     </div>
-  </div>
+  </section>
 
   @if (modalMode() === 'add' || modalMode() === 'edit') {
   <z-modal
     [isOpen]="true"
     [title]="modalMode() === 'edit' ? 'Edit Waste Category' : 'Create Waste Category'"
-    [description]="modalMode() === 'edit' ? 'Update category pricing and rules' : 'Create a category customers can use for pickups'"
+    [description]="modalMode() === 'edit' ? 'Update category points and rules' : 'Create a category customers can use for pickups'"
     [okText]="modalMode() === 'edit' ? 'Save Changes' : 'Create Category'"
     cancelText="Cancel"
     size="lg"
@@ -260,20 +248,6 @@
             type="text"
             formControlName="name"
             placeholder="Plastic"
-            class="w-full"
-          />
-        </z-form-control>
-      </z-form-field>
-
-      <z-form-field>
-        <z-form-label [zRequired]="true">Price Per Kg</z-form-label>
-        <z-form-control>
-          <input
-            z-input
-            type="number"
-            min="0"
-            step="0.01"
-            formControlName="pricePerKg"
             class="w-full"
           />
         </z-form-control>
