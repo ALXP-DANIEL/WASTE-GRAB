@@ -56,6 +56,13 @@ enum VoucherRedemptionStatus {
   EXPIRED
 }
 
+enum NotificationTargetRole {
+  ALL
+  CUSTOMER
+  COLLECTOR
+  ADMIN
+}
+
 model User {
   id           String    @id @default(uuid())
   name         String    @db.VarChar(255)
@@ -71,6 +78,8 @@ model User {
   pickupRequestsAsCollector PickupRequest[] @relation("CollectorRequests")
   pointLedger               PointLedger[]
   voucherRedemptions        VoucherRedemption[]
+  notifications             Notification[]
+  pushSubscriptions         PushSubscription[]
 
   @@map("users")
 }
@@ -226,6 +235,41 @@ model VoucherRedemption {
   @@index([userId, redeemedAt])
   @@index([voucherId])
   @@map("voucher_redemptions")
+}
+
+model Notification {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  title     String    @db.VarChar(255)
+  message   String    @db.Text
+  type      String    @db.VarChar(80)
+  actionUrl String?   @map("action_url") @db.Text
+  isClearable Boolean @default(true) @map("is_clearable")
+  expiresAt DateTime? @map("expires_at")
+  readAt    DateTime? @map("read_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt])
+  @@index([userId, expiresAt])
+  @@map("notifications")
+}
+
+model PushSubscription {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  endpoint  String   @db.Text
+  endpointHash String @unique @map("endpoint_hash") @db.VarChar(64)
+  p256dh    String   @db.Text
+  auth      String   @db.Text
+  userAgent String?  @map("user_agent") @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_subscriptions")
 }
 
 // Collection locations where collectors can deliver waste.

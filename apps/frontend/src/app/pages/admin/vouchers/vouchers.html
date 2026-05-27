@@ -339,11 +339,11 @@
         <z-form-field>
           <z-form-label>Status</z-form-label>
           <z-form-control>
-            <select z-input formControlName="status" class="w-full">
-              <option [value]="VoucherStatus.ACTIVE">Active</option>
-              <option [value]="VoucherStatus.INACTIVE">Inactive</option>
-              <option [value]="VoucherStatus.EXPIRED">Expired</option>
-            </select>
+            <z-select formControlName="status" class="w-full" zPlaceholder="Select status">
+              @for (option of statusOptions; track option.value) {
+                <z-select-item [zValue]="option.value">{{ option.label }}</z-select-item>
+              }
+            </z-select>
           </z-form-control>
         </z-form-field>
 
@@ -357,14 +357,24 @@
         <z-form-field>
           <z-form-label>Starts At</z-form-label>
           <z-form-control>
-            <input z-input type="datetime-local" formControlName="startsAt" class="w-full" />
+            <z-date-picker
+              formControlName="startsAt"
+              placeholder="Pick start date"
+              zFormat="MMM d, y"
+              class="w-full"
+            />
           </z-form-control>
         </z-form-field>
 
         <z-form-field>
           <z-form-label>Expires At</z-form-label>
           <z-form-control>
-            <input z-input type="datetime-local" formControlName="expiresAt" class="w-full" />
+            <z-date-picker
+              formControlName="expiresAt"
+              placeholder="Pick expiry date"
+              zFormat="MMM d, y"
+              class="w-full"
+            />
           </z-form-control>
         </z-form-field>
 

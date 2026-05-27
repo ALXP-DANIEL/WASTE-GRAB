@@ -27,6 +27,8 @@ const pages = {
   adminWasteCategories: () =>
     import('./pages/admin/waste-categories/waste-categories.component').then((m) => m.AdminWasteCategoriesPage),
   adminVouchers: () => import('./pages/admin/vouchers/vouchers.component').then((m) => m.AdminVouchersPage),
+  adminNotifications: () =>
+    import('./pages/admin/notifications/notifications.component').then((m) => m.AdminNotificationsPage),
   collectorDashboard: () => import('./pages/collector/collector.component').then((m) => m.CollectorPage),
   collectorEarnings: () =>
     import('./pages/collector/earnings/earnings.component').then((m) => m.CollectorEarningsPage),
@@ -155,6 +157,11 @@ const ROUTE_CONFIG = [
         path: ROUTE_PATHS.admin.vouchers,
         title: 'Manage Vouchers',
         loadComponent: pages.adminVouchers,
+      },
+      {
+        path: ROUTE_PATHS.admin.notifications,
+        title: 'Notifications',
+        loadComponent: pages.adminNotifications,
       },
     ],
   },

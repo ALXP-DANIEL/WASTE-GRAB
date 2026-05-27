@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  OnDestroy,
   OnInit,
   inject,
   Input,
@@ -17,7 +18,7 @@ import {
 import { filter } from 'rxjs';
 
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideBell, lucideUser, lucideSettings, lucideLogOut } from '@ng-icons/lucide';
+import { lucideBell, lucideTrash2, lucideUser, lucideSettings, lucideLogOut } from '@ng-icons/lucide';
 
 import { ZardBadgeComponent } from '@/ui/zard/badge/badge.component';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
@@ -29,12 +30,8 @@ import {
 } from '@/ui/zard/dropdown';
 
 import { AuthService } from '@/services/auth.service';
-
-type NotificationItem = {
-  title: string;
-  message: string;
-  time: string;
-};
+import { NotificationService } from '@/services/notification.service';
+import type { Notification } from '@wastegrab/shared';
 
 @Component({
   selector: 'app-header',
@@ -105,13 +102,15 @@ type NotificationItem = {
         >
           <ng-icon name="lucideBell" class="size-5!" />
 
-          <z-badge
-            zType="default"
-            zShape="pill"
-            class="absolute -top-1 -right-1 h-5 min-w-5 px-1 text-[10px] font-semibold leading-none shadow-sm pointer-events-none"
-          >
-            3
-          </z-badge>
+          @if (notificationCount() > 0) {
+            <z-badge
+              zType="default"
+              zShape="pill"
+              class="absolute -top-1 -right-1 h-5 min-w-5 px-1 text-[10px] font-semibold leading-none shadow-sm pointer-events-none"
+            >
+              {{ notificationCount() }}
+            </z-badge>
+          }
         </button>
       </div>
 
@@ -132,28 +131,66 @@ type NotificationItem = {
             <button
               type="button"
               class="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-900"
-              (click)="clearNotifications()"
+              (click)="markAllNotificationsRead()"
             >
-              Clear all
+              Mark read
             </button>
           </div>
+          @if (notificationItems().length > 0) {
+            <button
+              type="button"
+              class="mt-3 w-full rounded-md border border-red-100 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700 transition-colors hover:bg-red-100"
+              (click)="clearAllNotifications($event)"
+            >
+              Clear notifications
+            </button>
+          }
+          @if (notificationService.canEnablePush()) {
+            <button
+              type="button"
+              class="mt-3 w-full rounded-md border border-primary/20 bg-primary/10 px-3 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary/15"
+              (click)="enablePushNotifications()"
+            >
+              Enable device notifications
+            </button>
+          }
         </div>
 
-        @if (notificationCount() > 0) {
+        @if (notificationItems().length > 0) {
           <div class="max-h-72 divide-y divide-slate-100 overflow-y-auto">
-            @for (item of notificationItems(); track item.title) {
+            @for (item of notificationItems(); track item.id) {
               <button
                 z-dropdown-menu-item
                 type="button"
                 class="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-slate-50"
+                (click)="openNotification(item)"
               >
-                <span class="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+                <span
+                  class="mt-1 h-2.5 w-2.5 rounded-full"
+                  [class.bg-emerald-500]="!item.readAt"
+                  [class.bg-slate-300]="item.readAt"
+                ></span>
 
                 <span class="min-w-0 flex-1">
                   <span class="block text-sm font-medium text-slate-900">{{ item.title }}</span>
                   <span class="mt-0.5 block text-xs leading-5 text-slate-500">{{ item.message }}</span>
-                  <span class="mt-1 block text-[11px] text-slate-400">{{ item.time }}</span>
+                  <span class="mt-1 block text-[11px] text-slate-400">{{ notificationTime(item) }}</span>
                 </span>
+
+                @if (item.isClearable) {
+                  <button
+                    type="button"
+                    class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                    aria-label="Clear notification"
+                    (click)="clearNotification($event, item)"
+                  >
+                    <ng-icon name="lucideTrash2" class="size-4!" />
+                  </button>
+                } @else {
+                  <span class="mt-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                    Pinned
+                  </span>
+                }
               </button>
             }
           </div>
@@ -168,35 +205,19 @@ type NotificationItem = {
     </header>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  viewProviders: [provideIcons({ lucideBell, lucideUser, lucideSettings, lucideLogOut })],
+  viewProviders: [provideIcons({ lucideBell, lucideTrash2, lucideUser, lucideSettings, lucideLogOut })],
 })
-export class AppHeaderComponent implements OnInit {
+export class AppHeaderComponent implements OnInit, OnDestroy {
   @Input() mode: 'welcome' | 'route' = 'welcome';
 
   protected readonly authService = inject(AuthService);
+  protected readonly notificationService = inject(NotificationService);
   protected readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   protected readonly dialogService = inject(ZardDialogService);
 
-  protected readonly notificationItems = signal<NotificationItem[]>([
-    {
-      title: 'Pickup request approved',
-      message: 'Your waste pickup has been scheduled for tomorrow morning.',
-      time: '5 minutes ago',
-    },
-    {
-      title: 'Collector assigned',
-      message: 'A collector is now assigned to your latest request.',
-      time: '1 hour ago',
-    },
-    {
-      title: 'Voucher redeemed',
-      message: 'Your reward voucher was successfully redeemed.',
-      time: 'Today, 9:20 AM',
-    },
-  ]);
-
-  protected readonly notificationCount = computed(() => this.notificationItems().length);
+  protected readonly notificationItems = computed(() => this.notificationService.notifications());
+  protected readonly notificationCount = computed(() => this.notificationService.unreadCount());
 
   // -----------------------------
   // ROUTE TITLE
@@ -224,7 +245,11 @@ export class AppHeaderComponent implements OnInit {
   // -----------------------------
   ngOnInit(): void {
     if (!this.authService.hasLoadedSession()) {
-      void this.authService.loadSession().subscribe();
+      void this.authService.loadSession().subscribe({
+        next: () => this.loadNotifications(),
+      });
+    } else {
+      this.loadNotifications();
     }
 
     this.updateRouteTitle();
@@ -240,6 +265,10 @@ export class AppHeaderComponent implements OnInit {
     setInterval(() => {
       this.playQuoteAnimation();
     }, 7000);
+  }
+
+  ngOnDestroy(): void {
+    this.notificationService.stopRealtime();
   }
 
   // -----------------------------
@@ -317,8 +346,46 @@ export class AppHeaderComponent implements OnInit {
     void this.router.navigate(['/settings']);
   }
 
-  protected clearNotifications(): void {
-    this.notificationItems.set([]);
+  protected markAllNotificationsRead(): void {
+    void this.notificationService.markAllRead().subscribe();
+  }
+
+  protected clearAllNotifications(event: Event): void {
+    event.stopPropagation();
+    void this.notificationService.clearAllNotifications().subscribe();
+  }
+
+  protected clearNotification(event: Event, notification: Notification): void {
+    event.stopPropagation();
+    void this.notificationService.clearNotification(notification).subscribe();
+  }
+
+  protected openNotification(notification: Notification): void {
+    this.notificationService.markRead(notification);
+  }
+
+  protected enablePushNotifications(): void {
+    void this.notificationService.enablePushNotifications().catch((err: unknown) => {
+      const message = err instanceof Error ? err.message : 'Unable to enable device notifications.';
+      this.dialogService.create({
+        zTitle: 'Notifications unavailable',
+        zDescription: message,
+        zOkText: 'OK',
+        zWidth: 'max-w-sm',
+      });
+    });
+  }
+
+  protected notificationTime(notification: Notification): string {
+    return new Date(notification.createdAt).toLocaleString();
+  }
+
+  private loadNotifications(): void {
+    if (!this.authService.currentUser()) {
+      return;
+    }
+
+    this.notificationService.startRealtime();
   }
 
   // -----------------------------

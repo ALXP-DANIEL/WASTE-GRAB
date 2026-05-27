@@ -4,6 +4,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { ZardTableImports } from '@/ui/zard/table';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
+import { ZardCheckboxComponent } from '@/ui/zard/checkbox';
 import { ZardModalComponent } from '@/ui/zard/modal/modal.component';
 import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/ui/zard/form/form.component';
 import { ZardInputDirective } from '@/ui/zard/input';
@@ -21,6 +22,7 @@ type WasteCategoryModalMode = 'add' | 'edit' | null;
     AppHeaderComponent,
     ...ZardTableImports,
     ZardButtonComponent,
+    ZardCheckboxComponent,
     ZardModalComponent,
     ZardFormFieldComponent,
     ZardFormLabelComponent,
