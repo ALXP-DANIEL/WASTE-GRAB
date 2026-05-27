@@ -15,4 +15,4 @@ args = ["caveman-mcp"]
 
 [mcp_servers.serena]
 command = "uvx"
-args = ["serena-agent", "start-mcp-server"]
+args = ["--from", "serena-agent", "serena", "start-mcp-server", "--project-from-cwd"]

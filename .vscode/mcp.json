@@ -1,0 +1,30 @@
+{
+  "servers": {
+    "nx": {
+      "type": "stdio",
+      "command": "npm",
+      "args": ["exec", "--", "nx", "mcp", "--minimal"]
+    },
+    "serena": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "serena-agent",
+        "serena",
+        "start-mcp-server",
+        "--project",
+        "${workspaceFolder}"
+      ]
+    },
+    "caveman": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["caveman-mcp"]
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    }
+  }
+}

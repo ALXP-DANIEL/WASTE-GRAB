@@ -1,9 +1,8 @@
-## Tooling Priority
+@.github/copilot-instructions.md
 
-1. Nx MCP → workspace understanding
-2. Serena → symbol search / navigation
-3. RTK → CLI output compression
-4. Code changes → Codex only
+--- codex-only ---
+
+Codex should treat `.github/copilot-instructions.md` as the shared source of truth for workspace instructions.
 
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->
