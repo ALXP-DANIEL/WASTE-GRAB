@@ -1,5 +1,4 @@
 import express from 'express';
-import qrcode from 'qrcode-terminal';
 import pino from 'pino';
 
 import makeWASocket, {
@@ -12,10 +11,12 @@ const PORT = Number(process.env.PORT || 3000);
 const AUTH_DIR = process.env.WA_AUTH_DIR || './auth';
 const NOTIFY_TOKEN = process.env.NOTIFY_TOKEN || '';
 const WHATSAPP_GROUP_JID = process.env.WHATSAPP_GROUP_JID || '';
+const WA_PAIRING_PHONE_NUMBER = process.env.WA_PAIRING_PHONE_NUMBER || '';
 
 let sock = null;
 let isReady = false;
 let isConnecting = false;
+let pairingRequested = false;
 
 function log(message, data = {}) {
   console.log(
@@ -25,6 +26,10 @@ function log(message, data = {}) {
       ...data,
     }),
   );
+}
+
+function cleanPhoneNumber(phoneNumber) {
+  return String(phoneNumber || '').replace(/[^\d]/g, '');
 }
 
 function requireAuth(req, res, next) {
@@ -119,6 +124,50 @@ function buildMessage(payload) {
   return lines.join('\n');
 }
 
+async function requestPairingCodeIfNeeded() {
+  if (!sock) {
+    return;
+  }
+
+  if (pairingRequested) {
+    return;
+  }
+
+  if (sock.authState.creds.registered) {
+    return;
+  }
+
+  const phoneNumber = cleanPhoneNumber(WA_PAIRING_PHONE_NUMBER);
+
+  if (!phoneNumber) {
+    log('No WA_PAIRING_PHONE_NUMBER set. QR login would be needed.');
+    return;
+  }
+
+  pairingRequested = true;
+
+  setTimeout(async () => {
+    try {
+      const code = await sock.requestPairingCode(phoneNumber);
+
+      console.log('\n========================================');
+      console.log('WhatsApp pairing code:');
+      console.log(code);
+      console.log('========================================\n');
+
+      log('Pairing code generated', {
+        phoneNumber,
+      });
+    } catch (error) {
+      pairingRequested = false;
+
+      log('Failed to generate pairing code', {
+        error: error.message,
+      });
+    }
+  }, 3000);
+}
+
 async function connectWhatsApp() {
   if (isConnecting) {
     return;
@@ -137,6 +186,7 @@ async function connectWhatsApp() {
       browser: ['WasteGrab CI Bot', 'Chrome', '1.0.0'],
       markOnlineOnConnect: false,
       syncFullHistory: false,
+      printQRInTerminal: false,
     });
 
     sock.ev.on('creds.update', saveCreds);
@@ -145,14 +195,14 @@ async function connectWhatsApp() {
       const { connection, lastDisconnect, qr } = update;
 
       if (qr) {
-        console.log('\nScan this QR code using WhatsApp Linked Devices:\n');
-        qrcode.generate(qr, { small: true });
-        console.log('');
+        await requestPairingCodeIfNeeded();
       }
 
       if (connection === 'open') {
         isReady = true;
         isConnecting = false;
+        pairingRequested = false;
+
         log('WhatsApp connected');
 
         try {
@@ -164,7 +214,9 @@ async function connectWhatsApp() {
             console.log(`${group.subject} => ${group.jid}`);
           }
 
-          console.log('\nCopy the correct group JID into WHATSAPP_GROUP_JID.\n');
+          console.log('\nCurrent WHATSAPP_GROUP_JID:');
+          console.log(WHATSAPP_GROUP_JID || 'not set');
+          console.log('');
         } catch (error) {
           log('Could not list groups', {
             error: error.message,
@@ -183,7 +235,7 @@ async function connectWhatsApp() {
         });
 
         if (code === DisconnectReason.loggedOut) {
-          log('Logged out. Delete auth folder and scan QR again.');
+          log('Logged out. Clear auth volume and pair again.');
           return;
         }
 
@@ -223,6 +275,7 @@ app.get('/health', (req, res) => {
     ok: true,
     whatsappReady: isReady,
     hasGroupJid: Boolean(WHATSAPP_GROUP_JID),
+    hasPairingPhoneNumber: Boolean(WA_PAIRING_PHONE_NUMBER),
   });
 });
 
