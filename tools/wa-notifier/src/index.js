@@ -1,4 +1,5 @@
 import express from 'express';
+import qrcode from 'qrcode-terminal';
 import pino from 'pino';
 
 import makeWASocket, {
@@ -8,15 +9,14 @@ import makeWASocket, {
 } from '@whiskeysockets/baileys';
 
 const PORT = Number(process.env.PORT || 3000);
+const HOST = process.env.HOST || '0.0.0.0';
 const AUTH_DIR = process.env.WA_AUTH_DIR || './auth';
 const NOTIFY_TOKEN = process.env.NOTIFY_TOKEN || '';
 const WHATSAPP_GROUP_JID = process.env.WHATSAPP_GROUP_JID || '';
-const WA_PAIRING_PHONE_NUMBER = process.env.WA_PAIRING_PHONE_NUMBER || '';
 
 let sock = null;
 let isReady = false;
 let isConnecting = false;
-let pairingRequested = false;
 
 function log(message, data = {}) {
   console.log(
@@ -28,8 +28,18 @@ function log(message, data = {}) {
   );
 }
 
-function cleanPhoneNumber(phoneNumber) {
-  return String(phoneNumber || '').replace(/[^\d]/g, '');
+function withTimeout(promise, ms, errorMessage) {
+  let timeoutId;
+
+  const timeout = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => {
+      reject(new Error(errorMessage));
+    }, ms);
+  });
+
+  return Promise.race([promise, timeout]).finally(() => {
+    clearTimeout(timeoutId);
+  });
 }
 
 function requireAuth(req, res, next) {
@@ -60,7 +70,11 @@ async function listGroups() {
     throw new Error('WhatsApp is not ready yet');
   }
 
-  const groups = await sock.groupFetchAllParticipating();
+  const groups = await withTimeout(
+    sock.groupFetchAllParticipating(),
+    15000,
+    'Listing WhatsApp groups timed out',
+  );
 
   return Object.entries(groups).map(([jid, group]) => ({
     jid,
@@ -82,9 +96,13 @@ async function sendGroupMessage(text) {
     throw new Error('WHATSAPP_GROUP_JID must end with @g.us');
   }
 
-  return await sock.sendMessage(WHATSAPP_GROUP_JID, {
-    text: text.slice(0, 4096),
-  });
+  return await withTimeout(
+    sock.sendMessage(WHATSAPP_GROUP_JID, {
+      text: String(text).slice(0, 4096),
+    }),
+    20000,
+    'Sending WhatsApp message timed out',
+  );
 }
 
 function buildMessage(payload) {
@@ -124,50 +142,6 @@ function buildMessage(payload) {
   return lines.join('\n');
 }
 
-async function requestPairingCodeIfNeeded() {
-  if (!sock) {
-    return;
-  }
-
-  if (pairingRequested) {
-    return;
-  }
-
-  if (sock.authState.creds.registered) {
-    return;
-  }
-
-  const phoneNumber = cleanPhoneNumber(WA_PAIRING_PHONE_NUMBER);
-
-  if (!phoneNumber) {
-    log('No WA_PAIRING_PHONE_NUMBER set. QR login would be needed.');
-    return;
-  }
-
-  pairingRequested = true;
-
-  setTimeout(async () => {
-    try {
-      const code = await sock.requestPairingCode(phoneNumber);
-
-      console.log('\n========================================');
-      console.log('WhatsApp pairing code:');
-      console.log(code);
-      console.log('========================================\n');
-
-      log('Pairing code generated', {
-        phoneNumber,
-      });
-    } catch (error) {
-      pairingRequested = false;
-
-      log('Failed to generate pairing code', {
-        error: error.message,
-      });
-    }
-  }, 3000);
-}
-
 async function connectWhatsApp() {
   if (isConnecting) {
     return;
@@ -195,13 +169,14 @@ async function connectWhatsApp() {
       const { connection, lastDisconnect, qr } = update;
 
       if (qr) {
-        await requestPairingCodeIfNeeded();
+        console.log('\nScan this QR code using WhatsApp Linked Devices:\n');
+        qrcode.generate(qr, { small: true });
+        console.log('');
       }
 
       if (connection === 'open') {
         isReady = true;
         isConnecting = false;
-        pairingRequested = false;
 
         log('WhatsApp connected');
 
@@ -235,7 +210,7 @@ async function connectWhatsApp() {
         });
 
         if (code === DisconnectReason.loggedOut) {
-          log('Logged out. Clear auth volume and pair again.');
+          log('Logged out. Delete auth folder and scan QR again.');
           return;
         }
 
@@ -270,12 +245,29 @@ const app = express();
 
 app.use(express.json({ limit: '256kb' }));
 
+app.use((req, res, next) => {
+  log('HTTP request', {
+    method: req.method,
+    url: req.url,
+  });
+
+  next();
+});
+
+app.get('/', (req, res) => {
+  res.json({
+    ok: true,
+    service: 'WasteGrab WhatsApp notifier',
+  });
+});
+
 app.get('/health', (req, res) => {
   res.json({
     ok: true,
     whatsappReady: isReady,
+    hasSocket: Boolean(sock),
     hasGroupJid: Boolean(WHATSAPP_GROUP_JID),
-    hasPairingPhoneNumber: Boolean(WA_PAIRING_PHONE_NUMBER),
+    groupJid: WHATSAPP_GROUP_JID || null,
   });
 });
 
@@ -300,6 +292,11 @@ app.post('/notify', requireAuth, async (req, res) => {
     const payload = req.body || {};
     const message = payload.text ? String(payload.text) : buildMessage(payload);
 
+    log('Sending WhatsApp notification', {
+      groupJid: WHATSAPP_GROUP_JID,
+      messageLength: message.length,
+    });
+
     const result = await sendGroupMessage(message);
 
     res.json({
@@ -307,6 +304,10 @@ app.post('/notify', requireAuth, async (req, res) => {
       messageId: result?.key?.id || null,
     });
   } catch (error) {
+    log('Notify failed', {
+      error: error.message,
+    });
+
     res.status(500).json({
       ok: false,
       error: error.message,
@@ -314,8 +315,18 @@ app.post('/notify', requireAuth, async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
+app.use((req, res) => {
+  res.status(404).json({
+    ok: false,
+    error: 'Route not found',
+    method: req.method,
+    path: req.path,
+  });
+});
+
+app.listen(PORT, HOST, () => {
   log('WA notifier started', {
+    host: HOST,
     port: PORT,
     authDir: AUTH_DIR,
   });
