@@ -13,6 +13,7 @@ export type User = {
   phone: string | null;
   avatarUrl: string | null;
   role: UserRole;
+  hasCompletedCustomerOnboarding: boolean;
   createdAt: string;
   address?: Address[];
 };
@@ -72,3 +73,5 @@ export type ChangePasswordInput = {
 };
 
 export type ChangePasswordResponse = AuthResponse;
+
+export type CompleteCustomerOnboardingResponse = AuthResponse;

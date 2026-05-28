@@ -235,6 +235,15 @@ export async function updateAvatar(
   return toUserResponse(updatedUser);
 }
 
+export async function completeCustomerOnboarding(userId: string): Promise<User> {
+  const updatedUser = await prisma.user.update({
+    where: { id: userId },
+    data: { hasCompletedCustomerOnboarding: true },
+  });
+
+  return toUserResponse(updatedUser);
+}
+
 export async function changePassword(
   userId: string,
   currentPassword: string,
@@ -412,6 +421,7 @@ function toUserResponse(user: UserRecord): User {
     phone: user.phone,
     avatarUrl: user.avatarUrl,
     role: user.role as UserRole,
+    hasCompletedCustomerOnboarding: user.hasCompletedCustomerOnboarding,
     createdAt: user.createdAt.toISOString(),
   };
 }

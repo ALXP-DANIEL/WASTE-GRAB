@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, inject, signal } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -24,11 +24,16 @@ import {
   lucideX,
 } from '@ng-icons/lucide';
 import { PickupStatus, type Address, type AnalyzeImageResponse, type WasteCategory } from '@wastegrab/shared';
+import { driver, type Driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { PickupRequestService } from '@/services/pickup-request.service';
+import { AuthService } from '@/services/auth.service';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
 import { ZardInputDirective } from '@/ui/zard/input';
 import { ZardSelectImports } from '@/ui/zard/select/select.imports';
+
+const NEW_PICKUP_TOUR_KEY = 'wastegrab-new-pickup-tour-complete';
 
 type NewPickupForm = FormGroup<{
   items: FormArray<PickupItemForm>;
@@ -115,9 +120,10 @@ type StepMeta = {
     }),
   ],
 })
-export class CustomerNewPickupPage {
+export class CustomerNewPickupPage implements AfterViewInit, OnDestroy {
   private readonly http = inject(HttpClient);
   private readonly pickupRequests = inject(PickupRequestService);
+  private readonly authService = inject(AuthService);
   private readonly dialogService = inject(ZardDialogService);
   private readonly router = inject(Router);
 
@@ -132,6 +138,7 @@ export class CustomerNewPickupPage {
   protected readonly submitSuccess = signal('');
   protected readonly hasActivePickupRequest = signal(false);
   protected readonly currentStep = signal<WizardStep>('images');
+  private productTour: Driver | null = null;
 
   protected readonly maxImages = 5;
   protected readonly steps: StepMeta[] = [
@@ -150,6 +157,19 @@ export class CustomerNewPickupPage {
 
   constructor() {
     void this.loadInitialData();
+  }
+
+  ngAfterViewInit(): void {
+    if (this.hasCompletedNewPickupTour()) {
+      return;
+    }
+
+    window.setTimeout(() => this.startNewPickupTour(), 450);
+  }
+
+  ngOnDestroy(): void {
+    this.productTour?.destroy();
+    this.productTour = null;
   }
 
   protected pickupItems(): PickupItemForm[] {
@@ -489,6 +509,172 @@ export class CustomerNewPickupPage {
         this.currentStep.set('items');
       },
     });
+  }
+
+  private startNewPickupTour(): void {
+    if (this.productTour?.isActive()) {
+      return;
+    }
+
+    this.currentStep.set('images');
+    this.productTour?.destroy();
+    this.productTour = driver({
+      allowClose: true,
+      animate: true,
+      disableActiveInteraction: true,
+      doneBtnText: 'Finish',
+      nextBtnText: 'Next',
+      overlayOpacity: 0.55,
+      popoverClass: 'wastegrab-product-tour',
+      progressText: '{{current}}/{{total}}',
+      showButtons: ['next', 'close'],
+      showProgress: true,
+      stagePadding: 6,
+      stageRadius: 10,
+      onCloseClick: () => {
+        localStorage.setItem(NEW_PICKUP_TOUR_KEY, 'true');
+        void this.authService.completeCustomerOnboarding().subscribe({
+          next: () => {
+            this.productTour?.destroy();
+            this.productTour = null;
+          },
+          error: (err) => {
+            console.error('Failed to complete onboarding:', err);
+            this.productTour?.destroy();
+            this.productTour = null;
+          },
+        });
+      },
+      onDestroyed: () => {
+        // Onboarding is completed via onCloseClick, not here
+      },
+      steps: [
+        {
+          element: '[data-tour="pickup-steps"]',
+          popover: {
+            title: 'Pickup request steps',
+            description: 'This flow keeps the request simple: upload photos, review waste, choose pickup details, then confirm.',
+            side: 'bottom',
+            align: 'start',
+          },
+        },
+        {
+          element: '[data-tour="pickup-upload"]',
+          popover: {
+            title: 'Start with photos',
+            description: 'Add clear photos of the waste. The first image is used for AI detection, and every image helps the collector verify the pickup.',
+            side: 'top',
+            align: 'center',
+          },
+        },
+        {
+          element: '[data-tour="pickup-ai"]',
+          popover: {
+            title: 'AI scan',
+            description: 'After uploading a photo, this button can suggest categories, estimated weight, and points. You can still edit everything.',
+            side: 'right',
+            align: 'start',
+            onNextClick: (_element, _step, opts) => this.moveTourToStep(opts.driver, 'items'),
+          },
+        },
+        {
+          element: '[data-tour="pickup-items"]',
+          popover: {
+            title: 'Review waste items',
+            description: 'Each row is one waste category. AI can fill this in, or you can add rows manually.',
+            side: 'top',
+            align: 'start',
+          },
+        },
+        {
+          element: '[data-tour="pickup-category"]',
+          popover: {
+            title: 'Category controls points',
+            description: 'Pick the correct waste type here. The category determines how many points each kg is worth.',
+            side: 'bottom',
+            align: 'start',
+          },
+        },
+        {
+          element: '[data-tour="pickup-weight"]',
+          popover: {
+            title: 'Estimated kg',
+            description: 'This is your best estimate. The collector can verify the final weight before points are awarded.',
+            side: 'bottom',
+            align: 'start',
+            onNextClick: (_element, _step, opts) => this.moveTourToStep(opts.driver, 'pickup'),
+          },
+        },
+        {
+          element: '[data-tour="pickup-address"]',
+          popover: {
+            title: 'Pickup address',
+            description: 'Choose a saved address so the collector knows where to collect the waste.',
+            side: 'top',
+            align: 'start',
+          },
+        },
+        {
+          element: '[data-tour="pickup-notes"]',
+          popover: {
+            title: 'Collector notes',
+            description: 'Use this for optional details like guardhouse instructions, floor number, or where the items are placed.',
+            side: 'top',
+            align: 'start',
+            onNextClick: (_element, _step, opts) => this.moveTourToStep(opts.driver, 'confirm'),
+          },
+        },
+        {
+          element: '[data-tour="pickup-estimate"]',
+          popover: {
+            title: 'Points preview',
+            description: 'This estimate updates from your selected categories and kg. Final points can change after verification.',
+            side: 'left',
+            align: 'start',
+          },
+        },
+        {
+          element: '[data-tour="pickup-submit"]',
+          popover: {
+            title: 'Submit request',
+            description: 'Once everything looks right, submit the pickup request and track it from My Requests.',
+            side: 'left',
+            align: 'end',
+            onNextClick: (_element, _step, opts) => {
+              // Finish tour and reset wizard to step one
+              localStorage.setItem(NEW_PICKUP_TOUR_KEY, 'true');
+              void this.authService.completeCustomerOnboarding().subscribe({
+                next: () => {
+                  opts.driver.destroy();
+                  this.productTour = null;
+                  this.currentStep.set('images');
+                },
+                error: (err) => {
+                  console.error('Failed to complete onboarding:', err);
+                  opts.driver.destroy();
+                  this.productTour = null;
+                  this.currentStep.set('images');
+                },
+              });
+            },
+          },
+        },
+      ],
+    });
+
+    this.productTour.drive();
+  }
+
+  private moveTourToStep(tour: Driver, step: WizardStep): void {
+    this.currentStep.set(step);
+    window.setTimeout(() => {
+      tour.refresh();
+      tour.moveNext();
+    });
+  }
+
+  private hasCompletedNewPickupTour(): boolean {
+    return localStorage.getItem(NEW_PICKUP_TOUR_KEY) === 'true';
   }
 
   private showAiDetectionDialog(suggestions: AiSuggestion[]): void {
