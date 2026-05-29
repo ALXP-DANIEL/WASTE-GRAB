@@ -156,7 +156,16 @@ userRouter.delete("/:id", requireAdmin, async (req: Request, res: Response) => {
   }
 });
 
-function toUserResponse(user: { id: string; name: string; email: string; phone: string | null; avatarUrl: string | null; role: string; createdAt: Date }): User {
+function toUserResponse(user: {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  avatarUrl: string | null;
+  role: string;
+  hasCompletedCustomerOnboarding: boolean;
+  createdAt: Date;
+}): User {
   return {
     id: user.id,
     name: user.name,
@@ -164,6 +173,7 @@ function toUserResponse(user: { id: string; name: string; email: string; phone: 
     phone: user.phone ?? null,
     avatarUrl: user.avatarUrl ?? null,
     role: user.role as UserRole,
+    hasCompletedCustomerOnboarding: user.hasCompletedCustomerOnboarding,
     createdAt: user.createdAt.toISOString(),
   };
 }

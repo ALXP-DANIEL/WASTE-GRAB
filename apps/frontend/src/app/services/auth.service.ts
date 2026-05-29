@@ -71,6 +71,13 @@ export class AuthService {
     return this.http.post<ResetPasswordResponse>(`${this.apiUrl}/reset-password`, input, this.requestOptions);
   }
 
+  completeCustomerOnboarding() {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/onboarding/customer/complete`, {}, this.requestOptions).pipe(
+      map((response) => this.ensureValidUser(response.user)),
+      tap((user) => this.setSession(user)),
+    );
+  }
+
   uploadAvatar(file: File) {
     const payload = new FormData();
     payload.append('avatar', file);

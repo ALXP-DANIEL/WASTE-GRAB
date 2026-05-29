@@ -6,6 +6,7 @@ import type {
   AuthResponse,
   ChangePasswordInput,
   ChangePasswordResponse,
+  CompleteCustomerOnboardingResponse,
   CreateUserInput,
   ForgotPasswordInput,
   ForgotPasswordResponse,
@@ -18,6 +19,7 @@ import type {
 import {
   changePassword,
   clearAuthCookie,
+  completeCustomerOnboarding,
   createAuthCookie,
   getCurrentUserFromRequest,
   loginUser,
@@ -246,6 +248,25 @@ authRouter.patch(
     }
   }) as RequestHandler,
 );
+
+authRouter.post("/onboarding/customer/complete", async (req: Request, res: Response) => {
+  const user = await getCurrentUserFromRequest(req);
+
+  if (!user) {
+    const payload: ApiErrorResponse = { error: "Not authenticated." };
+    res.status(401).json(payload);
+    return;
+  }
+
+  try {
+    const updatedUser = await completeCustomerOnboarding(user.id);
+    const payload: CompleteCustomerOnboardingResponse = { user: updatedUser };
+    res.json(payload);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to complete onboarding.";
+    res.status(400).json({ error: message } as ApiErrorResponse);
+  }
+});
 
 authRouter.post("/change-password", async (req: Request, res: Response) => {
   const user = await getCurrentUserFromRequest(req);
