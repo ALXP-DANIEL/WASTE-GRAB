@@ -94,6 +94,7 @@
     },
     "db:push": {
       "executor": "nx:run-commands",
+      "dependsOn": ["prisma:generate"],
       "options": {
         "cwd": "apps/backend",
         "command": "tsx scripts/db-push-local.ts"
@@ -101,6 +102,7 @@
     },
     "seed:local": {
       "executor": "nx:run-commands",
+      "dependsOn": ["prisma:generate"],
       "options": {
         "cwd": "apps/backend",
         "command": "tsx scripts/seed-local-data.ts"
