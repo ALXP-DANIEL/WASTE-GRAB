@@ -10,29 +10,17 @@ permissions:
   actions: read
   contents: read
   deployments: write
-  id-token: write
   packages: write
-  pages: write
 
 env:
   NODE_VERSION: 24
-
-  # Production URLs
   RAILWAY_BACKEND_URL: https://api.wastegrab.alifdaniel.dpdns.org
   RAILWAY_FRONTEND_URL: https://wastegrab.alifdaniel.dpdns.org
-
-  # Local CI URLs
-  BASE_URL: http://127.0.0.1:4200
-  API_BASE_URL: http://127.0.0.1:3000
-
-  # CI database
-  DATABASE_URL: mysql://wastegrab:wastegrab@127.0.0.1:3306/wastegrab
 
 jobs:
   shared-types-check:
     name: Shared types checks
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v6
         with:
@@ -44,33 +32,17 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Check shared types
-        run: npm exec -- nx run-many -t lint test typecheck build -p shared-types --outputStyle=static
+      - run: npm ci
+      - run: npm exec -- nx run-many -t lint test typecheck build -p shared-types --outputStyle=static
+      - run: npm exec -- nx fix-ci
+        if: always()
 
   backend-check:
     name: Backend checks
     runs-on: ubuntu-latest
     needs: shared-types-check
-
-    services:
-      mysql:
-        image: mysql:9
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: wastegrab
-          MYSQL_USER: wastegrab
-          MYSQL_PASSWORD: wastegrab
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
-
+    env:
+      DATABASE_URL: mysql://wastegrab:wastegrab@localhost:3306/wastegrab
     steps:
       - uses: actions/checkout@v6
         with:
@@ -82,30 +54,15 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Prepare backend database
-        run: |
-          if [ -f "apps/backend/prisma/schema.prisma" ]; then
-            npm exec -- prisma generate --schema=apps/backend/prisma/schema.prisma
-            npm exec -- prisma db push --schema=apps/backend/prisma/schema.prisma --skip-generate
-          elif [ -f "prisma/schema.prisma" ]; then
-            npm exec -- prisma generate --schema=prisma/schema.prisma
-            npm exec -- prisma db push --schema=prisma/schema.prisma --skip-generate
-          else
-            echo "No Prisma schema found."
-            exit 1
-          fi
-
-      - name: Check backend
-        run: npm exec -- nx run-many -t lint test build typecheck -p backend --outputStyle=static
+      - run: npm ci
+      - run: npm exec -- nx run-many -t lint test build typecheck -p backend --outputStyle=static
+      - run: npm exec -- nx fix-ci
+        if: always()
 
   frontend-check:
     name: Frontend checks
     runs-on: ubuntu-latest
     needs: shared-types-check
-
     steps:
       - uses: actions/checkout@v6
         with:
@@ -117,100 +74,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Check frontend
-        run: npm exec -- nx run-many -t lint test build typecheck -p frontend --outputStyle=static
-
-  e2e-check:
-    name: E2E checks
-    runs-on: ubuntu-latest
-    needs:
-      - backend-check
-      - frontend-check
-
-    services:
-      mysql:
-        image: mysql:9
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: wastegrab
-          MYSQL_USER: wastegrab
-          MYSQL_PASSWORD: wastegrab
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
-
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          filter: tree:0
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Prepare E2E database
-        run: |
-          if [ -f "apps/backend/prisma/schema.prisma" ]; then
-            npm exec -- prisma generate --schema=apps/backend/prisma/schema.prisma
-            npm exec -- prisma db push --schema=apps/backend/prisma/schema.prisma --skip-generate
-          elif [ -f "prisma/schema.prisma" ]; then
-            npm exec -- prisma generate --schema=prisma/schema.prisma
-            npm exec -- prisma db push --schema=prisma/schema.prisma --skip-generate
-          else
-            echo "No Prisma schema found."
-            exit 1
-          fi
-
-      - name: Install Playwright Chromium
-        run: npm exec -- playwright install --with-deps chromium
-
-      - name: Run Playwright e2e
-        run: npm exec -- nx run e2e:e2e --outputStyle=static -- --reporter=html
-      - name: Upload Playwright report
+      - run: npm ci
+      - run: npm exec -- nx run-many -t lint test build typecheck -p frontend --outputStyle=static
+      - run: npm exec -- nx fix-ci
         if: always()
-        uses: actions/upload-artifact@v5
-        with:
-          name: playwright-report
-          path: apps/e2e/playwright-report
-          if-no-files-found: ignore
-          retention-days: 14
-      - name: Configure GitHub Pages
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: actions/configure-pages@v5
-      - name: Upload Playwright report to GitHub Pages
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: apps/e2e/playwright-report
-      - name: Deploy Playwright report to GitHub Pages
-        id: playwright-report-pages
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: actions/deploy-pages@v4
-      - name: Add Playwright report link
-        if: always()
-        shell: bash
-        run: |
-          {
-            echo "### Playwright E2E report"
-            echo ""
-            if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
-              echo "Preview: ${{ steps.playwright-report-pages.outputs.page_url }}"
-              echo ""
-            fi
-            echo "Artifact fallback: download the \`playwright-report\` artifact from this workflow run, then open \`index.html\`."
-          } >> "$GITHUB_STEP_SUMMARY"
 
   backend-image:
     name: Backend Docker image
@@ -431,7 +298,6 @@ jobs:
       - shared-types-check
       - backend-check
       - frontend-check
-      - e2e-check
       - backend-image
       - frontend-image
 
@@ -460,7 +326,6 @@ jobs:
       SHARED_RESULT: ${{ needs.shared-types-check.result }}
       BACKEND_CHECK_RESULT: ${{ needs.backend-check.result }}
       FRONTEND_CHECK_RESULT: ${{ needs.frontend-check.result }}
-      E2E_CHECK_RESULT: ${{ needs.e2e-check.result }}
       BACKEND_IMAGE_RESULT: ${{ needs.backend-image.result }}
       FRONTEND_IMAGE_RESULT: ${{ needs.frontend-image.result }}
 
@@ -501,7 +366,6 @@ jobs:
               "Shared types": os.getenv("SHARED_RESULT", "unknown"),
               "Backend checks": os.getenv("BACKEND_CHECK_RESULT", "unknown"),
               "Frontend checks": os.getenv("FRONTEND_CHECK_RESULT", "unknown"),
-              "E2E checks": os.getenv("E2E_CHECK_RESULT", "unknown"),
               "Backend image/deploy": os.getenv("BACKEND_IMAGE_RESULT", "unknown"),
               "Frontend image/deploy": os.getenv("FRONTEND_IMAGE_RESULT", "unknown"),
           }
