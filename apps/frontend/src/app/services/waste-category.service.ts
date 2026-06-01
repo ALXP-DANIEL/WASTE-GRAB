@@ -12,7 +12,12 @@ import { environment } from '../../environments/environment';
 export class WasteCategoryService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiBaseUrl}/admin/waste-categories`;
+  private readonly publicApiUrl = `${environment.apiBaseUrl}/waste-categories`;
   private readonly opts = { withCredentials: true as const };
+
+  listPublicCategories(): Observable<WasteCategory[]> {
+    return this.http.get<WasteCategory[]>(this.publicApiUrl);
+  }
 
   listCategories(): Observable<WasteCategory[]> {
     return this.http.get<WasteCategory[]>(this.apiUrl, this.opts);

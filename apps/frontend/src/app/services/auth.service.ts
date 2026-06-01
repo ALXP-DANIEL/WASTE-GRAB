@@ -9,6 +9,9 @@ import {
   type LoginInput,
   type ResetPasswordInput,
   type ResetPasswordResponse,
+  type ChangePasswordInput,
+  type ChangePasswordResponse,
+  type UpdateProfileInput,
   type User,
 } from '@wastegrab/shared';
 import { map, of, tap, catchError } from 'rxjs';
@@ -85,6 +88,19 @@ export class AuthService {
     return this.http.patch<AuthResponse>(`${this.apiUrl}/profile/avatar`, payload, this.requestOptions).pipe(
       map((response) => this.ensureValidUser(response.user)),
       tap((user) => this.setSession(user)),
+    );
+  }
+
+  updateProfile(input: UpdateProfileInput) {
+    return this.http.patch<AuthResponse>(`${this.apiUrl}/profile`, input, this.requestOptions).pipe(
+      map((response) => this.ensureValidUser(response.user)),
+      tap((user) => this.setSession(user)),
+    );
+  }
+
+  changePassword(input: ChangePasswordInput) {
+    return this.http.post<ChangePasswordResponse>(`${this.apiUrl}/change-password`, input, this.requestOptions).pipe(
+      tap((response) => this.setSession(this.ensureValidUser(response.user))),
     );
   }
 

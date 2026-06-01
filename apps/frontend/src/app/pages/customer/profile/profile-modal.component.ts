@@ -4,9 +4,9 @@ import { ReactiveFormsModule, Validators, FormControl, FormGroup } from '@angula
 import { ZardInputDirective } from '@/ui/zard/input';
 import { ZardFormFieldComponent, ZardFormLabelComponent, ZardFormControlComponent } from '@/ui/zard/form/form.component';
 import { ZardModalComponent } from '@/ui/zard/modal/modal.component';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '@/services/auth.service';
-import type { ChangePasswordInput, ChangePasswordResponse, UpdateProfileInput, UpdateProfileResponse } from '@wastegrab/shared';
+import type { ChangePasswordInput, UpdateProfileInput } from '@wastegrab/shared';
 
 type ModalMode = 'edit-profile' | 'change-password' | null;
 
@@ -129,7 +129,6 @@ type ModalMode = 'edit-profile' | 'change-password' | null;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileModalComponent {
-  private readonly http = inject(HttpClient);
   protected readonly authService = inject(AuthService);
 
   protected readonly modalMode = signal<ModalMode>(null);
@@ -201,10 +200,10 @@ export class ProfileModalComponent {
 
     const { name, phone } = this.editProfileForm.getRawValue();
     const input: UpdateProfileInput = { name, phone };
-    this.http.patch<UpdateProfileResponse>('/api/auth/profile', input).subscribe({
-      next: (response: UpdateProfileResponse) => {
+    this.authService.updateProfile(input).subscribe({
+      next: (user) => {
         this.isSubmitting.set(false);
-        this.authService.currentUser.set(response.user);
+        this.authService.currentUser.set(user);
         this.successUpdate.emit();
         this.close();
       },
@@ -237,8 +236,8 @@ export class ProfileModalComponent {
       currentPassword,
       newPassword,
     };
-    this.http.post<ChangePasswordResponse>('/api/auth/change-password', input).subscribe({
-      next: (response: ChangePasswordResponse) => {
+    this.authService.changePassword(input).subscribe({
+      next: (response) => {
         this.isSubmitting.set(false);
         this.authService.currentUser.set(response.user);
         this.successUpdate.emit();

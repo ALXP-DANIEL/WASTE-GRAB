@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, inject, signal } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -23,7 +22,7 @@ import {
   lucideUpload,
   lucideX,
 } from '@ng-icons/lucide';
-import { PickupStatus, type Address, type AnalyzeImageResponse, type AnalyzeImageResult, type DetectedWasteCategory, type WasteCategory } from '@wastegrab/shared';
+import { PickupStatus, type Address, type AnalyzeImageResult, type DetectedWasteCategory, type WasteCategory } from '@wastegrab/shared';
 import { driver, type Driver } from 'driver.js';
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { PickupRequestService } from '@/services/pickup-request.service';
@@ -31,6 +30,9 @@ import { AuthService } from '@/services/auth.service';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
 import { ZardInputDirective } from '@/ui/zard/input';
 import { ZardSelectImports } from '@/ui/zard/select/select.imports';
+import { AiAnalysisService } from '@/services/ai-analysis.service';
+import { AddressService } from '@/services/address.service';
+import { WasteCategoryService } from '@/services/waste-category.service';
 
 const NEW_PICKUP_TOUR_KEY = 'wastegrab-new-pickup-tour-complete';
 
@@ -120,11 +122,13 @@ type StepMeta = {
   ],
 })
 export class CustomerNewPickupPage implements AfterViewInit, OnDestroy {
-  private readonly http = inject(HttpClient);
   private readonly pickupRequests = inject(PickupRequestService);
   private readonly authService = inject(AuthService);
   private readonly dialogService = inject(ZardDialogService);
   private readonly router = inject(Router);
+  private readonly aiAnalysis = inject(AiAnalysisService);
+  private readonly addressService = inject(AddressService);
+  private readonly wasteCategoryService = inject(WasteCategoryService);
 
   protected readonly wasteCategories = signal<WasteCategory[]>([]);
   protected readonly addresses = signal<Address[]>([]);
@@ -382,14 +386,7 @@ export class CustomerNewPickupPage implements AfterViewInit, OnDestroy {
     this.analysisSummary.set(null);
 
     try {
-      const formData = new FormData();
-      images.forEach((image) => {
-        formData.append('images', image);
-      });
-
-      const response = await firstValueFrom(
-        this.http.post<AnalyzeImageResponse>('/api/roboflow-ai/analyze-image', formData),
-      );
+      const response = await firstValueFrom(this.aiAnalysis.analyzeImages(images));
       const result = response.result;
 
       if (!result) {
@@ -863,7 +860,7 @@ export class CustomerNewPickupPage implements AfterViewInit, OnDestroy {
   private async loadWasteCategories(): Promise<void> {
     try {
       const categories = await firstValueFrom(
-        this.http.get<WasteCategory[]>('/api/waste-categories'),
+        this.wasteCategoryService.listPublicCategories(),
       );
 
       this.wasteCategories.set(categories);
@@ -876,7 +873,7 @@ export class CustomerNewPickupPage implements AfterViewInit, OnDestroy {
   private async loadAddresses(): Promise<void> {
     try {
       const addresses = await firstValueFrom(
-        this.http.get<Address[]>('/api/customer/address', { withCredentials: true }),
+        this.addressService.listAddress(),
       );
 
       this.addresses.set(addresses);
