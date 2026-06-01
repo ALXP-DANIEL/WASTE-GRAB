@@ -22,6 +22,7 @@ import { AddressService } from '@/services/address.service';
 import { AuthService } from '@/services/auth.service';
 import { NotificationService } from '@/services/notification.service';
 import { ThemeService } from '@/services/theme.service';
+import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
 import { AppNavbarComponent } from '@/ui/navbar/navbar.component';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 
@@ -295,6 +296,7 @@ export class AppLayout {
   private readonly addressService = inject(AddressService);
   private readonly notificationService = inject(NotificationService);
   private readonly themeService = inject(ThemeService);
+  private readonly dialogService = inject(ZardDialogService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
 
@@ -328,7 +330,7 @@ export class AppLayout {
   protected readonly defaultAddress = computed(() => (
     this.addresses().find((address) => address.isDefault) ?? this.addresses()[0] ?? null
   ));
-  protected readonly canInstallPwa = computed(() => this.installPrompt() !== null);
+  protected readonly canInstallPwa = computed(() => this.installPrompt() !== null || this.isIosSafari());
   protected readonly notificationStatus = computed(() => {
     if (typeof Notification === 'undefined') {
       return 'unavailable';
@@ -339,6 +341,17 @@ export class AppLayout {
   protected readonly canAskForNotifications = computed(() => (
     this.notificationService.canEnablePush() && this.notificationStatus() !== 'denied'
   ));
+
+  protected isIosSafari(): boolean {
+    try {
+      const ua = window.navigator.userAgent || '';
+      const isiOS = /iPad|iPhone|iPod/.test(ua);
+      const isSafari = /Safari/.test(ua) && !/CriOS|FxiOS|OPiOS|EdgiOS/.test(ua);
+      return isiOS && isSafari;
+    } catch {
+      return false;
+    }
+  }
 
   constructor() {
     effect(() => {
@@ -494,6 +507,13 @@ export class AppLayout {
     const prompt = this.installPrompt();
 
     if (!prompt) {
+      // Fallback for platforms (notably iOS) that don't expose `beforeinstallprompt`.
+      this.dialogService.create({
+        zTitle: 'Install WasteGrab',
+        zDescription: 'To install WasteGrab on your device, open the browser menu and choose "Add to Home Screen" (iOS Safari: Share → Add to Home Screen).',
+        zOkText: 'Got it',
+        zWidth: 'max-w-sm',
+      });
       return;
     }
 

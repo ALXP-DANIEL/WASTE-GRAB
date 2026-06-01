@@ -26,12 +26,15 @@ export class NotificationService {
   readonly canEnablePush = computed(() => this.swPush.isEnabled && Boolean(this.webPushPublicKey()));
 
   constructor() {
-    this.swPush.notificationClicks.subscribe(({ notification }) => {
-      const url = notification.data?.url;
-      if (typeof url === 'string' && url.startsWith('/')) {
-        void this.router.navigateByUrl(url);
-      }
-    });
+    // Only subscribe to `notificationClicks` when service worker push is enabled.
+    if (this.swPush.isEnabled) {
+      this.swPush.notificationClicks.subscribe(({ notification }) => {
+        const url = notification.data?.url;
+        if (typeof url === 'string' && url.startsWith('/')) {
+          void this.router.navigateByUrl(url);
+        }
+      });
+    }
   }
 
   loadNotifications() {
