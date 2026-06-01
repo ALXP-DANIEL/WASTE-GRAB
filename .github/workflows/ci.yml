@@ -10,7 +10,9 @@ permissions:
   actions: read
   contents: read
   deployments: write
+  id-token: write
   packages: write
+  pages: write
 
 env:
   NODE_VERSION: 24
@@ -76,6 +78,65 @@ jobs:
 
       - run: npm ci
       - run: npm exec -- nx run-many -t lint test build typecheck -p frontend --outputStyle=static
+      - run: npm exec -- nx fix-ci
+        if: always()
+
+  e2e-check:
+    name: E2E checks
+    runs-on: ubuntu-latest
+    needs:
+      - backend-check
+      - frontend-check
+    env:
+      DATABASE_URL: mysql://wastegrab:wastegrab@localhost:3306/wastegrab
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          filter: tree:0
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+      - run: npm exec -- playwright install --with-deps chromium
+      - name: Run Playwright e2e
+        run: npm exec -- nx run e2e:e2e --outputStyle=static -- --reporter=html
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: playwright-report
+          path: apps/e2e/playwright-report
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Configure GitHub Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/configure-pages@v5
+      - name: Upload Playwright report to GitHub Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/e2e/playwright-report
+      - name: Deploy Playwright report to GitHub Pages
+        id: playwright-report-pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/deploy-pages@v4
+      - name: Add Playwright report link
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "### Playwright E2E report"
+            echo ""
+            if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
+              echo "Preview: ${{ steps.playwright-report-pages.outputs.page_url }}"
+              echo ""
+            fi
+            echo "Artifact fallback: download the \`playwright-report\` artifact from this workflow run, then open \`index.html\`."
+          } >> "$GITHUB_STEP_SUMMARY"
       - run: npm exec -- nx fix-ci
         if: always()
 
@@ -298,6 +359,7 @@ jobs:
       - shared-types-check
       - backend-check
       - frontend-check
+      - e2e-check
       - backend-image
       - frontend-image
 
@@ -326,6 +388,7 @@ jobs:
       SHARED_RESULT: ${{ needs.shared-types-check.result }}
       BACKEND_CHECK_RESULT: ${{ needs.backend-check.result }}
       FRONTEND_CHECK_RESULT: ${{ needs.frontend-check.result }}
+      E2E_CHECK_RESULT: ${{ needs.e2e-check.result }}
       BACKEND_IMAGE_RESULT: ${{ needs.backend-image.result }}
       FRONTEND_IMAGE_RESULT: ${{ needs.frontend-image.result }}
 
@@ -366,6 +429,7 @@ jobs:
               "Shared types": os.getenv("SHARED_RESULT", "unknown"),
               "Backend checks": os.getenv("BACKEND_CHECK_RESULT", "unknown"),
               "Frontend checks": os.getenv("FRONTEND_CHECK_RESULT", "unknown"),
+              "E2E checks": os.getenv("E2E_CHECK_RESULT", "unknown"),
               "Backend image/deploy": os.getenv("BACKEND_IMAGE_RESULT", "unknown"),
               "Frontend image/deploy": os.getenv("FRONTEND_IMAGE_RESULT", "unknown"),
           }

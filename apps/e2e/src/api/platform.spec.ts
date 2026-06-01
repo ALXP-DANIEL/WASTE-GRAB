@@ -1,6 +1,8 @@
 import { expect, request, test } from '@playwright/test';
+import { Buffer } from 'node:buffer';
+import { env } from 'node:process';
 
-const backendURL = process.env['BACKEND_URL'] || 'http://localhost:3000';
+const backendURL = env['BACKEND_URL'] || 'http://127.0.0.1:3000';
 
 test('health endpoint returns service status', async () => {
   const api = await request.newContext({ baseURL: backendURL });

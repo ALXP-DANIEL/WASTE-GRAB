@@ -1,6 +1,40 @@
-import { expect, test, type Page } from '@playwright/test';
+import { type Page } from '@playwright/test';
+import { Buffer } from 'node:buffer';
 
-const customer = {
+type TestPickupRequest = {
+  id: string;
+  userId: string;
+  collectorId: string | null;
+  addressText: string;
+  status: string;
+  notes: string | null;
+  aiClassificationLabel: string | null;
+  aiConfidence: string | null;
+  aiSuggestedPayload: unknown;
+  createdAt: string;
+  completedAt: string | null;
+  items: Array<{
+    id: string;
+    pickupRequestId: string;
+    categoryId: string;
+    estimatedWeight: string | null;
+    actualWeight: string | null;
+    category: {
+      id: string;
+      name: string;
+      pointsPerKg: number;
+    } | null;
+  }>;
+  images: Array<{
+    id: string;
+    pickupRequestId: string;
+    imageUrl: string;
+    imageType: string;
+    uploadedAt: string;
+  }>;
+};
+
+export const customer = {
   id: 'customer-id',
   name: 'Test Customer',
   email: 'customer@test.com',
@@ -11,7 +45,7 @@ const customer = {
   createdAt: '2026-01-01T00:00:00.000Z',
 };
 
-const categories = [
+export const categories = [
   {
     id: 'plastic-id',
     name: 'Plastic',
@@ -34,7 +68,7 @@ const categories = [
   },
 ];
 
-const addresses = [
+export const addresses = [
   {
     id: 'address-id',
     userId: customer.id,
@@ -53,52 +87,83 @@ const addresses = [
   },
 ];
 
-test('customer can analyze all uploaded images and create a pickup request', async ({
-  page,
-}) => {
-  await mockApi(page);
-  await page.addInitScript(() => {
-    window.localStorage.setItem('wastegrab-new-pickup-tour-complete', 'true');
-  });
+export const pickupRequest: TestPickupRequest = {
+  id: 'pickup-request-id',
+  userId: customer.id,
+  collectorId: null,
+  addressText: addresses[0].formattedAddress,
+  status: 'PENDING',
+  notes: 'Place bags near the guardhouse',
+  aiClassificationLabel: 'Plastic, Paper',
+  aiConfidence: null,
+  aiSuggestedPayload: {
+    source: 'roboflow',
+    items: [
+      {
+        categoryId: 'plastic-id',
+        categoryName: 'Plastic',
+        detectedCount: 2,
+        estimatedWeight: 2,
+        points: 4,
+      },
+      {
+        categoryId: 'paper-id',
+        categoryName: 'Paper',
+        detectedCount: 1,
+        estimatedWeight: 2,
+        points: 2,
+      },
+    ],
+  },
+  createdAt: '2026-01-01T00:00:00.000Z',
+  completedAt: null,
+  items: [
+    {
+      id: 'plastic-item-id',
+      pickupRequestId: 'pickup-request-id',
+      categoryId: 'plastic-id',
+      estimatedWeight: '2',
+      actualWeight: null,
+      category: {
+        id: 'plastic-id',
+        name: 'Plastic',
+        pointsPerKg: 2,
+      },
+    },
+    {
+      id: 'paper-item-id',
+      pickupRequestId: 'pickup-request-id',
+      categoryId: 'paper-id',
+      estimatedWeight: '2',
+      actualWeight: null,
+      category: {
+        id: 'paper-id',
+        name: 'Paper',
+        pointsPerKg: 1,
+      },
+    },
+  ],
+  images: [
+    {
+      id: 'pickup-image-id',
+      pickupRequestId: 'pickup-request-id',
+      imageUrl:
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=',
+      imageType: 'USER_UPLOAD',
+      uploadedAt: '2026-01-01T00:00:00.000Z',
+    },
+  ],
+};
 
-  await page.goto('/customer/new-pickup');
-  await expect(page.getByText('Upload Images')).toBeVisible();
+type MockApiOptions = {
+  pickupRequests?: TestPickupRequest[];
+  getPickupRequest?: () => TestPickupRequest;
+  cancelPickupRequest?: () => TestPickupRequest;
+};
 
-  await page.locator('input[type="file"]').setInputFiles([
-    imageFile('first-waste.png'),
-    imageFile('second-waste.png'),
-  ]);
+export async function mockPickupApi(page: Page, options: MockApiOptions = {}): Promise<void> {
+  const pickupRequests = options.pickupRequests ?? [];
 
-  await expect(page.getByAltText('Pickup image 1')).toBeVisible();
-  await expect(page.getByAltText('Pickup image 2')).toBeVisible();
-
-  await page.getByLabel('Analyze images with AI').click();
-  await expect(page.getByText('Image 1')).toBeVisible();
-  await expect(page.getByText('Plastic x1', { exact: true })).toBeVisible();
-  await expect(page.getByText('Paper x1')).toBeVisible();
-  await page.getByRole('button', { name: 'Review Items' }).click();
-
-  await expect(page.getByText('Review Waste Items')).toBeVisible();
-  const itemsStep = page.locator('[data-tour="pickup-items"]');
-  await expect(itemsStep.getByText('Plastic', { exact: true }).first()).toBeVisible();
-  await expect(itemsStep.getByText('Paper', { exact: true }).first()).toBeVisible();
-  await expect(page.getByLabel('Weight').first()).toHaveValue('2');
-
-  await page.getByRole('button', { name: /^Next$/ }).click();
-  await expect(page.getByText('Pickup Details')).toBeVisible();
-  const pickupStep = page.locator('[data-tour="pickup-address"]');
-  await expect(
-    pickupStep.getByText(addresses[0].formattedAddress, { exact: true }).first(),
-  ).toBeVisible();
-
-  await page.getByRole('button', { name: /^Next$/ }).click();
-  await expect(page.getByText('Review the request before saving.')).toBeVisible();
-
-  await page.getByRole('button', { name: 'Request Pickup' }).click();
-  await expect(page.getByText('Pickup request created')).toBeVisible();
-});
-
-async function mockApi(page: Page): Promise<void> {
   await page.route('**/api/auth/me', async (route) => {
     await route.fulfill({ json: { user: customer } });
   });
@@ -116,17 +181,10 @@ async function mockApi(page: Page): Promise<void> {
       await route.fulfill({
         json: {
           pickupRequest: {
-            id: 'pickup-request-id',
-            userId: customer.id,
-            collectorId: null,
-            addressText: addresses[0].formattedAddress,
-            status: 'PENDING',
+            ...pickupRequest,
             notes: null,
             aiClassificationLabel: null,
-            aiConfidence: null,
             aiSuggestedPayload: null,
-            createdAt: '2026-01-01T00:00:00.000Z',
-            completedAt: null,
             items: [],
             images: [],
           },
@@ -135,7 +193,24 @@ async function mockApi(page: Page): Promise<void> {
       return;
     }
 
-    await route.fulfill({ json: { pickupRequests: [] } });
+    await route.fulfill({ json: { pickupRequests } });
+  });
+
+  await page.route('**/api/customer/pickups/*/cancel', async (route) => {
+    const pickup = options.cancelPickupRequest?.() ?? {
+      ...(options.getPickupRequest?.() ?? pickupRequest),
+      status: 'CANCELLED',
+    };
+
+    await route.fulfill({ json: { pickupRequest: pickup } });
+  });
+
+  await page.route('**/api/customer/pickups/*', async (route) => {
+    await route.fulfill({
+      json: {
+        pickupRequest: options.getPickupRequest?.() ?? pickupRequests[0] ?? pickupRequest,
+      },
+    });
   });
 
   await page.route('**/api/roboflow-ai/analyze-image', async (route) => {
@@ -210,7 +285,7 @@ async function mockApi(page: Page): Promise<void> {
   });
 }
 
-function imageFile(name: string) {
+export function imageFile(name: string) {
   return {
     name,
     mimeType: 'image/png',
