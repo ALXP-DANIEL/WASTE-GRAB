@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import roboflowAI from "./roboflow-ai.js";
 import axios from "axios";
 import sharp from "sharp";
+import { getCurrentUserFromRequest } from "../services/auth.service.js";
 
 vi.mock("axios", () => ({
   default: {
@@ -42,12 +43,41 @@ vi.mock("../prisma.js", () => ({
   },
 }));
 
+vi.mock("../services/auth.service.js", () => ({
+  getCurrentUserFromRequest: vi.fn(),
+}));
+
 describe("roboflow AI route", () => {
   const app = express().use("/api/roboflow-ai", roboflowAI);
 
   beforeEach(() => {
     process.env.ROBOFLOW_API_KEY = "test-key";
     vi.clearAllMocks();
+    vi.mocked(getCurrentUserFromRequest).mockResolvedValue({
+      id: "user-id",
+      name: "Test User",
+      email: "test@example.com",
+      phone: null,
+      role: "CUSTOMER",
+      profileImageUrl: null,
+      hasCompletedCustomerOnboarding: true,
+      createdAt: new Date().toISOString(),
+    });
+  });
+
+  it("rejects anonymous image analysis requests", async () => {
+    vi.mocked(getCurrentUserFromRequest).mockResolvedValue(null);
+
+    const response = await request(app)
+      .post("/api/roboflow-ai/analyze-image")
+      .attach("images", Buffer.from("first"), {
+        filename: "first.jpg",
+        contentType: "image/jpeg",
+      });
+
+    expect(response.status).toBe(401);
+    expect(axios.post).not.toHaveBeenCalled();
+    expect(sharp).not.toHaveBeenCalled();
   });
 
   it("analyzes every uploaded image and aggregates detected categories", async () => {

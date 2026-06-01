@@ -5,6 +5,7 @@ import axios from 'axios';
 import sharp from 'sharp';
 import type { AnalyzeImageResponse, DetectedWasteCategory } from '@wastegrab/shared';
 import { prisma } from '../prisma.js';
+import { requireAuthenticatedUser } from '../middleware/require-auth.js';
 
 type RoboflowPrediction = { class: string };
 type RoboflowResponse = {
@@ -39,6 +40,7 @@ const upload = multer({
 
 router.post(
   '/analyze-image',
+  requireAuthenticatedUser,
   upload.array('images', 5),
 
   async (req: Request, res: Response) => {

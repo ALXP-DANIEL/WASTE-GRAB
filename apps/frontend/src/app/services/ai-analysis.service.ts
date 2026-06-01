@@ -9,6 +9,7 @@ import { environment } from '../../environments/environment';
 export class AiAnalysisService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiBaseUrl}/roboflow-ai`;
+  private readonly requestOptions = { withCredentials: true as const };
 
   analyzeImages(images: File[]) {
     const formData = new FormData();
@@ -16,6 +17,10 @@ export class AiAnalysisService {
       formData.append('images', image);
     });
 
-    return this.http.post<AnalyzeImageResponse>(`${this.apiUrl}/analyze-image`, formData);
+    return this.http.post<AnalyzeImageResponse>(
+      `${this.apiUrl}/analyze-image`,
+      formData,
+      this.requestOptions,
+    );
   }
 }

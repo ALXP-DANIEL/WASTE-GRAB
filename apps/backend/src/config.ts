@@ -13,9 +13,11 @@ for (const envPath of [
 
 const port = Number(process.env.PORT || 3000);
 const databaseUrl = process.env.DATABASE_URL;
-const authSecret = process.env.AUTH_SECRET || "wastegrab-dev-auth-secret";
-const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY?.trim() || "";
 const isProduction = process.env.NODE_ENV === "production";
+const authSecret = process.env.AUTH_SECRET?.trim() || (
+  isProduction ? "" : "wastegrab-dev-auth-secret"
+);
+const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY?.trim() || "";
 const authCookieSecure =
   process.env.AUTH_COOKIE_SECURE === undefined
     ? isProduction
@@ -37,6 +39,10 @@ if (!Number.isInteger(port) || port <= 0) {
 
 if (!databaseUrl) {
   throw new Error("DATABASE_URL is required.");
+}
+
+if (!authSecret) {
+  throw new Error("AUTH_SECRET is required in production.");
 }
 
 export const config = {

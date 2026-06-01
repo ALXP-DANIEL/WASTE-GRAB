@@ -711,7 +711,7 @@ export class CustomerNewPickupPage implements AfterViewInit, OnDestroy {
 
         return `
           <div class="grid grid-cols-[4rem_1fr] gap-3 rounded-md border border-border bg-background p-2">
-            <img src="${image.url}" alt="Uploaded waste image ${index + 1}" class="size-16 rounded-md object-cover" />
+            <img src="${this.escapeHtml(image.url)}" alt="Uploaded waste image ${index + 1}" class="size-16 rounded-md object-cover" />
             <div class="min-w-0">
               <div class="text-xs font-semibold text-foreground">Image ${index + 1}</div>
               <div class="mt-1 text-xs text-muted-foreground">${detectedText}</div>
