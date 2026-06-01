@@ -3,10 +3,9 @@ import multer from 'multer';
 import { promises as fs } from 'fs';
 import axios from 'axios';
 import sharp from 'sharp';
-import type { AnalyzeImageResponse } from '@wastegrab/shared';
+import type { AnalyzeImageResponse, DetectedWasteCategory } from '@wastegrab/shared';
 import { prisma } from '../prisma.js';
 
-type RoboflowRequest = Request & { file?: Express.Multer.File };
 type RoboflowPrediction = { class: string };
 type RoboflowResponse = {
   outputs?: Array<{
@@ -26,6 +25,7 @@ const upload = multer({
   dest: 'uploads/',
   limits: {
     fileSize: 5 * 1024 * 1024,
+    files: 5,
   },
   fileFilter: (_req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
@@ -39,16 +39,17 @@ const upload = multer({
 
 router.post(
   '/analyze-image',
-  upload.single('image'),
+  upload.array('images', 5),
 
-  async (req: RoboflowRequest, res: Response) => {
-    const imagePath = req.file?.path;
+  async (req: Request, res: Response) => {
+    const uploadedFiles = Array.isArray(req.files) ? req.files : [];
+    const imagePaths = uploadedFiles.map((file) => file.path);
 
     try {
-      if (!imagePath) {
+      if (!imagePaths.length) {
         return res.status(400).json({
           success: false,
-          error: 'No image file uploaded',
+          error: 'No image files uploaded',
         });
       }
 
@@ -60,11 +61,6 @@ router.post(
         });
       }
 
-      const image = await sharp(imagePath)
-        .rotate()
-        .jpeg({ quality: 90 })
-        .toBuffer()
-        .then((buffer) => buffer.toString('base64'));
       const categories = await prisma.wasteCategory.findMany({
         where: {
           isBanned: false,
@@ -96,28 +92,6 @@ router.post(
         ]),
       );
 
-      const response = await axios.post<RoboflowResponse>(
-        'https://serverless.roboflow.com/infer/workflows/harith-haiqal-syaiful-eksan/general-segmentation-api-3',
-        {
-          api_key: apiKey,
-          inputs: {
-            image: {
-              type: 'base64',
-              value: image,
-            },
-            classes: categories.map((category) => category.name).join(', '),
-          },
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-
-      const predictions =
-        response.data.outputs?.[0]?.predictions?.predictions ?? [];
-
       const counts = categories.reduce<Record<string, number>>(
         (acc, category) => ({
           ...acc,
@@ -125,14 +99,79 @@ router.post(
         }),
         {},
       );
+      const analyzedImages: AnalyzeImageResponse['result']['images'] = [];
 
-      predictions.forEach((item) => {
-        const category = categoriesByName.get(normalizeCategoryName(item.class));
+      for (const [index, imagePath] of imagePaths.entries()) {
+        const image = await sharp(imagePath)
+          .rotate()
+          .jpeg({ quality: 90 })
+          .toBuffer()
+          .then((buffer) => buffer.toString('base64'));
 
-        if (category) {
-          counts[category.name]++;
-        }
-      });
+        const response = await axios.post<RoboflowResponse>(
+          'https://serverless.roboflow.com/infer/workflows/harith-haiqal-syaiful-eksan/general-segmentation-api-3',
+          {
+            api_key: apiKey,
+            inputs: {
+              image: {
+                type: 'base64',
+                value: image,
+              },
+              classes: categories.map((category) => category.name).join(', '),
+            },
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+
+        const predictions =
+          response.data.outputs?.[0]?.predictions?.predictions ?? [];
+        const imageCounts = categories.reduce<Record<string, number>>(
+          (acc, category) => ({
+            ...acc,
+            [category.name]: 0,
+          }),
+          {},
+        );
+
+        predictions.forEach((item) => {
+          const category = categoriesByName.get(normalizeCategoryName(item.class));
+
+          if (category) {
+            counts[category.name]++;
+            imageCounts[category.name]++;
+          }
+        });
+
+        const detectedCategoriesForImage = categories
+          .map((category): DetectedWasteCategory => {
+            const count = imageCounts[category.name] ?? 0;
+            const estimatedWeight = Number(
+              (count * Number(category.averageWeightKg)).toFixed(2),
+            );
+
+            return {
+              id: category.id,
+              name: category.name,
+              count,
+              estimatedWeight,
+              points: Math.round(estimatedWeight * category.pointsPerKg),
+            };
+          })
+          .filter((category) => category.count > 0);
+
+        analyzedImages.push({
+          index,
+          detectedCategories: detectedCategoriesForImage,
+          totalItems: detectedCategoriesForImage.reduce(
+            (total, category) => total + category.count,
+            0,
+          ),
+        });
+      }
 
       const detectedCategories = categories
         .map((category) => {
@@ -174,6 +213,7 @@ router.post(
         result: {
           detectedWaste,
           detectedCategories,
+          images: analyzedImages,
           counts,
           totalItems,
           estimatedWeight,
@@ -200,9 +240,7 @@ router.post(
         error: err instanceof Error ? err.message : String(err),
       });
     } finally {
-      if (imagePath) {
-        await fs.unlink(imagePath).catch(() => undefined);
-      }
+      await Promise.all(imagePaths.map((imagePath) => fs.unlink(imagePath).catch(() => undefined)));
     }
 });
 

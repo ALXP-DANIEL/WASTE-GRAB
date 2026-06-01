@@ -9,6 +9,11 @@ export type DetectedWasteCategory = {
 export type AnalyzeImageResult = {
   detectedWaste: string[];
   detectedCategories: DetectedWasteCategory[];
+  images: Array<{
+    index: number;
+    detectedCategories: DetectedWasteCategory[];
+    totalItems: number;
+  }>;
   counts: Record<string, number>;
   totalItems: number;
   estimatedWeight: number;

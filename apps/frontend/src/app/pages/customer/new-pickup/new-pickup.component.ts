@@ -23,7 +23,7 @@ import {
   lucideUpload,
   lucideX,
 } from '@ng-icons/lucide';
-import { PickupStatus, type Address, type AnalyzeImageResponse, type WasteCategory } from '@wastegrab/shared';
+import { PickupStatus, type Address, type AnalyzeImageResponse, type AnalyzeImageResult, type DetectedWasteCategory, type WasteCategory } from '@wastegrab/shared';
 import { driver, type Driver } from 'driver.js';
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { PickupRequestService } from '@/services/pickup-request.service';
@@ -371,8 +371,8 @@ export class CustomerNewPickupPage implements AfterViewInit, OnDestroy {
   }
 
   protected async analyzeImages(): Promise<void> {
-    const image = this.images()[0]?.file;
-    if (!image) {
+    const images = this.images().map((image) => image.file);
+    if (!images.length) {
       this.submitError.set('Add at least one image before running AI analysis.');
       return;
     }
@@ -383,7 +383,9 @@ export class CustomerNewPickupPage implements AfterViewInit, OnDestroy {
 
     try {
       const formData = new FormData();
-      formData.append('image', image);
+      images.forEach((image) => {
+        formData.append('images', image);
+      });
 
       const response = await firstValueFrom(
         this.http.post<AnalyzeImageResponse>('/api/roboflow-ai/analyze-image', formData),
@@ -444,7 +446,7 @@ export class CustomerNewPickupPage implements AfterViewInit, OnDestroy {
       if (suggestions[0]) {
         this.applyAllSuggestions(suggestions);
         this.currentStep.set('items');
-        this.showAiDetectionDialog(suggestions);
+        this.showAiDetectionDialog(suggestions, result.images ?? []);
       } else {
         this.handleEmptyAiResult();
       }
@@ -498,7 +500,7 @@ export class CustomerNewPickupPage implements AfterViewInit, OnDestroy {
     this.dialogService.create({
       zTitle: 'None detected',
       zDescription:
-        'AI could not match any waste category from the uploaded image. You can continue by adding the waste items manually.',
+        'AI could not match any waste category from the uploaded images. You can continue by adding the waste items manually.',
       zContent:
         '<div class="rounded-lg border border-border bg-muted/40 p-3 text-sm text-muted-foreground">Start with the Add button, choose the category, then enter the estimated weight.</div>',
       zOkText: 'Proceed',
@@ -561,7 +563,7 @@ export class CustomerNewPickupPage implements AfterViewInit, OnDestroy {
           element: '[data-tour="pickup-upload"]',
           popover: {
             title: 'Start with photos',
-            description: 'Add clear photos of the waste. The first image is used for AI detection, and every image helps the collector verify the pickup.',
+            description: 'Add clear photos of the waste. AI scans every uploaded image, and each photo helps the collector verify the pickup.',
             side: 'top',
             align: 'center',
           },
@@ -570,7 +572,7 @@ export class CustomerNewPickupPage implements AfterViewInit, OnDestroy {
           element: '[data-tour="pickup-ai"]',
           popover: {
             title: 'AI scan',
-            description: 'After uploading a photo, this button can suggest categories, estimated weight, and points. You can still edit everything.',
+            description: 'After uploading photos, this button can suggest categories, estimated weight, and points across all images. You can still edit everything.',
             side: 'right',
             align: 'start',
             onNextClick: (_element, _step, opts) => this.moveTourToStep(opts.driver, 'items'),
@@ -676,8 +678,14 @@ export class CustomerNewPickupPage implements AfterViewInit, OnDestroy {
     return localStorage.getItem(NEW_PICKUP_TOUR_KEY) === 'true';
   }
 
-  private showAiDetectionDialog(suggestions: AiSuggestion[]): void {
+  private showAiDetectionDialog(
+    suggestions: AiSuggestion[],
+    analyzedImages: AnalyzeImageResult['images'],
+  ): void {
     const totalDetected = suggestions.reduce((total, suggestion) => total + suggestion.count, 0);
+    const imagesByIndex = new Map(
+      analyzedImages.map((image) => [image.index, image]),
+    );
     const rows = suggestions
       .map(
         (suggestion) => `
@@ -694,11 +702,40 @@ export class CustomerNewPickupPage implements AfterViewInit, OnDestroy {
         `,
       )
       .join('');
+    const imageRows = this.images()
+      .map((image, index) => {
+        const analyzedImage = imagesByIndex.get(index);
+        const detectedCategories = analyzedImage?.detectedCategories ?? [];
+        const detectedText = detectedCategories.length
+          ? detectedCategories
+              .map((category) => this.formatDetectedImageCategory(category))
+              .join(', ')
+          : 'No matching waste detected';
+
+        return `
+          <div class="grid grid-cols-[4rem_1fr] gap-3 rounded-md border border-border bg-background p-2">
+            <img src="${image.url}" alt="Uploaded waste image ${index + 1}" class="size-16 rounded-md object-cover" />
+            <div class="min-w-0">
+              <div class="text-xs font-semibold text-foreground">Image ${index + 1}</div>
+              <div class="mt-1 text-xs text-muted-foreground">${detectedText}</div>
+            </div>
+          </div>
+        `;
+      })
+      .join('');
 
     this.dialogService.create({
       zTitle: 'Waste detected',
       zDescription: `AI found ${totalDetected} item${totalDetected === 1 ? '' : 's'} across ${suggestions.length} categor${suggestions.length === 1 ? 'y' : 'ies'}.`,
-      zContent: `<div class="grid gap-2 text-sm">${rows}</div>`,
+      zContent: `
+        <div class="grid gap-3 text-sm">
+          <div class="grid gap-2">${imageRows}</div>
+          <div class="border-t border-border pt-3">
+            <div class="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Combined suggestion</div>
+            <div class="grid gap-2">${rows}</div>
+          </div>
+        </div>
+      `,
       zOkText: 'Review Items',
       zCancelText: null,
       zWidth: 'max-w-md',
@@ -706,6 +743,10 @@ export class CustomerNewPickupPage implements AfterViewInit, OnDestroy {
         this.currentStep.set('items');
       },
     });
+  }
+
+  private formatDetectedImageCategory(category: DetectedWasteCategory): string {
+    return `${this.escapeHtml(category.name)} x${category.count}`;
   }
 
   protected async submit(): Promise<void> {
