@@ -195,15 +195,22 @@ jobs:
     runs-on: ubuntu-latest
     needs: e2e-check
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    continue-on-error: true
     steps:
       - name: Deploy E2E report to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
 
       - name: Add E2E report link to summary
+        if: always()
         shell: bash
         run: |
-          echo "E2E report: ${{ steps.deployment.outputs.page_url }}" >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "${{ steps.deployment.outputs.page_url }}" ]; then
+            echo "E2E report: ${{ steps.deployment.outputs.page_url }}" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "E2E report was uploaded as the e2e-playwright-report workflow artifact." >> "$GITHUB_STEP_SUMMARY"
+            echo "GitHub Pages publishing is optional. Enable Pages in repository settings to publish the report URL." >> "$GITHUB_STEP_SUMMARY"
+          fi
 
   backend-image:
     name: Backend Docker image
