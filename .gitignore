@@ -57,6 +57,16 @@ vitest.config.*.timestamp*
 .nx/polygraph
 .nx/self-healing
 
+# Graphify runtime/cache files
+.graphify_detect.json
+.graphify-focus/
+graphify-scope/
+graphify-out/.graphify_labels.json
+graphify-out/.graphify_root
+graphify-out/.graphify_analysis.json
+graphify-out/[0-9][0-9][0-9][0-9]-*/
+graphify-out/cache/ast/
+
 # generated clients
 apps/backend/src/generated/prisma/
 
