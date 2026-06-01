@@ -25,7 +25,6 @@ import {
 } from '@ng-icons/lucide';
 import { PickupStatus, type Address, type AnalyzeImageResponse, type WasteCategory } from '@wastegrab/shared';
 import { driver, type Driver } from 'driver.js';
-import 'driver.js/dist/driver.css';
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { PickupRequestService } from '@/services/pickup-request.service';
 import { AuthService } from '@/services/auth.service';
