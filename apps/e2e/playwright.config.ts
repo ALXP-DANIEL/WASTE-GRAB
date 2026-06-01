@@ -2,8 +2,11 @@ import { defineConfig, devices } from '@playwright/test';
 import { workspaceRoot } from '@nx/devkit';
 import { nxE2EPreset } from '@nx/playwright/preset';
 
-const frontendURL = process.env['BASE_URL'] || 'http://127.0.0.1:4200';
+const frontendURL = process.env['BASE_URL'] || 'http://localhost:4200';
 const backendURL = process.env['API_BASE_URL'] || 'http://127.0.0.1:3000';
+const frontendEndpoint = new URL(frontendURL);
+const frontendHost = frontendEndpoint.hostname;
+const frontendPort = frontendEndpoint.port || (frontendEndpoint.protocol === 'https:' ? '443' : '80');
 
 export default defineConfig({
   ...nxE2EPreset(__filename, { testDir: './src' }),
@@ -42,7 +45,7 @@ export default defineConfig({
         curl -fsS http://127.0.0.1:3000/api/health >/dev/null
 
         echo "Starting frontend..."
-        npm exec -- nx run frontend:serve:development --excludeTaskDependencies --port=4200 --host=127.0.0.1
+        npm exec -- nx run frontend:serve:development --excludeTaskDependencies --port=${frontendPort} --host=${frontendHost}
       '
     `,
     url: frontendURL,
