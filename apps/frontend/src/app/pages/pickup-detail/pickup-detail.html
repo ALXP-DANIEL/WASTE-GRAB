@@ -17,13 +17,23 @@
   >
     @if (pickup(); as currentPickup) {
     <div class="grid gap-4">
-      <section class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">
-        <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+      <section
+        class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6"
+      >
+        <div
+          class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between"
+        >
           <div class="min-w-0">
             <div class="flex flex-wrap items-center gap-2">
               <h1 class="text-xl font-bold md:text-2xl">{{ pageTitle() }}</h1>
-              <span class="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold" [class]="statusClass(currentPickup.status)">
-                <ng-icon [name]="statusIcon(currentPickup.status)" class="size-3.5!" />
+              <span
+                class="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold"
+                [class]="statusClass(currentPickup.status)"
+              >
+                <ng-icon
+                  [name]="statusIcon(currentPickup.status)"
+                  class="size-3.5!"
+                />
                 {{ statusLabel(currentPickup.status) }}
               </span>
             </div>
@@ -42,22 +52,24 @@
             >
               @if (isCancelling()) {
               <ng-icon name="lucideLoaderCircle" class="size-4! animate-spin" />
-              Cancelling
-              } @else {
+              Cancelling } @else {
               <ng-icon name="lucideXCircle" class="size-4!" />
-              Cancel Request
-              }
+              Cancel Request }
             </button>
             }
 
             <div class="grid grid-cols-2 gap-3 text-sm">
               <div class="rounded-lg border border-border bg-background p-3">
                 <p class="text-xs text-muted-foreground">Created</p>
-                <p class="mt-1 font-semibold">{{ formatDate(currentPickup.createdAt) }}</p>
+                <p class="mt-1 font-semibold">
+                  {{ formatDate(currentPickup.createdAt) }}
+                </p>
               </div>
               <div class="rounded-lg border border-border bg-background p-3">
                 <p class="text-xs text-muted-foreground">Completed</p>
-                <p class="mt-1 font-semibold">{{ formatDate(currentPickup.completedAt) }}</p>
+                <p class="mt-1 font-semibold">
+                  {{ formatDate(currentPickup.completedAt) }}
+                </p>
               </div>
             </div>
           </div>
@@ -65,81 +77,103 @@
       </section>
 
       <section class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <article class="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
-          <span class="grid size-10 place-items-center rounded-lg bg-background text-primary">
+        <article
+          class="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+        >
+          <span
+            class="grid size-10 place-items-center rounded-lg bg-background text-primary"
+          >
             <ng-icon name="lucideScale" class="size-5!" />
           </span>
           <span>
-            <span class="block font-semibold">{{ totalWeight() | number:'1.2-2' }} kg</span>
-            <span class="block text-sm text-muted-foreground">Total weight</span>
+            <span class="block font-semibold"
+              >{{ totalWeight() | number:'1.2-2' }} kg</span
+            >
+            <span class="block text-sm text-muted-foreground"
+              >Total weight</span
+            >
           </span>
         </article>
-        <article class="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
-          <span class="grid size-10 place-items-center rounded-lg bg-background text-primary">
+        <article
+          class="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+        >
+          <span
+            class="grid size-10 place-items-center rounded-lg bg-background text-primary"
+          >
             <ng-icon name="lucideCoins" class="size-5!" />
           </span>
           <span>
             <span class="block font-semibold">{{ totalPoints() }} pts</span>
-            <span class="block text-sm text-muted-foreground">Potential points</span>
+            <span class="block text-sm text-muted-foreground"
+              >Potential points</span
+            >
           </span>
         </article>
-        <article class="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
-          <span class="grid size-10 place-items-center rounded-lg bg-background text-primary">
+        <article
+          class="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+        >
+          <span
+            class="grid size-10 place-items-center rounded-lg bg-background text-primary"
+          >
             <ng-icon name="lucideImage" class="size-5!" />
           </span>
           <span>
-            <span class="block font-semibold">{{ currentPickup.images.length }}</span>
+            <span class="block font-semibold"
+              >{{ currentPickup.images.length }}</span
+            >
             <span class="block text-sm text-muted-foreground">Images</span>
           </span>
         </article>
         @if (showDistance(currentPickup)) {
-        <article class="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
-          <span class="grid size-10 place-items-center rounded-lg bg-background text-primary">
+        <article
+          class="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+        >
+          <span
+            class="grid size-10 place-items-center rounded-lg bg-background text-primary"
+          >
             <ng-icon name="lucideNavigation" class="size-5!" />
           </span>
           <span>
-            <span class="block font-semibold">{{ distanceLabel(currentPickup) }}</span>
+            <span class="block font-semibold"
+              >{{ distanceLabel(currentPickup) }}</span
+            >
             <span class="block text-sm text-muted-foreground">Distance</span>
           </span>
         </article>
         } @else {
-        <article class="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
-          <span class="grid size-10 place-items-center rounded-lg bg-background text-primary">
+        <article
+          class="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+        >
+          <span
+            class="grid size-10 place-items-center rounded-lg bg-background text-primary"
+          >
             <ng-icon name="lucidePackageCheck" class="size-5!" />
           </span>
           <span>
-            <span class="block font-semibold">{{ statusLabel(currentPickup.status) }}</span>
-            <span class="block text-sm text-muted-foreground">Current status</span>
+            <span class="block font-semibold"
+              >{{ statusLabel(currentPickup.status) }}</span
+            >
+            <span class="block text-sm text-muted-foreground"
+              >Current status</span
+            >
           </span>
         </article>
         }
       </section>
 
       @if (isCollectorDetail() && routeMapStops(currentPickup).length > 0) {
-      <section class="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
-        <div class="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between lg:p-6">
+      <section
+        class="overflow-hidden rounded-lg border border-border bg-card shadow-sm"
+      >
+        <div
+          class="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between lg:p-6"
+        >
           <div>
             <h2 class="text-lg font-semibold">Pickup Map</h2>
             <p class="text-sm text-muted-foreground">
               Check the route from your location to the customer pickup address.
             </p>
           </div>
-
-          @if (routeUrl(currentPickup); as directionsUrl) {
-          <a
-            [href]="directionsUrl"
-            target="_blank"
-            rel="noreferrer"
-            class="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            <ng-icon name="lucideNavigation" class="size-4!" />
-            View route
-          </a>
-          } @else if (context === 'collector') {
-          <span class="text-sm text-muted-foreground">
-            Allow location access to show the route to the customer.
-          </span>
-          }
         </div>
 
         <app-route-map
@@ -148,14 +182,18 @@
           [stops]="routeMapStops(currentPickup)"
         />
       </section>
-      }
-
-      @if (isCollectorDetail()) {
-      <section class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      } @if (isCollectorDetail()) {
+      <section
+        class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6"
+      >
+        <div
+          class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between"
+        >
           <div>
             <h2 class="text-lg font-semibold">Collector Actions</h2>
-            <p class="text-sm text-muted-foreground">Move this pickup through the collection workflow.</p>
+            <p class="text-sm text-muted-foreground">
+              Move this pickup through the collection workflow.
+            </p>
           </div>
 
           <div class="flex flex-wrap gap-2">
@@ -168,15 +206,11 @@
             >
               @if (isPreparingAcceptRoute()) {
               <ng-icon name="lucideLoaderCircle" class="size-4! animate-spin" />
-              Preparing route
-              } @else {
+              Preparing route } @else {
               <ng-icon name="lucideTruck" class="size-4!" />
-              Accept Pickup
-              }
+              Accept Pickup }
             </button>
-            }
-
-            @if (canMarkArrived()) {
+            } @if (canMarkArrived()) {
             <button
               type="button"
               class="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
@@ -186,9 +220,7 @@
               <ng-icon name="lucideMapPin" class="size-4!" />
               Mark Arrived
             </button>
-            }
-
-            @if (canCompletePickup()) {
+            } @if (canCompletePickup()) {
             <button
               type="button"
               class="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
@@ -206,15 +238,22 @@
         <div class="mt-4 rounded-lg border border-border bg-background p-3">
           <div class="mb-3">
             <p class="font-semibold">Verify item weights</p>
-            <p class="text-sm text-muted-foreground">Enter the actual weight collected for every item.</p>
+            <p class="text-sm text-muted-foreground">
+              Enter the actual weight collected for every item.
+            </p>
           </div>
 
           <div class="grid gap-3">
             @for (item of currentPickup.items; track item.id) {
-            <label class="grid gap-2 rounded-lg border border-border bg-card p-3 sm:grid-cols-[1fr_12rem] sm:items-center">
+            <label
+              class="grid gap-2 rounded-lg border border-border bg-card p-3 sm:grid-cols-[1fr_12rem] sm:items-center"
+            >
               <span>
                 <span class="block font-semibold">{{ itemLabel(item) }}</span>
-                <span class="text-xs text-muted-foreground">Estimate: {{ estimatedWeight(item) | number:'1.2-2' }} kg</span>
+                <span class="text-xs text-muted-foreground"
+                  >Estimate: {{ estimatedWeight(item) | number:'1.2-2' }}
+                  kg</span
+                >
               </span>
               <span class="relative">
                 <input
@@ -225,7 +264,10 @@
                   [ngModel]="verificationWeight(item)"
                   (ngModelChange)="setVerificationWeight(item.id, $event)"
                 />
-                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground">kg</span>
+                <span
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground"
+                  >kg</span
+                >
               </span>
             </label>
             }
@@ -241,15 +283,14 @@
             Verify Items
           </button>
         </div>
-        }
-
-        @if (collectorActionError()) {
-        <p class="mt-3 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm font-medium text-destructive">
+        } @if (collectorActionError()) {
+        <p
+          class="mt-3 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm font-medium text-destructive"
+        >
           {{ collectorActionError() }}
         </p>
-        }
-
-        @if (!canAcceptPickup() && !canMarkArrived() && !canVerifyPickup() && !canCompletePickup()) {
+        } @if (!canAcceptPickup() && !canMarkArrived() && !canVerifyPickup() &&
+        !canCompletePickup()) {
         <p class="mt-4 text-sm text-muted-foreground">
           No collector action is available for the current status.
         </p>
@@ -257,21 +298,38 @@
       </section>
       }
 
-      <section class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">
-        <div class="mb-5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+      <section
+        class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6"
+      >
+        <div
+          class="mb-5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between"
+        >
           <div>
             <h2 class="text-lg font-semibold">Status Timeline</h2>
-            <p class="text-sm text-muted-foreground">Track this pickup from request to completion.</p>
+            <p class="text-sm text-muted-foreground">
+              Track this pickup from request to completion.
+            </p>
           </div>
-          <span class="inline-flex w-fit items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold" [class]="statusClass(currentPickup.status)">
-            <ng-icon [name]="statusIcon(currentPickup.status)" class="size-3.5!" />
+          <span
+            class="inline-flex w-fit items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold"
+            [class]="statusClass(currentPickup.status)"
+          >
+            <ng-icon
+              [name]="statusIcon(currentPickup.status)"
+              class="size-3.5!"
+            />
             {{ statusLabel(currentPickup.status) }}
           </span>
         </div>
 
         <div class="relative">
-          <div class="absolute left-5 right-5 top-5 hidden h-0.5 bg-border sm:block"></div>
-          <div class="absolute left-5 top-5 hidden h-0.5 bg-primary sm:block" [style.width]="timelineProgressWidth()"></div>
+          <div
+            class="absolute left-5 right-5 top-5 hidden h-0.5 bg-border sm:block"
+          ></div>
+          <div
+            class="absolute left-5 top-5 hidden h-0.5 bg-primary sm:block"
+            [style.width]="timelineProgressWidth()"
+          ></div>
 
           <div class="grid gap-4" [ngClass]="timelineGridClass()">
             @for (step of timelineSteps(); track step.status) {
@@ -284,9 +342,18 @@
               </div>
 
               <div class="min-w-0 sm:mt-3 sm:text-center">
-                <p class="text-sm font-semibold" [class]="timelineTextClass(step)">{{ step.label }}</p>
-                <p class="mt-1 text-xs text-muted-foreground">{{ step.description }}</p>
-                <p class="mt-1 text-xs font-medium text-muted-foreground">{{ step.time }}</p>
+                <p
+                  class="text-sm font-semibold"
+                  [class]="timelineTextClass(step)"
+                >
+                  {{ step.label }}
+                </p>
+                <p class="mt-1 text-xs text-muted-foreground">
+                  {{ step.description }}
+                </p>
+                <p class="mt-1 text-xs font-medium text-muted-foreground">
+                  {{ step.time }}
+                </p>
               </div>
             </div>
             }
@@ -296,7 +363,9 @@
 
       <section class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
         <div class="grid gap-4">
-          <section class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">
+          <section
+            class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6"
+          >
             <div class="mb-4 flex items-center gap-2">
               <ng-icon name="lucidePackage" class="size-5! text-primary" />
               <h2 class="text-lg font-semibold">Pickup Items</h2>
@@ -304,11 +373,15 @@
 
             <div class="grid gap-3">
               @for (item of currentPickup.items; track item.id) {
-              <div class="grid gap-3 rounded-lg border border-border bg-background p-3">
+              <div
+                class="grid gap-3 rounded-lg border border-border bg-background p-3"
+              >
                 <div>
                   <p class="font-semibold">{{ itemLabel(item) }}</p>
                   @if (showCategoryId()) {
-                  <p class="text-xs text-muted-foreground">Category ID: {{ item.categoryId }}</p>
+                  <p class="text-xs text-muted-foreground">
+                    Category ID: {{ item.categoryId }}
+                  </p>
                   }
                 </div>
 
@@ -321,15 +394,20 @@
                     >
                       @if (isAiEstimate(item)) {
                       <ng-icon name="lucideSparkles" class="size-3.5!" />
-                      }
-                      {{ estimateSourceLabel(item) }}
+                      } {{ estimateSourceLabel(item) }}
                     </p>
-                    <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-                      <span class="inline-flex items-center gap-1 font-semibold">
+                    <div
+                      class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm"
+                    >
+                      <span
+                        class="inline-flex items-center gap-1 font-semibold"
+                      >
                         <ng-icon name="lucideScale" class="size-4!" />
                         {{ estimatedWeight(item) | number:'1.2-2' }} kg
                       </span>
-                      <span class="inline-flex items-center gap-1 font-semibold text-primary">
+                      <span
+                        class="inline-flex items-center gap-1 font-semibold text-primary"
+                      >
                         <ng-icon name="lucideCoins" class="size-4!" />
                         {{ estimatedPoints(item) }} pts
                       </span>
@@ -337,33 +415,49 @@
                   </div>
 
                   <div class="rounded-lg border border-border bg-card p-3">
-                    <p class="text-xs font-semibold uppercase text-muted-foreground">Collector verified</p>
+                    <p
+                      class="text-xs font-semibold uppercase text-muted-foreground"
+                    >
+                      Collector verified
+                    </p>
                     @if (verifiedWeight(item) !== null) {
-                    <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-                      <span class="inline-flex items-center gap-1 font-semibold">
+                    <div
+                      class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm"
+                    >
+                      <span
+                        class="inline-flex items-center gap-1 font-semibold"
+                      >
                         <ng-icon name="lucideScale" class="size-4!" />
                         {{ verifiedWeight(item) | number:'1.2-2' }} kg
                       </span>
-                      <span class="inline-flex items-center gap-1 font-semibold text-primary">
+                      <span
+                        class="inline-flex items-center gap-1 font-semibold text-primary"
+                      >
                         <ng-icon name="lucideCoins" class="size-4!" />
                         {{ verifiedPoints(item) }} pts
                       </span>
                     </div>
                     } @else {
-                    <p class="mt-2 text-sm font-medium text-muted-foreground">Not verified yet</p>
+                    <p class="mt-2 text-sm font-medium text-muted-foreground">
+                      Not verified yet
+                    </p>
                     }
                   </div>
                 </div>
               </div>
               } @empty {
-              <div class="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+              <div
+                class="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground"
+              >
                 No item details found.
               </div>
               }
             </div>
           </section>
 
-          <section class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">
+          <section
+            class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6"
+          >
             <div class="mb-4 flex items-center gap-2">
               <ng-icon name="lucideImage" class="size-5! text-primary" />
               <h2 class="text-lg font-semibold">Images</h2>
@@ -372,16 +466,30 @@
             @if (currentPickup.images.length) {
             <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
               @for (image of currentPickup.images; track image.id) {
-              <a [href]="image.imageUrl" target="_blank" rel="noreferrer" class="group overflow-hidden rounded-lg border border-border bg-background">
-                <img [src]="image.imageUrl" alt="" class="aspect-square w-full object-cover transition-transform group-hover:scale-105" />
-                <span class="block truncate px-2 py-1.5 text-xs text-muted-foreground">
-                  {{ image.imageType === 'COLLECTOR_PROOF' ? 'Collector proof' : 'User upload' }}
+              <a
+                [href]="image.imageUrl"
+                target="_blank"
+                rel="noreferrer"
+                class="group overflow-hidden rounded-lg border border-border bg-background"
+              >
+                <img
+                  [src]="image.imageUrl"
+                  alt=""
+                  class="aspect-square w-full object-cover transition-transform group-hover:scale-105"
+                />
+                <span
+                  class="block truncate px-2 py-1.5 text-xs text-muted-foreground"
+                >
+                  {{ image.imageType === 'COLLECTOR_PROOF' ? 'Collector proof' :
+                  'User upload' }}
                 </span>
               </a>
               }
             </div>
             } @else {
-            <div class="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+            <div
+              class="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground"
+            >
               No images uploaded for this pickup.
             </div>
             }
@@ -389,65 +497,80 @@
         </div>
 
         <aside class="grid gap-4 content-start">
-          <section class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">
+          <section
+            class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6"
+          >
             <div class="mb-4 flex items-center gap-2">
               <ng-icon name="lucideUser" class="size-5! text-primary" />
               <h2 class="text-lg font-semibold">People</h2>
             </div>
             <div class="grid gap-4">
               <div>
-                <p class="text-xs font-semibold uppercase text-muted-foreground">Customer</p>
-                <p class="mt-1 font-semibold">{{ customerName(currentPickup) }}</p>
-                <p class="text-sm text-muted-foreground">{{ customerEmail(currentPickup) }}</p>
+                <p
+                  class="text-xs font-semibold uppercase text-muted-foreground"
+                >
+                  Customer
+                </p>
+                <p class="mt-1 font-semibold">
+                  {{ customerName(currentPickup) }}
+                </p>
+                <p class="text-sm text-muted-foreground">
+                  {{ customerEmail(currentPickup) }}
+                </p>
               </div>
               <div>
-                <p class="text-xs font-semibold uppercase text-muted-foreground">Collector</p>
-                <p class="mt-1 font-semibold">{{ collectorName(currentPickup) }}</p>
-                <p class="text-sm text-muted-foreground">{{ collectorEmail(currentPickup) }}</p>
+                <p
+                  class="text-xs font-semibold uppercase text-muted-foreground"
+                >
+                  Collector
+                </p>
+                <p class="mt-1 font-semibold">
+                  {{ collectorName(currentPickup) }}
+                </p>
+                <p class="text-sm text-muted-foreground">
+                  {{ collectorEmail(currentPickup) }}
+                </p>
               </div>
             </div>
           </section>
 
-          <section class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">
+          <section
+            class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6"
+          >
             <div class="mb-4 flex items-center gap-2">
               <ng-icon name="lucideMapPin" class="size-5! text-primary" />
               <h2 class="text-lg font-semibold">Location</h2>
             </div>
             <p class="font-semibold">{{ currentPickup.addressText }}</p>
-            @if (routeUrl(currentPickup); as routeUrl) {
-            <a
-              [href]="routeUrl"
-              target="_blank"
-              rel="noreferrer"
-              class="mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-            >
-              <ng-icon name="lucideNavigation" class="size-4!" />
-              View collector route
-            </a>
-            } @else if (context === 'customer' && currentPickup.collectorId) {
-            <p class="mt-3 text-sm text-muted-foreground">
-              Route will appear after the collector shares their latest location.
-            </p>
-            }
           </section>
 
-          <section class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">
+          <section
+            class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6"
+          >
             <div class="mb-4 flex items-center gap-2">
               <ng-icon name="lucideClock3" class="size-5! text-primary" />
               <h2 class="text-lg font-semibold">Notes</h2>
             </div>
-            <p class="whitespace-pre-wrap text-sm text-muted-foreground">{{ currentPickup.notes || 'No notes added.' }}</p>
+            <p class="whitespace-pre-wrap text-sm text-muted-foreground">
+              {{ currentPickup.notes || 'No notes added.' }}
+            </p>
           </section>
         </aside>
       </section>
     </div>
     } @else {
-    <section class="rounded-lg border border-border bg-card p-8 text-center shadow-sm">
+    <section
+      class="rounded-lg border border-border bg-card p-8 text-center shadow-sm"
+    >
       <h1 class="text-2xl font-bold">Pickup not found</h1>
       <p class="mt-2 text-sm text-muted-foreground">
-        {{ loadError() || 'The pickup you opened no longer exists or the slug is invalid.' }}
+        {{ loadError() || 'The pickup you opened no longer exists or the slug is
+        invalid.' }}
       </p>
-      <a [routerLink]="backRoute()" class="mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground">
+      <a
+        [routerLink]="backRoute()"
+        class="mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground"
+      >
         <ng-icon name="lucideArrowLeft" class="size-4!" />
         {{ backLabel() }}
       </a>
