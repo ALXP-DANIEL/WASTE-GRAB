@@ -141,6 +141,8 @@ model PickupRequest {
   userId      String       @map("user_id")
   collectorId String?      @map("collector_id")
   addressText String       @map("address_text") @db.Text
+  latitude    Decimal?     @db.Decimal(10, 7)
+  longitude   Decimal?     @db.Decimal(10, 7)
   status      PickupStatus @default(PENDING)
 
   aiClassificationLabel String?  @map("ai_classification_label") @db.VarChar(100)

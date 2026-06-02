@@ -173,6 +173,8 @@ export async function seedLocalCustomerAddress() {
       state: "Kuala Lumpur",
       postalCode: "50000",
       formattedAddress: "123 Main Street, Kuala Lumpur, Kuala Lumpur 50000",
+      latitude: 3.1543,
+      longitude: 101.7042,
       notes: "Default customer seed address",
     });
   }
@@ -192,6 +194,8 @@ export async function seedLocalCustomerAddress() {
       state: "Kuala Lumpur",
       postalCode: "55100",
       formattedAddress: "88 Jalan Bukit Bintang, Kuala Lumpur, Kuala Lumpur 55100",
+      latitude: 3.1466,
+      longitude: 101.7116,
       notes: "Secondary customer seed address",
     });
   }
@@ -327,6 +331,8 @@ export async function seedLocalVouchersAndRewards() {
       userId: customer.id,
       collectorId: collector.id,
       addressText: "123 Main Street, Kuala Lumpur, Kuala Lumpur 50000",
+      latitude: "3.1543000",
+      longitude: "101.7042000",
       status: PickupStatus.COMPLETED,
       aiClassificationLabel: "Paper, Glass, Plastic",
       notes: "Seed completed pickup for reward ledger demo.",
@@ -357,6 +363,8 @@ export async function seedLocalVouchersAndRewards() {
       userId: customer.id,
       collectorId: collector.id,
       addressText: "123 Main Street, Kuala Lumpur, Kuala Lumpur 50000",
+      latitude: "3.1543000",
+      longitude: "101.7042000",
       status: PickupStatus.COMPLETED,
       aiClassificationLabel: "Paper, Glass, Plastic",
       notes: "Seed completed pickup for reward ledger demo.",

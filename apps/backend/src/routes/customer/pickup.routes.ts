@@ -301,13 +301,13 @@ pickupRouter.post(
         return;
       }
 
-      const addressText = await resolveAddressText({
+      const pickupAddress = await resolvePickupAddress({
         userId: user.id,
         addressId,
         fallback: normalizeText(req.body.addressText),
       });
 
-      if (!addressText) {
+      if (!pickupAddress.addressText) {
         res.status(400).json({ error: "Pickup address is required." } as ApiErrorResponse);
         return;
       }
@@ -345,7 +345,9 @@ pickupRouter.post(
           data: {
             id: pickupRequestId,
             userId: user.id,
-            addressText,
+            addressText: pickupAddress.addressText,
+            latitude: pickupAddress.latitude,
+            longitude: pickupAddress.longitude,
             status: PrismaPickupStatus.PENDING,
             notes,
             aiClassificationLabel: classificationLabel,
@@ -389,13 +391,13 @@ pickupRouter.post(
   }) as RequestHandler,
 );
 
-async function resolveAddressText(input: {
+async function resolvePickupAddress(input: {
   userId: string;
   addressId: string | undefined;
   fallback: string;
-}): Promise<string> {
+}): Promise<{ addressText: string; latitude: string | null; longitude: string | null }> {
   if (!input.addressId) {
-    return input.fallback;
+    return { addressText: input.fallback, latitude: null, longitude: null };
   }
 
   const address = await prisma.address.findFirst({
@@ -406,15 +408,61 @@ async function resolveAddressText(input: {
   });
 
   if (!address) {
-    return input.fallback;
+    return { addressText: input.fallback, latitude: null, longitude: null };
   }
 
-  return (
+  const addressText = (
     address.formattedAddress ||
     [address.street, address.city, address.state, address.postalCode]
       .filter(Boolean)
       .join(", ")
   );
+
+  const coordinates = normalizeCoordinatePair(address.latitude, address.longitude);
+
+  return {
+    addressText,
+    latitude: coordinates ? String(coordinates.latitude) : stringifyDecimal(address.latitude),
+    longitude: coordinates ? String(coordinates.longitude) : stringifyDecimal(address.longitude),
+  };
+}
+
+function normalizeCoordinatePair(latitudeValue: unknown, longitudeValue: unknown): { latitude: number; longitude: number } | null {
+  const latitude = parseCoordinate(latitudeValue);
+  const longitude = parseCoordinate(longitudeValue);
+
+  if (latitude === null || longitude === null) {
+    return null;
+  }
+
+  if (latitude === 0 && longitude === 0) {
+    return null;
+  }
+
+  if (isLatitude(latitude) && isLongitude(longitude)) {
+    return { latitude, longitude };
+  }
+
+  if (isLatitude(longitude) && isLongitude(latitude)) {
+    return { latitude: longitude, longitude: latitude };
+  }
+
+  return null;
+}
+
+function parseCoordinate(value: unknown): number | null {
+  const raw = Array.isArray(value) ? value[0] : value;
+  const parsed = Number(raw);
+
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function isLatitude(value: number): boolean {
+  return value >= -90 && value <= 90;
+}
+
+function isLongitude(value: number): boolean {
+  return value >= -180 && value <= 180;
 }
 
 function normalizeText(value: unknown): string {
@@ -506,6 +554,8 @@ function toPickupRequestWithDetails(row: {
   userId: string;
   collectorId: string | null;
   addressText: string;
+  latitude: unknown | null;
+  longitude: unknown | null;
   status: PrismaPickupStatus;
   notes: string | null;
   aiClassificationLabel: string | null;
@@ -538,6 +588,8 @@ function toPickupRequestWithDetails(row: {
     userId: row.userId,
     collectorId: row.collectorId,
     addressText: row.addressText,
+    latitude: stringifyDecimal(row.latitude),
+    longitude: stringifyDecimal(row.longitude),
     status: row.status as PickupRequest["status"],
     notes: row.notes,
     aiClassificationLabel: row.aiClassificationLabel,

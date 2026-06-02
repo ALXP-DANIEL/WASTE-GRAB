@@ -1,2 +1,1 @@
-// Collector routes will go here
-export {};
+export { default as collectorPickupRouter } from "./pickup.routes.js";

@@ -80,6 +80,8 @@ function toAdminPickupRequest(row: {
   userId: string;
   collectorId: string | null;
   addressText: string;
+  latitude: unknown | null;
+  longitude: unknown | null;
   status: PrismaPickupStatus;
   notes: string | null;
   aiClassificationLabel: string | null;
@@ -122,6 +124,8 @@ function toAdminPickupRequest(row: {
     userId: row.userId,
     collectorId: row.collectorId,
     addressText: row.addressText,
+    latitude: stringifyDecimal(row.latitude),
+    longitude: stringifyDecimal(row.longitude),
     status: row.status as PickupRequest["status"],
     notes: row.notes,
     aiClassificationLabel: row.aiClassificationLabel,

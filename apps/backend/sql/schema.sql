@@ -66,6 +66,8 @@ CREATE TABLE password_reset_tokens (
 --   user_id CHAR(36) NOT NULL,
 --   collector_id CHAR(36),
 --   address_text LONGTEXT NOT NULL,
+--   latitude DECIMAL(10, 7),
+--   longitude DECIMAL(10, 7),
 --   status ENUM('PENDING', 'ACCEPTED', 'ARRIVED', 'VERIFIED', 'COMPLETED', 'CANCELLED') DEFAULT 'PENDING',
 --   ai_classification_label VARCHAR(100),
 --   ai_confidence DECIMAL(5, 2),

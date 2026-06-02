@@ -17,6 +17,8 @@ export type PickupRequest = {
   userId: string;
   collectorId: string | null;
   addressText: string;
+  latitude: string | null; // Decimal as string
+  longitude: string | null; // Decimal as string
   status: PickupStatus;
   notes: string | null;
   aiClassificationLabel: string | null;
@@ -88,6 +90,14 @@ export type AdminPickupRequest = PickupRequestWithDetails & {
 
 export type ListAdminPickupRequestsResponse = {
   pickupRequests: AdminPickupRequest[];
+};
+
+export type CollectorPickupRequest = AdminPickupRequest & {
+  distanceKm: string | null;
+};
+
+export type ListCollectorPickupRequestsResponse = {
+  pickupRequests: CollectorPickupRequest[];
 };
 
 export type GetPickupRequestResponse = {
