@@ -78,14 +78,12 @@
     <section class="mb-4 overflow-hidden rounded-lg border border-border bg-background">
       <div class="grid gap-0 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <div class="min-h-80 bg-muted">
-          @if (routeStopMapUrl(); as mapUrl) {
-          <iframe
-            [src]="mapUrl"
-            title="Assigned pickup route map"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-            class="h-80 w-full border-0"
-          ></iframe>
+          @if (collectorLocation() && routeMapStops().length > 0) {
+          <app-route-map
+            class="block h-80"
+            [origin]="collectorLocation()"
+            [stops]="routeMapStops()"
+          />
           } @else {
           <div class="grid h-80 place-items-center p-6 text-center">
             <div>

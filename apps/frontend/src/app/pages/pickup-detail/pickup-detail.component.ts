@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DomSanitizer, type SafeResourceUrl } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -28,6 +27,7 @@ import { AuthService } from '@/services/auth.service';
 import { PickupRequestService } from '@/services/pickup-request.service';
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
+import { RouteMapComponent, type RouteMapPoint, type RouteMapStop } from '@/ui/route-map/route-map.component';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
 import { Z_MODAL_DATA } from '@/ui/zard/dialog/dialog.service';
 import { PickupStatus, type AdminPickupRequest, type CollectorPickupRequest, type PickupItem, type PickupRequestWithDetails } from '@wastegrab/shared';
@@ -81,17 +81,15 @@ const PICKUP_STATUS_FLOW = [
 
 @Component({
   selector: 'app-accept-pickup-dialog',
-  imports: [CommonModule, NgIcon],
+  imports: [CommonModule, NgIcon, RouteMapComponent],
   template: `
     <div class="grid gap-4">
       <div class="overflow-hidden rounded-lg border border-border">
-        <iframe
-          [src]="mapUrl"
-          title="Pickup route preview"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          class="h-64 w-full border-0"
-        ></iframe>
+        <app-route-map
+          class="block h-64"
+          [origin]="data.origin"
+          [stops]="routeStops()"
+        />
       </div>
 
       <div class="grid gap-3 sm:grid-cols-2">
@@ -162,10 +160,15 @@ const PICKUP_STATUS_FLOW = [
 })
 export class AcceptPickupDialogComponent {
   protected readonly data = inject<AcceptPickupDialogData>(Z_MODAL_DATA);
-  private readonly sanitizer = inject(DomSanitizer);
-  protected readonly mapUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-    `https://maps.google.com/maps?saddr=${encodeURIComponent(`${this.data.origin.latitude},${this.data.origin.longitude}`)}&daddr=${encodeURIComponent(this.data.stops.map((stop) => `${stop.latitude},${stop.longitude}`).join(' to:'))}&dirflg=d&output=embed`,
-  );
+
+  protected routeStops(): RouteMapStop[] {
+    return this.data.stops.map((stop, index) => ({
+      ...stop,
+      label: this.stopLabel(index),
+      title: `${stop.title}${stop.isCandidate ? ' · new' : ''}`,
+      subtitle: stop.addressText,
+    }));
+  }
 
   protected stopLabel(index: number): string {
     return String.fromCharCode(65 + index);
@@ -175,7 +178,7 @@ export class AcceptPickupDialogComponent {
 @Component({
   selector: 'app-pickup-detail-page',
   templateUrl: './pickup-detail.html',
-  imports: [CommonModule, FormsModule, AppHeaderComponent, FetchStateComponent, RouterLink, NgIcon],
+  imports: [CommonModule, FormsModule, AppHeaderComponent, FetchStateComponent, RouterLink, NgIcon, RouteMapComponent],
   viewProviders: [
     provideIcons({
       lucideArrowLeft,
@@ -204,7 +207,6 @@ export class PickupDetailPage {
   private readonly customerPickups = inject(PickupRequestService);
   private readonly auth = inject(AuthService);
   private readonly dialogService = inject(ZardDialogService);
-  private readonly sanitizer = inject(DomSanitizer);
 
   protected readonly pickup = signal<PickupDetail | null>(null);
   protected readonly isLoading = signal(true);
@@ -456,20 +458,22 @@ export class PickupDetailPage {
     return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(`${origin.latitude},${origin.longitude}`)}&destination=${encodeURIComponent(destination)}&travelmode=driving`;
   }
 
-  protected mapEmbedUrl(pickup: PickupDetail): SafeResourceUrl | null {
+  protected routeMapOrigin(pickup: PickupDetail): RouteMapPoint | null {
+    return this.routeOrigin(pickup);
+  }
+
+  protected routeMapStops(pickup: PickupDetail): RouteMapStop[] {
     if (!pickup.latitude || !pickup.longitude) {
-      return null;
+      return [];
     }
 
-    const destination = `${pickup.latitude},${pickup.longitude}`;
-    const origin = this.routeOrigin(pickup);
-    const url = origin
-      ? `https://maps.google.com/maps?saddr=${encodeURIComponent(`${origin.latitude},${origin.longitude}`)}&daddr=${encodeURIComponent(destination)}&dirflg=d&output=embed`
-      : `https://maps.google.com/maps?q=${encodeURIComponent(destination)}&z=14&output=embed`;
-
-    return this.sanitizer.bypassSecurityTrustResourceUrl(
-      url,
-    );
+    return [{
+      label: 'A',
+      title: `#${this.shortId(pickup.id)}`,
+      subtitle: pickup.addressText,
+      latitude: pickup.latitude,
+      longitude: pickup.longitude,
+    }];
   }
 
   protected showCategoryId(): boolean {

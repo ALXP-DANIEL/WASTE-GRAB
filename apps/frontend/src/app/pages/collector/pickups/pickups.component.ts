@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { DomSanitizer, type SafeResourceUrl } from '@angular/platform-browser';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideArrowUpRight,
@@ -24,6 +23,7 @@ import { firstValueFrom } from 'rxjs';
 import { CollectorPickupService, type CollectorLocation, type CollectorPickupScope } from '@/services/collector-pickup.service';
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
+import { RouteMapComponent, type RouteMapStop } from '@/ui/route-map/route-map.component';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { ZardTableImports } from '@/ui/zard/table';
@@ -48,7 +48,7 @@ const ROUTE_FIT_THRESHOLD_KM = 15;
 @Component({
   selector: 'app-collector-pickups-page',
   templateUrl: './pickups.html',
-  imports: [CommonModule, RouterLink, AppHeaderComponent, FetchStateComponent, ZardButtonComponent, TableHeaderComponent, NgIcon, ...ZardTableImports],
+  imports: [CommonModule, RouterLink, AppHeaderComponent, FetchStateComponent, ZardButtonComponent, TableHeaderComponent, NgIcon, RouteMapComponent, ...ZardTableImports],
   viewProviders: [
     provideIcons({
       lucideArrowUpRight,
@@ -71,7 +71,6 @@ const ROUTE_FIT_THRESHOLD_KM = 15;
 export class CollectorPickupsPage {
   private readonly pickupService = inject(CollectorPickupService);
   private readonly route = inject(ActivatedRoute);
-  private readonly sanitizer = inject(DomSanitizer);
 
   protected readonly pickupScope = this.readPickupScope();
   protected readonly pickups = signal<CollectorPickupRequest[]>([]);
@@ -116,22 +115,6 @@ export class CollectorPickupsPage {
     return this.assignedPickups()
       .filter((pickup) => this.hasPickupCoordinates(pickup))
       .sort((a, b) => this.routeSortValue(a) - this.routeSortValue(b));
-  });
-  protected readonly routeStopMapUrl = computed<SafeResourceUrl | null>(() => {
-    const location = this.collectorLocation();
-    const stops = this.routeStops();
-
-    if (!location || stops.length === 0) {
-      return null;
-    }
-
-    const encodedOrigin = encodeURIComponent(`${location.latitude},${location.longitude}`);
-    const destination = stops
-      .map((pickup) => `${pickup.latitude},${pickup.longitude}`)
-      .join(' to:');
-    const url = `https://maps.google.com/maps?saddr=${encodedOrigin}&daddr=${encodeURIComponent(destination)}&dirflg=d&output=embed`;
-
-    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   });
   protected readonly routeStopDirectionsUrl = computed(() => {
     const location = this.collectorLocation();
@@ -292,6 +275,16 @@ export class CollectorPickupsPage {
 
   protected routeStopLabel(index: number): string {
     return String.fromCharCode(65 + index);
+  }
+
+  protected routeMapStops(): RouteMapStop[] {
+    return this.routeStops().map((pickup, index) => ({
+      label: this.routeStopLabel(index),
+      title: `#${this.shortId(pickup.id)}`,
+      subtitle: pickup.addressText,
+      latitude: String(pickup.latitude),
+      longitude: String(pickup.longitude),
+    }));
   }
 
   private async loadPickups(requestLocation = true): Promise<void> {

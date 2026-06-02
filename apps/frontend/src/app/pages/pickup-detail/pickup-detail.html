@@ -115,7 +115,7 @@
         }
       </section>
 
-      @if (isCollectorDetail() && mapEmbedUrl(currentPickup)) {
+      @if (isCollectorDetail() && routeMapStops(currentPickup).length > 0) {
       <section class="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
         <div class="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between lg:p-6">
           <div>
@@ -142,13 +142,11 @@
           }
         </div>
 
-        <iframe
-          [src]="mapEmbedUrl(currentPickup)"
-          title="Pickup map"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          class="h-72 w-full border-0"
-        ></iframe>
+        <app-route-map
+          class="block h-72"
+          [origin]="routeMapOrigin(currentPickup)"
+          [stops]="routeMapStops(currentPickup)"
+        />
       </section>
       }
 
