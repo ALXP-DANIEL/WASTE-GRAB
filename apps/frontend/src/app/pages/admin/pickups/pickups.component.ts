@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
+  lucideArrowUpRight,
   lucideCheckCircle2,
   lucideClock3,
   lucideCoins,
@@ -29,9 +31,10 @@ type PickupFilter = 'all' | 'active' | 'completed' | 'cancelled';
 @Component({
   selector: 'app-admin-pickups-page',
   templateUrl: './pickups.html',
-  imports: [CommonModule, AppHeaderComponent, FetchStateComponent, ZardButtonComponent, TableHeaderComponent, NgIcon, ...ZardTableImports],
+  imports: [CommonModule, RouterLink, AppHeaderComponent, FetchStateComponent, ZardButtonComponent, TableHeaderComponent, NgIcon, ...ZardTableImports],
   viewProviders: [
     provideIcons({
+      lucideArrowUpRight,
       lucideCheckCircle2,
       lucideClock3,
       lucideCoins,

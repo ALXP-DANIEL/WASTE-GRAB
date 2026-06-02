@@ -2,6 +2,7 @@ import { Router, type NextFunction, type Request, type Response } from "express"
 import type {
   ApiErrorResponse,
   CollectorPickupRequest,
+  GetCollectorPickupRequestResponse,
   ListCollectorPickupRequestsResponse,
   PickupImage,
   PickupItem,
@@ -58,11 +59,20 @@ async function requireCollector(req: Request, res: Response, next: NextFunction)
 
 pickupRouter.get("/", requireCollector, async (req: Request, res: Response) => {
   try {
+    const user = await getCurrentUserFromRequest(req);
+
+    if (!user || user.role !== "COLLECTOR") {
+      res.status(403).json({ error: "Forbidden. Collector access required." } as ApiErrorResponse);
+      return;
+    }
+
     const collectorCoordinates = normalizeCoordinatePair(
       req.query.latitude,
       req.query.longitude,
     );
+    const scope = parsePickupScope(req.query.scope);
     const pickupRequests = await prisma.pickupRequest.findMany({
+      where: pickupScopeWhere(scope, user.id),
       include: pickupRequestInclude,
       orderBy: { createdAt: "desc" },
       take: 100,
@@ -84,6 +94,78 @@ pickupRouter.get("/", requireCollector, async (req: Request, res: Response) => {
     res.status(500).json({ error: message } as ApiErrorResponse);
   }
 });
+
+pickupRouter.get("/:pickupRequestId", requireCollector, async (req: Request, res: Response) => {
+  try {
+    const user = await getCurrentUserFromRequest(req);
+
+    if (!user || user.role !== "COLLECTOR") {
+      res.status(403).json({ error: "Forbidden. Collector access required." } as ApiErrorResponse);
+      return;
+    }
+
+    const collectorCoordinates = normalizeCoordinatePair(
+      req.query.latitude,
+      req.query.longitude,
+    );
+    const pickupRequest = await prisma.pickupRequest.findFirst({
+      where: {
+        id: String(req.params.pickupRequestId),
+        OR: [
+          { collectorId: user.id },
+          {
+            collectorId: null,
+            status: {
+              notIn: [PrismaPickupStatus.COMPLETED, PrismaPickupStatus.CANCELLED],
+            },
+          },
+        ],
+      },
+      include: pickupRequestInclude,
+    });
+
+    if (!pickupRequest) {
+      res.status(404).json({ error: "Pickup request not found." } as ApiErrorResponse);
+      return;
+    }
+
+    const payload: GetCollectorPickupRequestResponse = {
+      pickupRequest: toCollectorPickupRequest(pickupRequest, collectorCoordinates),
+    };
+
+    res.json(payload);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unable to fetch pickup request.";
+    res.status(500).json({ error: message } as ApiErrorResponse);
+  }
+});
+
+type PickupScope = "all" | "available" | "my";
+
+function parsePickupScope(value: unknown): PickupScope {
+  const raw = Array.isArray(value) ? value[0] : value;
+
+  return raw === "available" || raw === "my" ? raw : "all";
+}
+
+function pickupScopeWhere(scope: PickupScope, collectorId: string): Prisma.PickupRequestWhereInput {
+  if (scope === "available") {
+    return {
+      collectorId: null,
+      status: {
+        notIn: [PrismaPickupStatus.COMPLETED, PrismaPickupStatus.CANCELLED],
+      },
+    };
+  }
+
+  if (scope === "my") {
+    return {
+      collectorId,
+    };
+  }
+
+  return {};
+}
 
 function toCollectorPickupRequest(
   row: {

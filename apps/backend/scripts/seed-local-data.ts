@@ -36,6 +36,13 @@ const seedUsers = [
 const seedPassword = "ADae21!!";
 const seedIds = {
   completedPickup: "11111111-1111-4111-8111-111111111111",
+  ampangPickup: "99999999-9999-4999-8999-999999999999",
+  cherasPickup: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+  shahAlamPickup: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+  puchongPickup: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+  subangPickup: "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+  verifiedPickup: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+  cancelledPickup: "ffffffff-ffff-4fff-8fff-ffffffffffff",
   cafeVoucher: "22222222-2222-4222-8222-222222222222",
   groceryVoucher: "33333333-3333-4333-8333-333333333333",
   inactiveVoucher: "44444444-4444-4444-8444-444444444444",
@@ -44,6 +51,17 @@ const seedIds = {
   voucherRedeemedLedger: "77777777-7777-4777-8777-777777777777",
   adminAdjustmentLedger: "88888888-8888-4888-8888-888888888888",
 };
+
+const seedPickupRequestIds = [
+  seedIds.completedPickup,
+  seedIds.ampangPickup,
+  seedIds.cherasPickup,
+  seedIds.shahAlamPickup,
+  seedIds.puchongPickup,
+  seedIds.subangPickup,
+  seedIds.verifiedPickup,
+  seedIds.cancelledPickup,
+];
 
 const seedWasteCategories = [
   {
@@ -325,6 +343,27 @@ export async function seedLocalVouchersAndRewards() {
     },
   });
 
+  await prisma.pointLedger.deleteMany({
+    where: {
+      OR: [
+        { id: seedIds.pickupEarnedLedger },
+        {
+          pickupRequestId: {
+            in: seedPickupRequestIds,
+          },
+        },
+      ],
+    },
+  });
+
+  await prisma.pickupRequest.deleteMany({
+    where: {
+      id: {
+        in: seedPickupRequestIds,
+      },
+    },
+  });
+
   await prisma.pickupRequest.upsert({
     where: { id: seedIds.completedPickup },
     update: {
@@ -335,6 +374,31 @@ export async function seedLocalVouchersAndRewards() {
       longitude: "101.7042000",
       status: PickupStatus.COMPLETED,
       aiClassificationLabel: "Paper, Glass, Plastic",
+      aiSuggestedPayload: {
+        source: "seed-ai",
+        detectedAt: "2026-05-20T04:00:00.000Z",
+        summary: {
+          totalItems: 3,
+          estimatedWeight: 7,
+          points: 9,
+        },
+        items: [
+          {
+            categoryId: paper.id,
+            categoryName: "Paper",
+            detectedCount: 1,
+            estimatedWeight: 4,
+            points: 4,
+          },
+          {
+            categoryId: glass.id,
+            categoryName: "Glass",
+            detectedCount: 1,
+            estimatedWeight: 2,
+            points: 2,
+          },
+        ],
+      },
       notes: "Seed completed pickup for reward ledger demo.",
       completedAt: new Date("2026-05-20T04:30:00.000Z"),
       items: {
@@ -367,6 +431,31 @@ export async function seedLocalVouchersAndRewards() {
       longitude: "101.7042000",
       status: PickupStatus.COMPLETED,
       aiClassificationLabel: "Paper, Glass, Plastic",
+      aiSuggestedPayload: {
+        source: "seed-ai",
+        detectedAt: "2026-05-20T04:00:00.000Z",
+        summary: {
+          totalItems: 3,
+          estimatedWeight: 7,
+          points: 9,
+        },
+        items: [
+          {
+            categoryId: paper.id,
+            categoryName: "Paper",
+            detectedCount: 1,
+            estimatedWeight: 4,
+            points: 4,
+          },
+          {
+            categoryId: glass.id,
+            categoryName: "Glass",
+            detectedCount: 1,
+            estimatedWeight: 2,
+            points: 2,
+          },
+        ],
+      },
       notes: "Seed completed pickup for reward ledger demo.",
       completedAt: new Date("2026-05-20T04:30:00.000Z"),
       items: {
@@ -390,6 +479,192 @@ export async function seedLocalVouchersAndRewards() {
       },
     },
   });
+
+  const seedPickupRequests = [
+    {
+      id: seedIds.ampangPickup,
+      collectorId: null,
+      addressText: "Jalan Ampang, Kuala Lumpur 50450",
+      latitude: "3.1599000",
+      longitude: "101.7362000",
+      status: PickupStatus.PENDING,
+      aiClassificationLabel: "Paper, Plastic",
+      notes: "Seed available pickup near Ampang.",
+      aiSuggestedPayload: null,
+      createdAt: new Date("2026-06-01T02:20:00.000Z"),
+      completedAt: null,
+      items: [
+        { categoryId: paper.id, estimatedWeight: "3.20", actualWeight: null },
+        { categoryId: plastic.id, estimatedWeight: "1.80", actualWeight: null },
+      ],
+    },
+    {
+      id: seedIds.cherasPickup,
+      collectorId: null,
+      addressText: "Taman Connaught, Cheras, Kuala Lumpur 56000",
+      latitude: "3.0804000",
+      longitude: "101.7368000",
+      status: PickupStatus.PENDING,
+      aiClassificationLabel: "Glass, Plastic",
+      notes: "Seed available pickup near Cheras.",
+      aiSuggestedPayload: null,
+      createdAt: new Date("2026-06-01T03:40:00.000Z"),
+      completedAt: null,
+      items: [
+        { categoryId: glass.id, estimatedWeight: "2.40", actualWeight: null },
+        { categoryId: plastic.id, estimatedWeight: "2.10", actualWeight: null },
+      ],
+    },
+    {
+      id: seedIds.shahAlamPickup,
+      collectorId: null,
+      addressText: "Seksyen 13, Shah Alam, Selangor 40100",
+      latitude: "3.0733000",
+      longitude: "101.5304000",
+      status: PickupStatus.PENDING,
+      aiClassificationLabel: "Paper, Glass",
+      notes: "Seed available pickup near Shah Alam.",
+      aiSuggestedPayload: null,
+      createdAt: new Date("2026-06-01T05:10:00.000Z"),
+      completedAt: null,
+      items: [
+        { categoryId: paper.id, estimatedWeight: "5.50", actualWeight: null },
+        { categoryId: glass.id, estimatedWeight: "1.70", actualWeight: null },
+      ],
+    },
+    {
+      id: seedIds.puchongPickup,
+      collectorId: collector.id,
+      addressText: "Bandar Puchong Jaya, Selangor 47100",
+      latitude: "3.0477000",
+      longitude: "101.6174000",
+      status: PickupStatus.ACCEPTED,
+      aiClassificationLabel: "Paper, Plastic",
+      notes: "Seed assigned pickup near Puchong.",
+      aiSuggestedPayload: null,
+      createdAt: new Date("2026-06-01T06:30:00.000Z"),
+      completedAt: null,
+      items: [
+        { categoryId: paper.id, estimatedWeight: "4.20", actualWeight: null },
+        { categoryId: plastic.id, estimatedWeight: "2.60", actualWeight: null },
+      ],
+    },
+    {
+      id: seedIds.subangPickup,
+      collectorId: collector.id,
+      addressText: "SS15 Subang Jaya, Selangor 47500",
+      latitude: "3.0744000",
+      longitude: "101.5889000",
+      status: PickupStatus.ARRIVED,
+      aiClassificationLabel: "Glass, Plastic",
+      notes: "Seed assigned pickup near Subang Jaya.",
+      aiSuggestedPayload: null,
+      createdAt: new Date("2026-06-01T07:45:00.000Z"),
+      completedAt: null,
+      items: [
+        { categoryId: glass.id, estimatedWeight: "2.80", actualWeight: null },
+        { categoryId: plastic.id, estimatedWeight: "3.40", actualWeight: null },
+      ],
+    },
+    {
+      id: seedIds.verifiedPickup,
+      collectorId: collector.id,
+      addressText: "Mont Kiara, Kuala Lumpur 50480",
+      latitude: "3.1698000",
+      longitude: "101.6523000",
+      status: PickupStatus.VERIFIED,
+      aiClassificationLabel: "Paper, Glass, Plastic",
+      notes: "Seed verified pickup awaiting completion.",
+      aiSuggestedPayload: {
+        source: "seed-ai",
+        detectedAt: "2026-06-01T08:00:00.000Z",
+        summary: {
+          totalItems: 3,
+          estimatedWeight: 5.3,
+          points: 7,
+        },
+        items: [
+          {
+            categoryId: paper.id,
+            categoryName: "Paper",
+            detectedCount: 1,
+            estimatedWeight: 2.5,
+            points: 3,
+          },
+          {
+            categoryId: plastic.id,
+            categoryName: "Plastic",
+            detectedCount: 1,
+            estimatedWeight: 1.6,
+            points: 3,
+          },
+        ],
+      },
+      createdAt: new Date("2026-06-01T08:30:00.000Z"),
+      completedAt: null,
+      items: [
+        { categoryId: paper.id, estimatedWeight: "2.50", actualWeight: "2.70" },
+        { categoryId: glass.id, estimatedWeight: "1.20", actualWeight: "1.30" },
+        { categoryId: plastic.id, estimatedWeight: "1.60", actualWeight: "1.80" },
+      ],
+    },
+    {
+      id: seedIds.cancelledPickup,
+      collectorId: null,
+      addressText: "Kampung Baru, Kuala Lumpur 50300",
+      latitude: "3.1659000",
+      longitude: "101.7102000",
+      status: PickupStatus.CANCELLED,
+      aiClassificationLabel: "Plastic",
+      notes: "Seed cancelled pickup for status testing.",
+      aiSuggestedPayload: null,
+      createdAt: new Date("2026-06-01T09:15:00.000Z"),
+      completedAt: null,
+      items: [
+        { categoryId: plastic.id, estimatedWeight: "2.20", actualWeight: null },
+      ],
+    },
+  ];
+
+  for (const pickup of seedPickupRequests) {
+    await prisma.pickupRequest.upsert({
+      where: { id: pickup.id },
+      update: {
+        userId: customer.id,
+        collectorId: pickup.collectorId,
+        addressText: pickup.addressText,
+        latitude: pickup.latitude,
+        longitude: pickup.longitude,
+        status: pickup.status,
+        aiClassificationLabel: pickup.aiClassificationLabel,
+        aiSuggestedPayload: pickup.aiSuggestedPayload,
+        notes: pickup.notes,
+        completedAt: pickup.completedAt,
+        createdAt: pickup.createdAt,
+        items: {
+          deleteMany: {},
+          create: pickup.items,
+        },
+      },
+      create: {
+        id: pickup.id,
+        userId: customer.id,
+        collectorId: pickup.collectorId,
+        addressText: pickup.addressText,
+        latitude: pickup.latitude,
+        longitude: pickup.longitude,
+        status: pickup.status,
+        aiClassificationLabel: pickup.aiClassificationLabel,
+        aiSuggestedPayload: pickup.aiSuggestedPayload,
+        notes: pickup.notes,
+        completedAt: pickup.completedAt,
+        createdAt: pickup.createdAt,
+        items: {
+          create: pickup.items,
+        },
+      },
+    });
+  }
 
   await prisma.voucherRedemption.upsert({
     where: { id: seedIds.groceryRedemption },
@@ -512,7 +787,7 @@ export async function seedLocalVouchersAndRewards() {
     },
   });
 
-  console.log("Seeded local vouchers, redemption logs, and point ledger.");
+  console.log("Seeded local vouchers, pickup requests, redemption logs, and point ledger.");
 }
 
 function hashPassword(password: string): string {

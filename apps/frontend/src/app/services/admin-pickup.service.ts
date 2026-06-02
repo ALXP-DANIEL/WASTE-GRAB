@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import type { ListAdminPickupRequestsResponse } from '@wastegrab/shared';
+import type { GetAdminPickupRequestResponse, ListAdminPickupRequestsResponse } from '@wastegrab/shared';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -11,5 +11,9 @@ export class AdminPickupService {
 
   listPickups() {
     return this.http.get<ListAdminPickupRequestsResponse>(this.apiUrl, this.requestOptions);
+  }
+
+  getPickup(id: string) {
+    return this.http.get<GetAdminPickupRequestResponse>(`${this.apiUrl}/${id}`, this.requestOptions);
   }
 }

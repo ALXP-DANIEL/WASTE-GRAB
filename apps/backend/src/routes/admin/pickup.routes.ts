@@ -2,6 +2,7 @@ import { Router, type NextFunction, type Request, type Response } from "express"
 import type {
   AdminPickupRequest,
   ApiErrorResponse,
+  GetAdminPickupRequestResponse,
   ListAdminPickupRequestsResponse,
   PickupImage,
   PickupItem,
@@ -71,6 +72,31 @@ pickupRouter.get("/", requireAdmin, async (_req: Request, res: Response) => {
     res.json(payload);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unable to fetch pickup requests.";
+    res.status(500).json({ error: message } as ApiErrorResponse);
+  }
+});
+
+pickupRouter.get("/:pickupRequestId", requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const pickupRequest = await prisma.pickupRequest.findUnique({
+      where: {
+        id: String(req.params.pickupRequestId),
+      },
+      include: pickupRequestInclude,
+    });
+
+    if (!pickupRequest) {
+      res.status(404).json({ error: "Pickup request not found." } as ApiErrorResponse);
+      return;
+    }
+
+    const payload: GetAdminPickupRequestResponse = {
+      pickupRequest: toAdminPickupRequest(pickupRequest),
+    };
+
+    res.json(payload);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unable to fetch pickup request.";
     res.status(500).json({ error: message } as ApiErrorResponse);
   }
 });

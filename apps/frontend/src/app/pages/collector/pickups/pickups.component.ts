@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
+  lucideArrowUpRight,
   lucideCheckCircle2,
   lucideClock3,
   lucideCoins,
@@ -18,7 +20,7 @@ import {
 import { ImageType, PickupStatus, type CollectorPickupRequest } from '@wastegrab/shared';
 import { firstValueFrom } from 'rxjs';
 
-import { CollectorPickupService, type CollectorLocation } from '@/services/collector-pickup.service';
+import { CollectorPickupService, type CollectorLocation, type CollectorPickupScope } from '@/services/collector-pickup.service';
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
@@ -31,9 +33,10 @@ type LocationStatus = 'idle' | 'requesting' | 'granted' | 'denied' | 'unsupporte
 @Component({
   selector: 'app-collector-pickups-page',
   templateUrl: './pickups.html',
-  imports: [CommonModule, AppHeaderComponent, FetchStateComponent, ZardButtonComponent, TableHeaderComponent, NgIcon, ...ZardTableImports],
+  imports: [CommonModule, RouterLink, AppHeaderComponent, FetchStateComponent, ZardButtonComponent, TableHeaderComponent, NgIcon, ...ZardTableImports],
   viewProviders: [
     provideIcons({
+      lucideArrowUpRight,
       lucideCheckCircle2,
       lucideClock3,
       lucideCoins,
@@ -52,7 +55,9 @@ type LocationStatus = 'idle' | 'requesting' | 'granted' | 'denied' | 'unsupporte
 })
 export class CollectorPickupsPage {
   private readonly pickupService = inject(CollectorPickupService);
+  private readonly route = inject(ActivatedRoute);
 
+  protected readonly pickupScope = this.readPickupScope();
   protected readonly pickups = signal<CollectorPickupRequest[]>([]);
   protected readonly isLoading = signal(true);
   protected readonly loadError = signal('');
@@ -62,18 +67,30 @@ export class CollectorPickupsPage {
   protected readonly collectorLocationAccuracy = signal<number | null>(null);
   protected readonly PickupStatus = PickupStatus;
 
-  protected readonly filters: Array<{ value: PickupFilter; label: string }> = [
-    { value: 'all', label: 'All' },
-    { value: 'available', label: 'Available' },
-    { value: 'assigned', label: 'Assigned' },
-    { value: 'completed', label: 'Completed' },
-    { value: 'cancelled', label: 'Cancelled' },
-  ];
+  protected readonly filters = computed<Array<{ value: PickupFilter; label: string }>>(() => {
+    if (this.pickupScope === 'my') {
+      return [
+        { value: 'all', label: 'All' },
+        { value: 'assigned', label: 'Active' },
+        { value: 'completed', label: 'Completed' },
+        { value: 'cancelled', label: 'Cancelled' },
+      ];
+    }
+
+    return [
+      { value: 'all', label: 'All' },
+      { value: 'available', label: 'Available' },
+    ];
+  });
 
   protected readonly availablePickups = computed(() => this.pickups().filter((pickup) => pickup.collectorId === null && this.isActiveStatus(pickup.status)));
   protected readonly assignedPickups = computed(() => this.pickups().filter((pickup) => pickup.collectorId !== null && this.isActiveStatus(pickup.status)));
   protected readonly completedPickups = computed(() => this.pickups().filter((pickup) => pickup.status === PickupStatus.COMPLETED));
   protected readonly totalPotentialPoints = computed(() => this.pickups().reduce((total, pickup) => total + this.potentialPoints(pickup), 0));
+  protected readonly tableTitle = computed(() => this.pickupScope === 'my' ? 'My Pickups' : 'Available Pickup Requests');
+  protected readonly tableDescription = computed(() => this.pickupScope === 'my'
+    ? 'Review pickup requests assigned to you.'
+    : 'Review available customer pickup requests sorted by nearest known location.');
 
   protected readonly filteredPickups = computed(() => {
     const filter = this.activeFilter();
@@ -182,7 +199,10 @@ export class CollectorPickupsPage {
     try {
       const location = this.collectorLocation() ?? (requestLocation ? await this.requestCollectorLocation() : null);
       this.collectorLocation.set(location);
-      const response = await firstValueFrom(this.pickupService.listPickups(location));
+      const response = await firstValueFrom(this.pickupService.listPickups({
+        location,
+        scope: this.pickupScope,
+      }));
       this.pickups.set(response.pickupRequests);
     } catch {
       this.loadError.set('Unable to load pickup requests.');
@@ -224,6 +244,12 @@ export class CollectorPickupsPage {
 
   private isActiveStatus(status: PickupStatus): boolean {
     return ![PickupStatus.COMPLETED, PickupStatus.CANCELLED].includes(status);
+  }
+
+  private readPickupScope(): CollectorPickupScope {
+    const scope = this.route.snapshot.data['pickupScope'];
+
+    return scope === 'my' ? 'my' : 'available';
   }
 
   private statusMeta(status: PickupStatus): { label: string; className: string; icon: string } {

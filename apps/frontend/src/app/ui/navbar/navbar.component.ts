@@ -112,9 +112,15 @@ const ROLE_NAV = {
       showOnMobile: true,
     },
     {
-      label: 'Pickups',
+      label: 'Available',
       route: routePath(ROUTE_PATHS.collector.base, ROUTE_PATHS.collector.pickups),
       icon: 'lucideRecycle',
+      showOnMobile: true,
+    },
+    {
+      label: 'My Pickups',
+      route: routePath(ROUTE_PATHS.collector.base, ROUTE_PATHS.collector.myPickups),
+      icon: 'lucideTruck',
       showOnMobile: true,
     },
     {

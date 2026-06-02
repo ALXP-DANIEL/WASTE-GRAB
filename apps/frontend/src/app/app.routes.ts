@@ -17,8 +17,6 @@ const pages = {
   customerNewPickup: () =>
     import('./pages/customer/new-pickup/new-pickup.component').then((m) => m.CustomerNewPickupPage),
   customerPickups: () => import('./pages/customer/pickups/pickups.component').then((m) => m.CustomerPickupsPage),
-  customerPickupDetail: () =>
-    import('./pages/customer/pickups/pickup-detail.component').then((m) => m.CustomerPickupDetailPage),
   customerVouchers: () => import('./pages/customer/vouchers/vouchers.component').then((m) => m.CustomerVouchersPage),
   adminDashboard: () => import('./pages/admin/admin.component').then((m) => m.AdminPage),
   adminCollectors: () => import('./pages/admin/collection-locations/collection-location.component').then((m) => m.AdminCollectionLocationPage),
@@ -34,6 +32,7 @@ const pages = {
     import('./pages/collector/earnings/earnings.component').then((m) => m.CollectorEarningsPage),
   collectorPickups: () =>
     import('./pages/collector/pickups/pickups.component').then((m) => m.CollectorPickupsPage),
+  pickupDetail: () => import('./pages/pickup-detail/pickup-detail.component').then((m) => m.PickupDetailPage),
 } satisfies Record<string, LazyPage>;
 
 interface RouteConfig {
@@ -42,6 +41,7 @@ interface RouteConfig {
   loadComponent?: LazyPage;
   guards?: readonly CanActivateFn[];
   roles?: readonly UserRole[];
+  data?: Record<string, unknown>;
   children?: readonly RouteConfig[];
 }
 
@@ -93,7 +93,10 @@ const ROUTE_CONFIG = [
       {
         path: `${ROUTE_PATHS.customer.pickups}/${ROUTE_PATHS.customer.pickupDetail}`,
         title: 'Pickup Details',
-        loadComponent: pages.customerPickupDetail,
+        loadComponent: pages.pickupDetail,
+        data: {
+          pickupContext: 'customer',
+        },
       },
       {
         path: ROUTE_PATHS.customer.vouchers,
@@ -144,6 +147,14 @@ const ROUTE_CONFIG = [
         loadComponent: pages.adminPickups,
       },
       {
+        path: `${ROUTE_PATHS.admin.pickups}/${ROUTE_PATHS.admin.pickupDetail}`,
+        title: 'Pickup Details',
+        loadComponent: pages.pickupDetail,
+        data: {
+          pickupContext: 'admin',
+        },
+      },
+      {
         path: ROUTE_PATHS.admin.users,
         title: 'Manage Users',
         loadComponent: pages.adminUsers,
@@ -183,8 +194,37 @@ const ROUTE_CONFIG = [
       },
       {
         path: ROUTE_PATHS.collector.pickups,
-        title: 'Collector Pickups',
+        title: 'Available Pickups',
         loadComponent: pages.collectorPickups,
+        data: {
+          pickupScope: 'available',
+        },
+      },
+      {
+        path: `${ROUTE_PATHS.collector.pickups}/${ROUTE_PATHS.collector.pickupDetail}`,
+        title: 'Pickup Details',
+        loadComponent: pages.pickupDetail,
+        data: {
+          pickupContext: 'collector',
+          pickupScope: 'available',
+        },
+      },
+      {
+        path: ROUTE_PATHS.collector.myPickups,
+        title: 'My Pickups',
+        loadComponent: pages.collectorPickups,
+        data: {
+          pickupScope: 'my',
+        },
+      },
+      {
+        path: `${ROUTE_PATHS.collector.myPickups}/${ROUTE_PATHS.collector.pickupDetail}`,
+        title: 'Pickup Details',
+        loadComponent: pages.pickupDetail,
+        data: {
+          pickupContext: 'collector',
+          pickupScope: 'my',
+        },
       },
     ],
   },
@@ -197,6 +237,7 @@ function buildRoutes(configs: readonly RouteConfig[]): Routes {
       data: {
         title: config.title,
         ...(config.roles ? { roles: [...config.roles] } : {}),
+        ...(config.data ?? {}),
       },
     };
 

@@ -65,6 +65,11 @@ export type CreatePickupRequestInput = {
 export type PickupRequestWithDetails = PickupRequest & {
   items: PickupItem[];
   images: PickupImage[];
+  collector?: {
+    id: string;
+    name: string;
+    email: string;
+  } | null;
 };
 
 export type CreatePickupRequestResponse = {
@@ -92,12 +97,20 @@ export type ListAdminPickupRequestsResponse = {
   pickupRequests: AdminPickupRequest[];
 };
 
+export type GetAdminPickupRequestResponse = {
+  pickupRequest: AdminPickupRequest;
+};
+
 export type CollectorPickupRequest = AdminPickupRequest & {
   distanceKm: string | null;
 };
 
 export type ListCollectorPickupRequestsResponse = {
   pickupRequests: CollectorPickupRequest[];
+};
+
+export type GetCollectorPickupRequestResponse = {
+  pickupRequest: CollectorPickupRequest;
 };
 
 export type GetPickupRequestResponse = {

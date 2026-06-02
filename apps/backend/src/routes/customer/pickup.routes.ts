@@ -50,6 +50,13 @@ const upload = multer({
 });
 
 const pickupRequestInclude = {
+  collector: {
+    select: {
+      id: true,
+      name: true,
+      email: true,
+    },
+  },
   items: {
     include: {
       category: {
@@ -204,8 +211,8 @@ pickupRouter.patch(
     }
 
     if (
-      existing.status === PrismaPickupStatus.COMPLETED ||
-      existing.status === PrismaPickupStatus.CANCELLED
+      existing.status !== PrismaPickupStatus.PENDING &&
+      existing.status !== PrismaPickupStatus.ACCEPTED
     ) {
       res.status(400).json({ error: "This pickup request cannot be cancelled." } as ApiErrorResponse);
       return;
@@ -582,6 +589,11 @@ function toPickupRequestWithDetails(row: {
     imageType: PrismaImageType;
     uploadedAt: Date;
   }>;
+  collector?: {
+    id: string;
+    name: string;
+    email: string;
+  } | null;
 }): PickupRequestWithDetails {
   const request: PickupRequest = {
     id: row.id,
@@ -626,6 +638,7 @@ function toPickupRequestWithDetails(row: {
     ...request,
     items,
     images,
+    collector: row.collector ?? null,
   };
 }
 

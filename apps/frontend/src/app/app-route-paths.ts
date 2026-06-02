@@ -16,6 +16,7 @@ export const ROUTE_PATHS = {
     base: 'admin',
     collectors: 'locations',
     pickups: 'pickups',
+    pickupDetail: ':pickupId',
     users: 'users',
     wasteCategories: 'waste-categories',
     vouchers: 'vouchers',
@@ -25,6 +26,8 @@ export const ROUTE_PATHS = {
     base: 'collector',
     earnings: 'earnings',
     pickups: 'pickups',
+    myPickups: 'my-pickups',
+    pickupDetail: ':pickupId',
   },
 } as const;
 
