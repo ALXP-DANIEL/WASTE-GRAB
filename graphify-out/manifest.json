@@ -1,8 +1,8 @@
 {
   "/Users/alif/Projects/WasteGrab/apps/backend/src/app.ts": {
-    "ast_hash": "87c204f0e9dcb956d921c6a6d7034a6e",
-    "mtime": 1780303119.7378087,
-    "semantic_hash": "87c204f0e9dcb956d921c6a6d7034a6e"
+    "ast_hash": "b97ac675ff9d395d0a8f136117bb7313",
+    "mtime": 1780373529.538723,
+    "semantic_hash": "b97ac675ff9d395d0a8f136117bb7313"
   },
   "/Users/alif/Projects/WasteGrab/apps/backend/src/config.ts": {
     "ast_hash": "7894eac628ef589f20ee7efa31453d11",
@@ -40,19 +40,19 @@
     "semantic_hash": "db98168fbe95472b5c4c94d19746081c"
   },
   "/Users/alif/Projects/WasteGrab/apps/backend/src/routes/admin/notification.routes.ts": {
-    "ast_hash": "5316ab82043805e1c54530a590ea0be4",
-    "mtime": 1779904922.1083233,
-    "semantic_hash": "5316ab82043805e1c54530a590ea0be4"
+    "ast_hash": "9585408652475feba7d84e1141147858",
+    "mtime": 1780372010.6447797,
+    "semantic_hash": "9585408652475feba7d84e1141147858"
   },
   "/Users/alif/Projects/WasteGrab/apps/backend/src/routes/admin/pickup.routes.ts": {
-    "ast_hash": "84bba28fbe3b389f54eab376ef30130a",
-    "mtime": 1779919243.682279,
-    "semantic_hash": "84bba28fbe3b389f54eab376ef30130a"
+    "ast_hash": "7b372f530369a10e9e3190f02abc1a61",
+    "mtime": 1780437756.3058345,
+    "semantic_hash": "7b372f530369a10e9e3190f02abc1a61"
   },
   "/Users/alif/Projects/WasteGrab/apps/backend/src/routes/admin/user.routes.ts": {
-    "ast_hash": "d850d4d7cbfc22d437a8f0fb217fe97d",
-    "mtime": 1780028757.9970307,
-    "semantic_hash": "d850d4d7cbfc22d437a8f0fb217fe97d"
+    "ast_hash": "90e0a821c30e34955f42c0208ee0abd4",
+    "mtime": 1780372615.393328,
+    "semantic_hash": "90e0a821c30e34955f42c0208ee0abd4"
   },
   "/Users/alif/Projects/WasteGrab/apps/backend/src/routes/admin/voucher.routes.ts": {
     "ast_hash": "113fbcf98a8835e1df5c8e5721bd7445",
@@ -65,14 +65,19 @@
     "semantic_hash": "356f053960fdb4b1b326989a909396df"
   },
   "/Users/alif/Projects/WasteGrab/apps/backend/src/routes/auth.routes.ts": {
-    "ast_hash": "b85dec58e6a8d51b8ff436bf1ef23af1",
-    "mtime": 1780028757.9971833,
-    "semantic_hash": "b85dec58e6a8d51b8ff436bf1ef23af1"
+    "ast_hash": "1e1fa78a564821600c1859b3e8ea7ebd",
+    "mtime": 1780372595.4848225,
+    "semantic_hash": "1e1fa78a564821600c1859b3e8ea7ebd"
   },
   "/Users/alif/Projects/WasteGrab/apps/backend/src/routes/collector/index.ts": {
-    "ast_hash": "9c793d9ea65440d7eac731b6a79c05a9",
-    "mtime": 1779726482.911377,
-    "semantic_hash": "9c793d9ea65440d7eac731b6a79c05a9"
+    "ast_hash": "17cf9719dc4dfb63bc7002ec9930970b",
+    "mtime": 1780373529.0138392,
+    "semantic_hash": "17cf9719dc4dfb63bc7002ec9930970b"
+  },
+  "/Users/alif/Projects/WasteGrab/apps/backend/src/routes/collector/pickup.routes.ts": {
+    "ast_hash": "2549b2e414370aa2b9a7d72eafb5a110",
+    "mtime": 1780437769.021175,
+    "semantic_hash": "2549b2e414370aa2b9a7d72eafb5a110"
   },
   "/Users/alif/Projects/WasteGrab/apps/backend/src/routes/customer/address.routes.ts": {
     "ast_hash": "666a4c9586e2d0ae83d0925956d02957",
@@ -85,9 +90,9 @@
     "semantic_hash": "866c9ec829e4e3d4a7d9c1595680dd73"
   },
   "/Users/alif/Projects/WasteGrab/apps/backend/src/routes/customer/pickup.routes.ts": {
-    "ast_hash": "e68833daa89fd284c66d795e870088c9",
-    "mtime": 1780359400.8675218,
-    "semantic_hash": "e68833daa89fd284c66d795e870088c9"
+    "ast_hash": "a2e798dca3d168d7cb3046d248feee3d",
+    "mtime": 1780437756.3066225,
+    "semantic_hash": "a2e798dca3d168d7cb3046d248feee3d"
   },
   "/Users/alif/Projects/WasteGrab/apps/backend/src/routes/customer/voucher.routes.ts": {
     "ast_hash": "304f7e0769de3c91f50beac73bbe380f",
@@ -95,9 +100,9 @@
     "semantic_hash": "304f7e0769de3c91f50beac73bbe380f"
   },
   "/Users/alif/Projects/WasteGrab/apps/backend/src/routes/index.ts": {
-    "ast_hash": "b9ba9b7ab3197e9fa89e0b5219c3a91f",
-    "mtime": 1779919243.6824176,
-    "semantic_hash": "b9ba9b7ab3197e9fa89e0b5219c3a91f"
+    "ast_hash": "b786691f1d76c0d273c64ed00b0b2c4d",
+    "mtime": 1780373529.3499749,
+    "semantic_hash": "b786691f1d76c0d273c64ed00b0b2c4d"
   },
   "/Users/alif/Projects/WasteGrab/apps/backend/src/routes/notification.routes.ts": {
     "ast_hash": "a474b5ec23e8025aa9e724639b3213fd",
@@ -110,9 +115,9 @@
     "semantic_hash": "f4214d97b9b7a539b13a48ef86628963"
   },
   "/Users/alif/Projects/WasteGrab/apps/backend/src/routes/roboflow-ai.spec.ts": {
-    "ast_hash": "0a20e0f8e7fecb2f8d40623238660e30",
-    "mtime": 1780303131.2601833,
-    "semantic_hash": "0a20e0f8e7fecb2f8d40623238660e30"
+    "ast_hash": "a49261b709efd1d541d5c54002933ee1",
+    "mtime": 1780372615.554875,
+    "semantic_hash": "a49261b709efd1d541d5c54002933ee1"
   },
   "/Users/alif/Projects/WasteGrab/apps/backend/src/routes/roboflow-ai.ts": {
     "ast_hash": "56e268803b51ab696a2cd080db719a77",
@@ -130,9 +135,9 @@
     "semantic_hash": "6972f4f0135a6af9d23f374aa4677e98"
   },
   "/Users/alif/Projects/WasteGrab/apps/backend/src/services/auth.service.ts": {
-    "ast_hash": "35aa23f20a418d2ad3b9c1662c2b25e0",
-    "mtime": 1780028757.9974935,
-    "semantic_hash": "35aa23f20a418d2ad3b9c1662c2b25e0"
+    "ast_hash": "0243153de7157f1986ae8e43675afc31",
+    "mtime": 1780372595.322729,
+    "semantic_hash": "0243153de7157f1986ae8e43675afc31"
   },
   "/Users/alif/Projects/WasteGrab/apps/backend/src/services/notification-stream.service.ts": {
     "ast_hash": "71ee2c70ec68688109d085babb5ce6f0",
@@ -175,9 +180,9 @@
     "semantic_hash": "f2fbef0c774ce3e6ac19e03f11f02bd3"
   },
   "/Users/alif/Projects/WasteGrab/apps/e2e/src/admin/admin-test-utils.ts": {
-    "ast_hash": "0f88ba9b631664d7d698eec27dc255ed",
-    "mtime": 1780307592.529947,
-    "semantic_hash": "0f88ba9b631664d7d698eec27dc255ed"
+    "ast_hash": "92792b69cbf5a74ce684352c9d5bce21",
+    "mtime": 1780372615.7163332,
+    "semantic_hash": "92792b69cbf5a74ce684352c9d5bce21"
   },
   "/Users/alif/Projects/WasteGrab/apps/e2e/src/admin/api-operations.spec.ts": {
     "ast_hash": "ee99ce9dbb8aae3a77f7450ec350f884",
@@ -190,9 +195,9 @@
     "semantic_hash": "0017db50b544ccd2f3778833ce8197cb"
   },
   "/Users/alif/Projects/WasteGrab/apps/e2e/src/admin/user-management.spec.ts": {
-    "ast_hash": "f760f8424b27ed8e1f26db2a2d18b60c",
-    "mtime": 1780307592.7877529,
-    "semantic_hash": "f760f8424b27ed8e1f26db2a2d18b60c"
+    "ast_hash": "ce956471f5ebdc05d2bb437f402c7c83",
+    "mtime": 1780372615.8772955,
+    "semantic_hash": "ce956471f5ebdc05d2bb437f402c7c83"
   },
   "/Users/alif/Projects/WasteGrab/apps/e2e/src/admin/voucher-management.spec.ts": {
     "ast_hash": "67b3eaa3df77491b4bec094e7d0a0a97",
@@ -200,9 +205,9 @@
     "semantic_hash": "67b3eaa3df77491b4bec094e7d0a0a97"
   },
   "/Users/alif/Projects/WasteGrab/apps/e2e/src/admin/waste-category.spec.ts": {
-    "ast_hash": "2d6a66d5e8f7eabf5a6c186a4f54748f",
-    "mtime": 1780307592.3552341,
-    "semantic_hash": "2d6a66d5e8f7eabf5a6c186a4f54748f"
+    "ast_hash": "f8a7f5cc1370b20af25e86cbdcd95ca7",
+    "mtime": 1780372616.03773,
+    "semantic_hash": "f8a7f5cc1370b20af25e86cbdcd95ca7"
   },
   "/Users/alif/Projects/WasteGrab/apps/e2e/src/api/platform.spec.ts": {
     "ast_hash": "222ea51778d1e7a0f27f723d75914170",
@@ -225,14 +230,14 @@
     "semantic_hash": "89fe0ca54946bf033ec386942543b179"
   },
   "/Users/alif/Projects/WasteGrab/apps/e2e/src/customer/pickup-operations.spec.ts": {
-    "ast_hash": "f41cff135b85e1c6ecebaf047fe61f48",
-    "mtime": 1780306079.2058225,
-    "semantic_hash": "f41cff135b85e1c6ecebaf047fe61f48"
+    "ast_hash": "6b60ae99a5a4ed15024f79c746e2dfc4",
+    "mtime": 1780437979.9631207,
+    "semantic_hash": "6b60ae99a5a4ed15024f79c746e2dfc4"
   },
   "/Users/alif/Projects/WasteGrab/apps/e2e/src/customer/pickup-test-utils.ts": {
-    "ast_hash": "6185c9b0c99eb0ca4c5bae48f924bb68",
-    "mtime": 1780306079.2051036,
-    "semantic_hash": "6185c9b0c99eb0ca4c5bae48f924bb68"
+    "ast_hash": "fc9cb074838de9f292aff0ece913c910",
+    "mtime": 1780372616.1974738,
+    "semantic_hash": "fc9cb074838de9f292aff0ece913c910"
   },
   "/Users/alif/Projects/WasteGrab/apps/e2e/src/customer/voucher-operations.spec.ts": {
     "ast_hash": "686f85241bb464e16d923d82140ff446",
@@ -245,14 +250,14 @@
     "semantic_hash": "ea18fb19caf30b8ce5c386ef06475b17"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/app-route-paths.ts": {
-    "ast_hash": "28deeb243d435cfa77bade17c1316439",
-    "mtime": 1779904922.1098325,
-    "semantic_hash": "28deeb243d435cfa77bade17c1316439"
+    "ast_hash": "3209c64c875a3ac880c8a99e63241018",
+    "mtime": 1780407764.0491998,
+    "semantic_hash": "3209c64c875a3ac880c8a99e63241018"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/app.routes.ts": {
-    "ast_hash": "58f205b9754f0af58ade9a00895c220c",
-    "mtime": 1780358760.9053278,
-    "semantic_hash": "58f205b9754f0af58ade9a00895c220c"
+    "ast_hash": "1488b44d7f184abbf30e760535f1b4d1",
+    "mtime": 1780407990.842492,
+    "semantic_hash": "1488b44d7f184abbf30e760535f1b4d1"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/admin/admin.component.ts": {
     "ast_hash": "fd22859e0bf055fc58817ea7ca2481d0",
@@ -280,24 +285,24 @@
     "semantic_hash": "bb105fc90a82f3cd0f1c6051ec4528c8"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/admin/notifications/notifications.component.ts": {
-    "ast_hash": "7231941c9e4d0ae4dd53d239f7452463",
-    "mtime": 1780358760.905175,
-    "semantic_hash": "7231941c9e4d0ae4dd53d239f7452463"
+    "ast_hash": "b4fd89cdd12967acb12bc92e0e061b59",
+    "mtime": 1780372043.949648,
+    "semantic_hash": "b4fd89cdd12967acb12bc92e0e061b59"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/admin/notifications/notifications.html": {
-    "ast_hash": "baa1722f59c4206ecb7d97b885669099",
-    "mtime": 1780358761.0722446,
-    "semantic_hash": "baa1722f59c4206ecb7d97b885669099"
+    "ast_hash": "468c85a96b1d53dc44bc1d123a0cf22c",
+    "mtime": 1780372075.9263275,
+    "semantic_hash": "468c85a96b1d53dc44bc1d123a0cf22c"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/admin/pickups/pickups.component.ts": {
-    "ast_hash": "3d7a2a61faf55df7597925dc956d405f",
-    "mtime": 1780358351.4939399,
-    "semantic_hash": "3d7a2a61faf55df7597925dc956d405f"
+    "ast_hash": "0969f7519e5d9d1a4c64ddf8041e11d4",
+    "mtime": 1780407773.705349,
+    "semantic_hash": "0969f7519e5d9d1a4c64ddf8041e11d4"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/admin/pickups/pickups.html": {
-    "ast_hash": "eb6c2b3d9fecf20c34d4a50ff002bf67",
-    "mtime": 1780358377.4955168,
-    "semantic_hash": "eb6c2b3d9fecf20c34d4a50ff002bf67"
+    "ast_hash": "0e2a3432bc0cb18bf6e1d110d2318fce",
+    "mtime": 1780407785.5717514,
+    "semantic_hash": "0e2a3432bc0cb18bf6e1d110d2318fce"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/admin/users/users.component.ts": {
     "ast_hash": "28f0db3e1107fcc12efb8fb23b3ded78",
@@ -334,6 +339,11 @@
     "mtime": 1779913980.9132056,
     "semantic_hash": "bf6a0a4c03fcbbeba5bfd4d26d3bffb2"
   },
+  "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/auth/auth.html": {
+    "ast_hash": "c9116c03edc161a59bd4566d1d80e0e8",
+    "mtime": 1779913971.165468,
+    "semantic_hash": "c9116c03edc161a59bd4566d1d80e0e8"
+  },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/collector/collector.component.ts": {
     "ast_hash": "b8e11459f4384cda5082126fb314bd0e",
     "mtime": 1779733188.218627,
@@ -345,39 +355,44 @@
     "semantic_hash": "e2183fa6f2569f34b8290edc536b5a2b"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/collector/pickups/pickups.component.ts": {
-    "ast_hash": "597df61a8515e8a748a81609aeb2676c",
-    "mtime": 1779733188.2183282,
-    "semantic_hash": "597df61a8515e8a748a81609aeb2676c"
+    "ast_hash": "ddbd58c93a201e63ecf619b76989511c",
+    "mtime": 1780440265.0592413,
+    "semantic_hash": "ddbd58c93a201e63ecf619b76989511c"
+  },
+  "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/collector/pickups/pickups.html": {
+    "ast_hash": "cd2e07e9298489e17f687945d6816e16",
+    "mtime": 1780440271.260525,
+    "semantic_hash": "cd2e07e9298489e17f687945d6816e16"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/customer/customer.component.ts": {
     "ast_hash": "9c1146f85797221fc971d2f42f0e42ab",
     "mtime": 1780362364.5846968,
     "semantic_hash": "9c1146f85797221fc971d2f42f0e42ab"
   },
-  "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/customer/new-pickup/new-pickup.component.ts": {
-    "ast_hash": "99b3cc17fe07608eefa1ba9d2b5718f8",
-    "mtime": 1780303119.739078,
-    "semantic_hash": "99b3cc17fe07608eefa1ba9d2b5718f8"
+  "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/customer/customer.html": {
+    "ast_hash": "8994904093bd4fe12646c4348b53d879",
+    "mtime": 1780362364.5850048,
+    "semantic_hash": "8994904093bd4fe12646c4348b53d879"
   },
-  "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/customer/new-pickup/new-pickup.html": {
-    "ast_hash": "44cadfdfe81a1166c26e5fd50c8dba99",
-    "mtime": 1780354832.181375,
-    "semantic_hash": "44cadfdfe81a1166c26e5fd50c8dba99"
+  "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/customer/new-pickup/new-pickup.component.ts": {
+    "ast_hash": "5662b3cd79963f862bef5c1f57f34734",
+    "mtime": 1780372615.229181,
+    "semantic_hash": "5662b3cd79963f862bef5c1f57f34734"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/customer/pickups/pickup-data.ts": {
     "ast_hash": "d577e3ad73d8889abad1a8c137f70490",
     "mtime": 1779733188.2120776,
     "semantic_hash": "d577e3ad73d8889abad1a8c137f70490"
   },
-  "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/customer/pickups/pickup-detail.component.ts": {
-    "ast_hash": "9555e3e435b842094c613b8377f18f2c",
-    "mtime": 1780355949.5284503,
-    "semantic_hash": "9555e3e435b842094c613b8377f18f2c"
-  },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/customer/pickups/pickups.component.ts": {
     "ast_hash": "7d6a7c3d9ff38d15372dd26ace69f369",
     "mtime": 1780360610.294006,
     "semantic_hash": "7d6a7c3d9ff38d15372dd26ace69f369"
+  },
+  "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/customer/pickups/pickups.html": {
+    "ast_hash": "57cbf8c70f7ebbb19c54a6fcabd8af8d",
+    "mtime": 1780360610.3218722,
+    "semantic_hash": "57cbf8c70f7ebbb19c54a6fcabd8af8d"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/customer/profile/profile-modal.component.ts": {
     "ast_hash": "3062c27c630662eef07302ffd4ccd4da",
@@ -404,10 +419,25 @@
     "mtime": 1780356364.4051254,
     "semantic_hash": "81ebb608fb5a23992e48efc3654750ff"
   },
+  "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/customer/vouchers/vouchers.html": {
+    "ast_hash": "c163c8ed60e9b3a436d0d25956670810",
+    "mtime": 1780356364.4052927,
+    "semantic_hash": "c163c8ed60e9b3a436d0d25956670810"
+  },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/home/home.component.ts": {
     "ast_hash": "24b29c99f84865a8f22a0c4c18505eb8",
     "mtime": 1779915975.2780962,
     "semantic_hash": "24b29c99f84865a8f22a0c4c18505eb8"
+  },
+  "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/pickup-detail/pickup-detail.component.ts": {
+    "ast_hash": "60d9954f4498a2470aeaa6ee56b8455b",
+    "mtime": 1780440243.422961,
+    "semantic_hash": "60d9954f4498a2470aeaa6ee56b8455b"
+  },
+  "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/pages/pickup-detail/pickup-detail.html": {
+    "ast_hash": "939e1e9b93d6f4afdbcffa9a0a4211bb",
+    "mtime": 1780440250.7335472,
+    "semantic_hash": "939e1e9b93d6f4afdbcffa9a0a4211bb"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/services/address.service.ts": {
     "ast_hash": "0e44d6e1fb1375d6d7698fabb4a8ef1f",
@@ -415,14 +445,14 @@
     "semantic_hash": "0e44d6e1fb1375d6d7698fabb4a8ef1f"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/services/admin-notification.service.ts": {
-    "ast_hash": "de79a23c1b93debde7a0e91060a96f95",
-    "mtime": 1779904922.1127634,
-    "semantic_hash": "de79a23c1b93debde7a0e91060a96f95"
+    "ast_hash": "8dbcc4b835dce0abcde3d26c90a5cc4c",
+    "mtime": 1780372017.8926544,
+    "semantic_hash": "8dbcc4b835dce0abcde3d26c90a5cc4c"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/services/admin-pickup.service.ts": {
-    "ast_hash": "c243f5bc44633ea34e5a2eb5fa28885b",
-    "mtime": 1779919243.6829755,
-    "semantic_hash": "c243f5bc44633ea34e5a2eb5fa28885b"
+    "ast_hash": "f0d10f9e622e48354c091a7f500157d3",
+    "mtime": 1780407662.3475115,
+    "semantic_hash": "f0d10f9e622e48354c091a7f500157d3"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/services/admin-voucher.service.ts": {
     "ast_hash": "a0942181c19cf55a8256fd1e1409b163",
@@ -440,9 +470,14 @@
     "semantic_hash": "68d061a7ad7776f857f5bbdd116dd549"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/services/auth.service.ts": {
-    "ast_hash": "109b1c5bed738efd3ca1da73dc69cd40",
-    "mtime": 1780302587.6057174,
-    "semantic_hash": "109b1c5bed738efd3ca1da73dc69cd40"
+    "ast_hash": "a4660f52c4f4328099d2c6a130e34189",
+    "mtime": 1780372615.0645247,
+    "semantic_hash": "a4660f52c4f4328099d2c6a130e34189"
+  },
+  "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/services/collector-pickup.service.ts": {
+    "ast_hash": "54c9217ac968253cc8cbadd4bedc751c",
+    "mtime": 1780437809.710197,
+    "semantic_hash": "54c9217ac968253cc8cbadd4bedc751c"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/services/customer-voucher.service.ts": {
     "ast_hash": "6bb9b4746967efd4e560ee6d5a9ba3d9",
@@ -455,9 +490,9 @@
     "semantic_hash": "e4a3c16d6c51ae8d0838af99eb1f4840"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/services/notification.service.ts": {
-    "ast_hash": "cfd63e1a045dba86b09bca163b5e8d1c",
-    "mtime": 1780311348.8280091,
-    "semantic_hash": "cfd63e1a045dba86b09bca163b5e8d1c"
+    "ast_hash": "de9210b4c8ca4e6b1ed3bf092b51b0e3",
+    "mtime": 1780371302.5296254,
+    "semantic_hash": "de9210b4c8ca4e6b1ed3bf092b51b0e3"
   },
   "/Users/alif/Projects/WasteGrab/apps/frontend/src/app/services/pickup-request.service.ts": {
     "ast_hash": "bbcb31e896e40eba5df5af178c435d2b",
@@ -535,14 +570,14 @@
     "semantic_hash": "62d0372c7b794c5f0a04ae93883a5cbf"
   },
   "/Users/alif/Projects/WasteGrab/libs/shared/types/src/lib/types/notification.ts": {
-    "ast_hash": "118dacaadd2dd5c1fbf02fac47069935",
-    "mtime": 1779904922.1137671,
-    "semantic_hash": "118dacaadd2dd5c1fbf02fac47069935"
+    "ast_hash": "eb83fedd6ba6721376ac970411e9d6f8",
+    "mtime": 1780371976.8398614,
+    "semantic_hash": "eb83fedd6ba6721376ac970411e9d6f8"
   },
   "/Users/alif/Projects/WasteGrab/libs/shared/types/src/lib/types/pickup.ts": {
-    "ast_hash": "d7c5584779b40ad53d053a0dfd720699",
-    "mtime": 1779919243.6831343,
-    "semantic_hash": "d7c5584779b40ad53d053a0dfd720699"
+    "ast_hash": "ed7993b3e93da793e938c69458a802ef",
+    "mtime": 1780437726.7292538,
+    "semantic_hash": "ed7993b3e93da793e938c69458a802ef"
   },
   "/Users/alif/Projects/WasteGrab/libs/shared/types/src/lib/types/place.ts": {
     "ast_hash": "383e6435f075f8e6dddeeeea82c9118f",
@@ -555,9 +590,9 @@
     "semantic_hash": "c5844b1df26ecb18835ee95ced8910e3"
   },
   "/Users/alif/Projects/WasteGrab/libs/shared/types/src/lib/types/user.ts": {
-    "ast_hash": "f3ce66410e8436b0c1bfc70a70bae0b1",
-    "mtime": 1780028757.9985619,
-    "semantic_hash": "f3ce66410e8436b0c1bfc70a70bae0b1"
+    "ast_hash": "3f569cfe929cd9bb600b8d8979045f9b",
+    "mtime": 1780372594.9977806,
+    "semantic_hash": "3f569cfe929cd9bb600b8d8979045f9b"
   },
   "/Users/alif/Projects/WasteGrab/libs/shared/types/src/lib/types/waste-category.ts": {
     "ast_hash": "b0285b77f453b2fe3bac86df55a6546d",

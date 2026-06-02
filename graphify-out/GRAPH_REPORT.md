@@ -4,259 +4,266 @@
 - cluster-only mode — file stats not available
 
 ## Summary
-- 820 nodes · 1163 edges · 56 communities (42 shown, 14 thin omitted)
-- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.88)
+- 965 nodes · 1380 edges · 70 communities (49 shown, 21 thin omitted)
+- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 6 edges (avg confidence: 0.97)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `120108e7`
+- Built from commit: `72151ad9`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `tools/graphify/update-codebase-graphify.sh ast|label|deep` after code changes; do not run `graphify update .` from the repo root.
 
 ## Community Hubs (Navigation)
 - [[_COMMUNITY_Pickup Request UI|Pickup Request UI]]
-- [[_COMMUNITY_Core Services|Core Services]]
-- [[_COMMUNITY_Authentication Logic|Authentication Logic]]
-- [[_COMMUNITY_Address Management|Address Management]]
+- [[_COMMUNITY_Auth and User Logic|Auth and User Logic]]
+- [[_COMMUNITY_Admin Dashboard UI|Admin Dashboard UI]]
+- [[_COMMUNITY_Notification Backend Logic|Notification Backend Logic]]
 - [[_COMMUNITY_API Response Models|API Response Models]]
-- [[_COMMUNITY_Notification UI|Notification UI]]
-- [[_COMMUNITY_Notification Logic|Notification Logic]]
-- [[_COMMUNITY_User Profile Management|User Profile Management]]
+- [[_COMMUNITY_Pickup List UI|Pickup List UI]]
+- [[_COMMUNITY_Address Management API|Address Management API]]
+- [[_COMMUNITY_User Profile UI|User Profile UI]]
+- [[_COMMUNITY_Pickup Data Parsing|Pickup Data Parsing]]
+- [[_COMMUNITY_Voucher Management UI|Voucher Management UI]]
 - [[_COMMUNITY_Pickup Data Models|Pickup Data Models]]
-- [[_COMMUNITY_Voucher Admin UI|Voucher Admin UI]]
 - [[_COMMUNITY_Admin Test Mocks|Admin Test Mocks]]
-- [[_COMMUNITY_Customer Dashboard UI|Customer Dashboard UI]]
-- [[_COMMUNITY_Pickup Routing Logic|Pickup Routing Logic]]
-- [[_COMMUNITY_Voucher Backend Services|Voucher Backend Services]]
+- [[_COMMUNITY_Pickup Detail Data|Pickup Detail Data]]
+- [[_COMMUNITY_New Pickup Wizard|New Pickup Wizard]]
+- [[_COMMUNITY_Pickup Calculation Logic|Pickup Calculation Logic]]
 - [[_COMMUNITY_Build Configuration|Build Configuration]]
-- [[_COMMUNITY_Auth UI Flow|Auth UI Flow]]
-- [[_COMMUNITY_Admin Pickup Management|Admin Pickup Management]]
+- [[_COMMUNITY_Auth UI Components|Auth UI Components]]
+- [[_COMMUNITY_Admin Pickup List|Admin Pickup List]]
 - [[_COMMUNITY_Location Management UI|Location Management UI]]
-- [[_COMMUNITY_Waste Category Admin|Waste Category Admin]]
+- [[_COMMUNITY_Waste Category UI|Waste Category UI]]
+- [[_COMMUNITY_Voucher Management Logic|Voucher Management Logic]]
 - [[_COMMUNITY_Home Dashboard UI|Home Dashboard UI]]
-- [[_COMMUNITY_Collection Location Management|Collection Location Management]]
-- [[_COMMUNITY_Middleware and AI|Middleware and AI]]
-- [[_COMMUNITY_Pickup Integration Tests|Pickup Integration Tests]]
+- [[_COMMUNITY_Location Management UI|Location Management UI]]
+- [[_COMMUNITY_Auth and AI Logic|Auth and AI Logic]]
+- [[_COMMUNITY_Core Services Layer|Core Services Layer]]
+- [[_COMMUNITY_Pickup Test Suite|Pickup Test Suite]]
 - [[_COMMUNITY_TypeScript Configuration|TypeScript Configuration]]
-- [[_COMMUNITY_Google Maps Services|Google Maps Services]]
+- [[_COMMUNITY_Customer Dashboard UI|Customer Dashboard UI]]
+- [[_COMMUNITY_Google Maps Integration|Google Maps Integration]]
 - [[_COMMUNITY_Waste Category Logic|Waste Category Logic]]
-- [[_COMMUNITY_Customer Voucher UI|Customer Voucher UI]]
-- [[_COMMUNITY_Voucher Routing Logic|Voucher Routing Logic]]
+- [[_COMMUNITY_Backend Routing and DB|Backend Routing and DB]]
+- [[_COMMUNITY_Voucher API Logic|Voucher API Logic]]
 - [[_COMMUNITY_Routing and Guards|Routing and Guards]]
-- [[_COMMUNITY_Database and Routing|Database and Routing]]
+- [[_COMMUNITY_Pickup Workflow UI|Pickup Workflow UI]]
+- [[_COMMUNITY_User and Location API|User and Location API]]
+- [[_COMMUNITY_Collector Service Logic|Collector Service Logic]]
 - [[_COMMUNITY_Package Metadata|Package Metadata]]
-- [[_COMMUNITY_Admin Pickup API|Admin Pickup API]]
-- [[_COMMUNITY_Voucher Business Logic|Voucher Business Logic]]
+- [[_COMMUNITY_Voucher API Logic|Voucher API Logic]]
 - [[_COMMUNITY_Library Configuration|Library Configuration]]
-- [[_COMMUNITY_Admin Notification Routing|Admin Notification Routing]]
 - [[_COMMUNITY_Project Metadata|Project Metadata]]
 - [[_COMMUNITY_TypeScript Configuration|TypeScript Configuration]]
-- [[_COMMUNITY_System Domain Overview|System Domain Overview]]
-- [[_COMMUNITY_Error Handling Logic|Error Handling Logic]]
-- [[_COMMUNITY_User Settings UI|User Settings UI]]
+- [[_COMMUNITY_Timeline UI Components|Timeline UI Components]]
+- [[_COMMUNITY_Location Service Logic|Location Service Logic]]
+- [[_COMMUNITY_User Service Logic|User Service Logic]]
+- [[_COMMUNITY_Admin Dashboard Views|Admin Dashboard Views]]
+- [[_COMMUNITY_Settings UI|Settings UI]]
 - [[_COMMUNITY_Admin API Tests|Admin API Tests]]
 - [[_COMMUNITY_Customer API Tests|Customer API Tests]]
-- [[_COMMUNITY_Admin Page Root|Admin Page Root]]
-- [[_COMMUNITY_Collector Pickup UI|Collector Pickup UI]]
-- [[_COMMUNITY_Playwright Configuration|Playwright Configuration]]
+- [[_COMMUNITY_Admin Page UI|Admin Page UI]]
+- [[_COMMUNITY_Playwright Config|Playwright Config]]
 - [[_COMMUNITY_Collector Earnings UI|Collector Earnings UI]]
 - [[_COMMUNITY_Rewards Page UI|Rewards Page UI]]
-- [[_COMMUNITY_Admin Dashboard Root|Admin Dashboard Root]]
-- [[_COMMUNITY_Location Management Root|Location Management Root]]
-- [[_COMMUNITY_Notification Management Root|Notification Management Root]]
+- [[_COMMUNITY_Admin Dashboard|Admin Dashboard]]
+- [[_COMMUNITY_Authentication Page|Authentication Page]]
+- [[_COMMUNITY_Location Management|Location Management]]
+- [[_COMMUNITY_Customer Dashboard|Customer Dashboard]]
+- [[_COMMUNITY_Notifications Management|Notifications Management]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `CustomerNewPickupPage` - 57 edges
-2. `AuthService` - 46 edges
-3. `NotificationService` - 30 edges
-4. `getCurrentUserFromRequest()` - 25 edges
-5. `AdminVouchersPage` - 19 edges
-6. `customerPickups` - 18 edges
-7. `ProfilePage` - 18 edges
-8. `AdminPickupsPage` - 16 edges
-9. `AddressService` - 16 edges
-10. `AuthPage` - 15 edges
+1. `PickupDetailPage` - 58 edges
+2. `CustomerNewPickupPage` - 57 edges
+3. `AuthService` - 46 edges
+4. `CollectorPickupsPage` - 34 edges
+5. `NotificationService` - 31 edges
+6. `getCurrentUserFromRequest()` - 27 edges
+7. `AdminVouchersPage` - 19 edges
+8. `ProfilePage` - 18 edges
+9. `customerPickups` - 17 edges
+10. `AdminPickupsPage` - 16 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `CollectorPickupRequest` --calls--> `stringifyDecimal()`  [EXTRACTED]
+  libs/shared/types/src/lib/types/pickup.ts → apps/backend/src/routes/collector/pickup.routes.ts
+- `requireAdmin()` --calls--> `getCurrentUserFromRequest()`  [EXTRACTED]
+  apps/backend/src/routes/admin/location.routes.ts → apps/backend/src/services/auth.service.ts
 - `requireAdmin()` --calls--> `getCurrentUserFromRequest()`  [EXTRACTED]
   apps/backend/src/routes/admin/notification.routes.ts → apps/backend/src/services/auth.service.ts
 - `requireAdmin()` --calls--> `getCurrentUserFromRequest()`  [EXTRACTED]
   apps/backend/src/routes/admin/pickup.routes.ts → apps/backend/src/services/auth.service.ts
 - `AdminPickupRequest` --calls--> `stringifyDecimal()`  [EXTRACTED]
   libs/shared/types/src/lib/types/pickup.ts → apps/backend/src/routes/admin/pickup.routes.ts
-- `requireAdmin()` --calls--> `getCurrentUserFromRequest()`  [EXTRACTED]
-  apps/backend/src/routes/admin/user.routes.ts → apps/backend/src/services/auth.service.ts
-- `requireAdmin()` --calls--> `getCurrentUserFromRequest()`  [EXTRACTED]
-  apps/backend/src/routes/admin/voucher.routes.ts → apps/backend/src/services/auth.service.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (56 total, 14 thin omitted)
+## Communities (70 total, 21 thin omitted)
 
-### Community 1 - "Core Services"
+### Community 1 - "Auth and User Logic"
+Cohesion: 0.07
+Nodes (33): isObject(), isPrismaNotFoundError(), notFoundHandler(), authRouter, avatarUpload, AuthService, AuthSession, clearAuthCookie() (+25 more)
+
+### Community 2 - "Admin Dashboard UI"
 Cohesion: 0.05
-Nodes (3): environment, LocationRecord, UserService
+Nodes (30): formatMarkdownSelection(), MarkdownFormat, NotificationFilter, NotificationModalMode, prefixMarkdownLines(), toDate(), toEndOfDayIso(), AdminNotificationLog (+22 more)
 
-### Community 2 - "Authentication Logic"
-Cohesion: 0.09
-Nodes (28): authRouter, avatarUpload, AuthService, AuthSession, clearAuthCookie(), completeCustomerOnboarding(), createAuthCookie(), createPasswordResetToken() (+20 more)
-
-### Community 3 - "Address Management"
-Cohesion: 0.11
-Nodes (27): addressRouter, AddressService, deleteAddress(), getAddressById(), listAddress(), setDefaultAddress(), toAddressResponse(), Address (+19 more)
+### Community 3 - "Notification Backend Logic"
+Cohesion: 0.07
+Nodes (24): AdminNotificationBatchKey, adminNotificationRouter, normalizeOptionalDate(), normalizeOptionalText(), normalizeText(), requireAdmin(), createNotification(), deleteAllNotifications() (+16 more)
 
 ### Community 4 - "API Response Models"
 Cohesion: 0.06
-Nodes (32): ApiErrorResponse, ApiResponse, HealthResponse, PaginatedResponse, AiAutoSnapshot, AiSuggestion, AnalysisSummary, NewPickupForm (+24 more)
+Nodes (28): ApiErrorResponse, ApiResponse, HealthResponse, PaginatedResponse, AnalyzeImageResponse, AnalyzeImageResult, DetectedWasteCategory, CollectionLocation (+20 more)
 
-### Community 5 - "Notification UI"
-Cohesion: 0.06
-Nodes (26): NotificationFilter, NotificationModalMode, toEndOfDayIso(), AdminNotificationLog, ListAdminNotificationLogsResponse, ListNotificationsResponse, NotificationRecipientRole, NotificationResponse (+18 more)
+### Community 5 - "Pickup List UI"
+Cohesion: 0.08
+Nodes (6): PickupFilter, CollectorPickupsPage, CoordinatePair, LocationStatus, RouteFit, RouteFitAnchor
 
-### Community 6 - "Notification Logic"
-Cohesion: 0.09
-Nodes (20): createNotification(), deleteAllNotifications(), deleteNotification(), hashEndpoint(), isWebPushConfigured, markAllNotificationsRead(), markNotificationRead(), NotificationInput (+12 more)
+### Community 6 - "Address Management API"
+Cohesion: 0.12
+Nodes (25): addressRouter, AddressService, deleteAddress(), getAddressById(), listAddress(), setDefaultAddress(), toAddressResponse(), Address (+17 more)
 
-### Community 7 - "User Profile Management"
+### Community 7 - "User Profile UI"
 Cohesion: 0.08
 Nodes (5): AddressFilter, AddressItem, AddressModalMode, ProfilePage, ModalMode
 
-### Community 8 - "Pickup Data Models"
-Cohesion: 0.09
-Nodes (10): customerPickups, Pickup, PickupCollector, PickupStatus, pickupStatusColors, pickupStatusLabels, PickupTimelineEvent, PickupTimelineStatus (+2 more)
+### Community 8 - "Pickup Data Parsing"
+Cohesion: 0.13
+Nodes (26): isLatitude(), isLongitude(), isRecord(), normalizeCoordinatePair(), normalizeOptionalText(), normalizeText(), parseCoordinate(), parseItemsValue() (+18 more)
 
-### Community 9 - "Voucher Admin UI"
+### Community 9 - "Voucher Management UI"
 Cohesion: 0.10
 Nodes (8): getErrorMessage(), VoucherTab, AdminVouchersPage, toDate(), toEndOfDayIso(), toStartOfDayIso(), VoucherCatalogFilter, VoucherModalMode
 
-### Community 10 - "Admin Test Mocks"
+### Community 10 - "Pickup Data Models"
+Cohesion: 0.09
+Nodes (10): customerPickups, Pickup, PickupCollector, PickupStatus, pickupStatusColors, pickupStatusLabels, PickupTimelineEvent, PickupTimelineStatus (+2 more)
+
+### Community 11 - "Admin Test Mocks"
 Cohesion: 0.09
 Nodes (9): admin, existingLocation, LocationRecord, AdminUser, existingUser, existingVoucher, Voucher, UserFilter (+1 more)
 
-### Community 11 - "Customer Dashboard UI"
-Cohesion: 0.10
-Nodes (3): CustomerPage, DashboardStat, CustomerPickupDetailPage
+### Community 13 - "New Pickup Wizard"
+Cohesion: 0.08
+Nodes (22): AiAutoSnapshot, AiSuggestion, AnalysisSummary, NewPickupForm, PreviewImage, StepMeta, WizardStep, CreatePickupRequestInput (+14 more)
 
-### Community 12 - "Pickup Routing Logic"
-Cohesion: 0.15
-Nodes (21): isRecord(), normalizeOptionalText(), normalizeText(), parseItemsValue(), parseOptionalJson(), parsePositiveNumber(), parseRequestedItems(), PickupRequestUpload (+13 more)
+### Community 14 - "Pickup Calculation Logic"
+Cohesion: 0.13
+Nodes (15): calculateDistanceKm(), CoordinatePair, isLatitude(), isLongitude(), isRecord(), normalizeCoordinatePair(), parseActualWeights(), parseCoordinate() (+7 more)
 
-### Community 13 - "Voucher Backend Services"
-Cohesion: 0.10
-Nodes (15): AdminPointLedgerLog, AdminVoucherRedemptionLog, CreateVoucherInput, CustomerVoucherCatalogItem, CustomerVoucherListResponse, CustomerVoucherRedemption, PointLedger, PointLedgerStatus (+7 more)
-
-### Community 14 - "Build Configuration"
+### Community 15 - "Build Configuration"
 Cohesion: 0.10
 Nodes (20): executor, options, outputs, name, assets, bundle, command, declaration (+12 more)
 
-### Community 15 - "Auth UI Flow"
+### Community 16 - "Auth UI Components"
 Cohesion: 0.11
 Nodes (4): AuthMode, AuthPage, LoginFormGroup, RegisterFormGroup
 
-### Community 17 - "Location Management UI"
+### Community 18 - "Location Management UI"
 Cohesion: 0.15
 Nodes (4): CollectorPage, AdminCollectorsPage, LocationFilter, LocationModalMode
 
-### Community 18 - "Waste Category Admin"
+### Community 19 - "Waste Category UI"
 Cohesion: 0.13
 Nodes (3): AdminWasteCategoriesPage, WasteCategoryFilter, WasteCategoryModalMode
 
-### Community 19 - "Home Dashboard UI"
+### Community 20 - "Voucher Management Logic"
+Cohesion: 0.15
+Nodes (4): getErrorMessage(), VoucherTab, Customer Vouchers, Voucher Management
+
+### Community 21 - "Home Dashboard UI"
 Cohesion: 0.12
 Nodes (11): DashboardStat, DetectedItem, Feature, FooterGroup, HomePage, NavLink, Pickup, Stat (+3 more)
 
-### Community 21 - "Middleware and AI"
-Cohesion: 0.19
-Nodes (7): requireAdmin(), requireAuthenticatedUser(), RoboflowPrediction, RoboflowResponse, router, upload, getCurrentUserFromRequest()
+### Community 23 - "Auth and AI Logic"
+Cohesion: 0.17
+Nodes (8): requireAuthenticatedUser(), RoboflowPrediction, RoboflowResponse, router, upload, getCookieValue(), getCurrentUserFromRequest(), verifySessionToken()
 
-### Community 22 - "Pickup Integration Tests"
+### Community 25 - "Pickup Test Suite"
 Cohesion: 0.22
 Nodes (9): addresses, categories, customer, imageFile(), MockApiOptions, mockPickupApi(), pickupRequest, TestPickupRequest (+1 more)
 
-### Community 23 - "TypeScript Configuration"
+### Community 26 - "TypeScript Configuration"
 Cohesion: 0.14
 Nodes (13): compilerOptions, forceConsistentCasingInFileNames, importHelpers, module, noFallthroughCasesInSwitch, noImplicitOverride, noImplicitReturns, noPropertyAccessFromIndexSignature (+5 more)
 
-### Community 24 - "Google Maps Services"
+### Community 28 - "Google Maps Integration"
 Cohesion: 0.26
 Nodes (11): AddressComponents, assertGoogleStatus(), autocompletePlaces(), buildAddressLine(), getComponents(), getGoogleMapsApiKey(), getPlaceDetails(), GoogleAutocompleteResponse (+3 more)
 
-### Community 25 - "Waste Category Logic"
+### Community 29 - "Waste Category Logic"
 Cohesion: 0.17
 Nodes (5): requireAdmin(), admin, plasticCategory, CreateWasteCategoryInput, UpdateWasteCategoryInput
 
-### Community 26 - "Customer Voucher UI"
-Cohesion: 0.21
-Nodes (3): getErrorMessage(), VoucherTab, CustomerVouchersPage
+### Community 30 - "Backend Routing and DB"
+Cohesion: 0.24
+Nodes (8): pickupRouter, requireAdmin(), stringifyDecimal(), wasteCategoryRouter, adapter, databaseUrl, prisma, AdminPickupRequest
 
-### Community 27 - "Voucher Routing Logic"
+### Community 31 - "Voucher API Logic"
 Cohesion: 0.20
 Nodes (3): normalizeNonNegativeInteger(), normalizeNullableNonNegativeInteger(), requireAdmin()
 
-### Community 28 - "Routing and Guards"
+### Community 32 - "Routing and Guards"
 Cohesion: 0.24
 Nodes (7): ROUTE_PATHS, routePath(), RoutePathSegment, LazyPage, RouteConfig, routes, guestGuard()
 
-### Community 29 - "Database and Routing"
-Cohesion: 0.24
-Nodes (6): requireAdmin(), userRouter, wasteCategoryRouter, adapter, databaseUrl, prisma
+### Community 33 - "Pickup Workflow UI"
+Cohesion: 0.18
+Nodes (8): AcceptPickupDialogComponent, AcceptPickupDialogData, AcceptPickupRouteStop, AiSuggestedPayload, PICKUP_STATUS_FLOW, PickupDetail, PickupDetailContext, TimelineStepState
 
-### Community 30 - "Package Metadata"
+### Community 35 - "User and Location API"
+Cohesion: 0.27
+Nodes (5): requireAdmin(), requireAdmin(), userRouter, getBody(), isObject()
+
+### Community 36 - "Collector Service Logic"
+Cohesion: 0.20
+Nodes (3): CollectorLocation, CollectorPickupScope, VerifyPickupItemInput
+
+### Community 37 - "Package Metadata"
 Cohesion: 0.25
 Nodes (8): exports, import, main, name, private, type, types, version
 
-### Community 31 - "Admin Pickup API"
-Cohesion: 0.29
-Nodes (4): pickupRouter, requireAdmin(), stringifyDecimal(), AdminPickupRequest
-
-### Community 32 - "Voucher Business Logic"
+### Community 38 - "Voucher API Logic"
 Cohesion: 0.29
 Nodes (4): RedeemVoucherError, toCustomerRedemptionResponse(), toVoucherResponse(), voucherRouter
 
-### Community 33 - "Library Configuration"
+### Community 39 - "Library Configuration"
 Cohesion: 0.25
 Nodes (7): compilerOptions, declaration, outDir, types, exclude, extends, include
 
-### Community 34 - "Admin Notification Routing"
-Cohesion: 0.38
-Nodes (5): adminNotificationRouter, normalizeOptionalDate(), normalizeOptionalText(), normalizeText(), requireAdmin()
-
-### Community 35 - "Project Metadata"
+### Community 40 - "Project Metadata"
 Cohesion: 0.33
 Nodes (6): name, nx, projectType, tags, private, version
 
-### Community 36 - "TypeScript Configuration"
+### Community 41 - "TypeScript Configuration"
 Cohesion: 0.29
 Nodes (6): compilerOptions, outDir, types, exclude, extends, include
 
-### Community 37 - "System Domain Overview"
-Cohesion: 0.33
-Nodes (6): Customer Pickup Request, Pickup Requests Management, User Roles (Admin, Collector, Customer), User Management, Voucher Management, Waste Categories Management
-
-### Community 38 - "Error Handling Logic"
-Cohesion: 0.47
-Nodes (4): isObject(), isPrismaNotFoundError(), notFoundHandler(), app
+### Community 47 - "Admin Dashboard Views"
+Cohesion: 0.40
+Nodes (6): Collector Pickup Dashboard, Customer Pickup History, Pickup Detail View, Pickup Requests (Admin), User Management, Waste Categories Management
 
 ## Knowledge Gaps
-- **212 isolated node(s):** `app`, `port`, `authCookieSameSite`, `databaseUrl`, `adapter` (+207 more)
+- **238 isolated node(s):** `app`, `port`, `authCookieSameSite`, `databaseUrl`, `adapter` (+233 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **21 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `CustomerNewPickupPage` connect `Pickup Request UI` to `Customer Dashboard UI`, `API Response Models`, `Pickup Routing Logic`?**
-  _High betweenness centrality (0.150) - this node is a cross-community bridge._
-- **Why does `removeImages()` connect `Pickup Routing Logic` to `Pickup Request UI`?**
-  _High betweenness centrality (0.109) - this node is a cross-community bridge._
-- **Why does `AuthService` connect `Authentication Logic` to `Core Services`, `Notification UI`, `Notification Logic`, `Middleware and AI`, `Routing and Guards`, `Database and Routing`?**
-  _High betweenness centrality (0.080) - this node is a cross-community bridge._
+- **Why does `CustomerNewPickupPage` connect `Pickup Request UI` to `Pickup Data Parsing`, `New Pickup Wizard`, `AI Estimation Logic`?**
+  _High betweenness centrality (0.104) - this node is a cross-community bridge._
+- **Why does `PickupDetailPage` connect `Pickup Detail Data` to `Pickup Workflow UI`, `Route Stop Logic`, `Collector Action Logic`, `Timeline UI Components`, `AI Estimation Logic`, `Pickup Fetching Logic`?**
+  _High betweenness centrality (0.082) - this node is a cross-community bridge._
+- **Why does `AuthService` connect `Auth and User Logic` to `Routing and Guards`, `Admin Dashboard UI`, `Auth and AI Logic`, `Core Services Layer`, `Backend Routing and DB`?**
+  _High betweenness centrality (0.066) - this node is a cross-community bridge._
 - **What connects `app`, `port`, `authCookieSameSite` to the rest of the system?**
-  _212 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _238 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Pickup Request UI` be split into smaller, more focused modules?**
   _Cohesion score 0.06531986531986532 - nodes in this community are weakly interconnected._
-- **Should `Core Services` be split into smaller, more focused modules?**
-  _Cohesion score 0.05365402405180388 - nodes in this community are weakly interconnected._
-- **Should `Authentication Logic` be split into smaller, more focused modules?**
-  _Cohesion score 0.08686868686868687 - nodes in this community are weakly interconnected._
+- **Should `Auth and User Logic` be split into smaller, more focused modules?**
+  _Cohesion score 0.07127882599580712 - nodes in this community are weakly interconnected._
+- **Should `Admin Dashboard UI` be split into smaller, more focused modules?**
+  _Cohesion score 0.052525252525252523 - nodes in this community are weakly interconnected._
