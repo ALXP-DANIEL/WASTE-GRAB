@@ -19,7 +19,9 @@ import { AdminPickupService } from '@/services/admin-pickup.service';
 import { ImageType, PickupStatus, type AdminPickupRequest } from '@wastegrab/shared';
 
 import { AppHeaderComponent } from '@/ui/header/header.component';
+import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
+import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { ZardTableImports } from '@/ui/zard/table';
 
 type PickupFilter = 'all' | 'active' | 'completed' | 'cancelled';
@@ -27,7 +29,7 @@ type PickupFilter = 'all' | 'active' | 'completed' | 'cancelled';
 @Component({
   selector: 'app-admin-pickups-page',
   templateUrl: './pickups.html',
-  imports: [CommonModule, AppHeaderComponent, ZardButtonComponent, NgIcon, ...ZardTableImports],
+  imports: [CommonModule, AppHeaderComponent, FetchStateComponent, ZardButtonComponent, TableHeaderComponent, NgIcon, ...ZardTableImports],
   viewProviders: [
     provideIcons({
       lucideCheckCircle2,

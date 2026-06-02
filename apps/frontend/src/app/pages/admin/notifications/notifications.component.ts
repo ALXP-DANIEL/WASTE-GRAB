@@ -8,6 +8,8 @@ import { NotificationTargetRole, type AdminNotificationLog } from '@wastegrab/sh
 import { ROUTE_PATHS, routePath } from '@/app.routes';
 import { AdminNotificationService } from '@/services/admin-notification.service';
 import { AppHeaderComponent } from '@/ui/header/header.component';
+import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
+import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { ZardBadgeComponent } from '@/ui/zard/badge';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { ZardCheckboxComponent } from '@/ui/zard/checkbox';
@@ -21,6 +23,7 @@ import { ZardTableImports } from '@/ui/zard/table';
 
 type NotificationTab = 'announcements' | 'deliveries' | 'policy';
 type NotificationModalMode = 'add' | null;
+type NotificationFilter = 'all' | 'clearable' | 'pinned' | 'expiring';
 
 @Component({
   selector: 'app-admin-notifications-page',
@@ -30,6 +33,8 @@ type NotificationModalMode = 'add' | null;
     DatePipe,
     ReactiveFormsModule,
     AppHeaderComponent,
+    FetchStateComponent,
+    TableHeaderComponent,
     ZardBadgeComponent,
     ZardButtonComponent,
     ZardCheckboxComponent,
@@ -67,13 +72,31 @@ export class AdminNotificationsPage implements OnInit {
   ];
   protected readonly dashboardRoute = routePath(ROUTE_PATHS.admin.base);
   protected readonly logs = signal<AdminNotificationLog[]>([]);
+  protected readonly isLoading = signal(true);
+  protected readonly loadError = signal('');
   protected readonly isSending = signal(false);
   protected readonly activeTab = signal<NotificationTab>('announcements');
+  protected readonly activeFilter = signal<NotificationFilter>('all');
   protected readonly modalMode = signal<NotificationModalMode>(null);
+  protected readonly filters: Array<{ value: NotificationFilter; label: string }> = [
+    { value: 'all', label: 'All' },
+    { value: 'clearable', label: 'Clearable' },
+    { value: 'pinned', label: 'Pinned' },
+    { value: 'expiring', label: 'Expiring' },
+  ];
   protected readonly totalSent = computed(() => this.logs().reduce((sum, log) => sum + log.sentCount, 0));
   protected readonly pinnedCount = computed(() => this.logs().filter((log) => !log.isClearable).length);
   protected readonly expiringCount = computed(() => this.logs().filter((log) => Boolean(log.expiresAt)).length);
   protected readonly clearableCount = computed(() => this.logs().filter((log) => log.isClearable).length);
+  protected readonly filteredLogs = computed(() => {
+    const logs = this.logs();
+    const filter = this.activeFilter();
+
+    if (filter === 'clearable') return logs.filter((log) => log.isClearable);
+    if (filter === 'pinned') return logs.filter((log) => !log.isClearable);
+    if (filter === 'expiring') return logs.filter((log) => Boolean(log.expiresAt));
+    return logs;
+  });
 
   protected readonly announcementForm = new FormGroup({
     title: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(255)] }),
@@ -90,6 +113,10 @@ export class AdminNotificationsPage implements OnInit {
 
   protected selectTab(tab: NotificationTab): void {
     this.activeTab.set(tab);
+  }
+
+  protected setFilter(filter: NotificationFilter): void {
+    this.activeFilter.set(filter);
   }
 
   protected openAdd(): void {
@@ -159,9 +186,15 @@ export class AdminNotificationsPage implements OnInit {
   }
 
   private loadLogs(): void {
+    this.isLoading.set(true);
+    this.loadError.set('');
     this.notificationService.listLogs().subscribe({
       next: (response) => this.logs.set(response.logs),
-      error: () => this.logs.set([]),
+      error: () => {
+        this.logs.set([]);
+        this.loadError.set('Unable to load notifications.');
+      },
+      complete: () => this.isLoading.set(false),
     });
   }
 }

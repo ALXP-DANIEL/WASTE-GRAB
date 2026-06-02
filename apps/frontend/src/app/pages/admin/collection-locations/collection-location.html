@@ -2,7 +2,7 @@
   <app-header mode="route">
     <button z-button type="button" rightSide class="gap-2" (click)="openAdd()">
       <ng-icon name="lucidePlus" class="size-4!" />
-      New Category
+      New Location
     </button>
   </app-header>
 
@@ -13,12 +13,12 @@
       <span
         class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
       >
-        <ng-icon name="lucideSparkles" class="size-5!" />
+        <ng-icon name="lucideMapPin" class="size-5!" />
       </span>
       <span>
-        <span class="block font-semibold">Active</span>
+        <span class="block font-semibold">Locations</span>
         <span class="block text-sm text-muted-foreground"
-          >{{ activeCount() }} usable categories</span
+          >{{ locations().length }} collection points</span
         >
       </span>
     </article>
@@ -28,12 +28,12 @@
       <span
         class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
       >
-        <ng-icon name="lucideBrain" class="size-5!" />
+        <ng-icon name="lucideNavigation" class="size-5!" />
       </span>
       <span>
-        <span class="block font-semibold">AI Detectable</span>
+        <span class="block font-semibold">Mapped</span>
         <span class="block text-sm text-muted-foreground"
-          >{{ aiCount() }} image matches</span
+          >{{ mappedCount() }} with coordinates</span
         >
       </span>
     </article>
@@ -43,12 +43,12 @@
       <span
         class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
       >
-        <ng-icon name="lucideCircleSlash" class="size-5!" />
+        <ng-icon name="lucideMapPin" class="size-5!" />
       </span>
       <span>
-        <span class="block font-semibold">Restricted</span>
+        <span class="block font-semibold">Cities</span>
         <span class="block text-sm text-muted-foreground"
-          >{{ restrictedCount() }} flagged categories</span
+          >{{ cityCount() }} covered areas</span
         >
       </span>
     </article>
@@ -58,60 +58,38 @@
     class="min-w-0 rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6"
   >
     <app-table-header
-      title="Waste Categories"
-      description="Manage pickup categories, point rewards, AI detection, and restrictions."
-      [filters]="filters"
-      [activeFilter]="activeFilter()"
+      title="Collection Locations"
+      description="Create collection locations where collectors can send waste."
       [showRefresh]="true"
-      (filterChange)="setFilter($event)"
       (refresh)="refresh()"
     />
 
     <app-fetch-state
       [isLoading]="isLoading()"
       [loadError]="loadError()"
-      loadingText="Loading waste categories..."
+      loadingText="Loading locations..."
     >
       <div class="grid gap-3 lg:hidden">
-        @for (category of filteredCategories(); track category.id) {
+        @for (loc of locations(); track loc.id) {
         <article class="rounded-lg border border-border p-3">
-          <div class="flex items-start justify-between gap-3">
-            <div class="min-w-0">
-              <p class="truncate font-semibold">{{ category.name }}</p>
-              <p class="mt-1 text-sm text-muted-foreground">
-                {{ category.description || 'No description provided' }}
-              </p>
-            </div>
-            <span
-              class="shrink-0 rounded-md px-2 py-1 text-xs font-semibold"
-              [class]="category.isAiDetectable ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'"
-            >
-              {{ category.isAiDetectable ? 'AI' : 'No AI' }}
-            </span>
+          <div class="min-w-0">
+            <p class="truncate font-semibold">{{ loc.name }}</p>
+            <p class="mt-1 text-sm text-muted-foreground">
+              {{ loc.address || 'No address provided' }}
+            </p>
           </div>
 
           <dl class="mt-3 grid grid-cols-2 gap-3 text-sm">
             <div>
-              <dt class="text-xs text-muted-foreground">Reward</dt>
-              <dd class="mt-0.5 font-semibold text-primary">
-                {{ category.pointsPerKg }} pts/kg
+              <dt class="text-xs text-muted-foreground">City</dt>
+              <dd class="mt-0.5 truncate font-semibold">
+                {{ loc.city || '—' }}
               </dd>
             </div>
             <div>
-              <dt class="text-xs text-muted-foreground">Avg Weight</dt>
-              <dd class="mt-0.5 font-semibold">
-                {{ category.averageWeightKg }} kg/item
-              </dd>
-            </div>
-            <div>
-              <dt class="text-xs text-muted-foreground">Status</dt>
-              <dd class="mt-0.5">
-                <span
-                  class="rounded-md px-2 py-1 text-xs font-semibold"
-                  [class]="statusClass(category)"
-                >
-                  {{ statusLabel(category) }}
-                </span>
+              <dt class="text-xs text-muted-foreground">State</dt>
+              <dd class="mt-0.5 truncate font-semibold">
+                {{ loc.state || '—' }}
               </dd>
             </div>
           </dl>
@@ -122,7 +100,7 @@
               zType="outline"
               zSize="sm"
               type="button"
-              (click)="openEdit(category)"
+              (click)="openEdit(loc)"
             >
               <ng-icon name="lucidePencil" class="size-4!" />
               Edit
@@ -132,7 +110,7 @@
               zType="destructive"
               zSize="sm"
               type="button"
-              (click)="deleteCategory(category)"
+              (click)="deleteLocation(loc)"
             >
               <ng-icon name="lucideTrash2" class="size-4!" />
               Delete
@@ -143,13 +121,13 @@
         <div
           class="rounded-lg border border-dashed border-border p-8 text-center"
         >
-          <p class="font-semibold">No waste categories found.</p>
+          <p class="font-semibold">No locations found.</p>
           <p class="mt-1 text-sm text-muted-foreground">
-            Create a category before customers request pickups.
+            Create a collection location to start receiving waste.
           </p>
           <div class="mt-4">
             <button z-button zType="default" type="button" (click)="openAdd()">
-              New Category
+              New Location
             </button>
           </div>
         </div>
@@ -159,28 +137,34 @@
       <div
         class="hidden max-w-full overflow-x-auto rounded-lg border border-border lg:block"
       >
-        <table z-table class="min-w-[68rem] bg-card">
+        <table z-table class="min-w-[64rem] bg-card">
           <caption z-table-caption class="sr-only">
-            Waste category management table
+            Collection locations management table
           </caption>
 
           <thead z-table-header>
             <tr z-table-row>
-              <th z-table-head>Category</th>
-              <th z-table-head>Reward</th>
-              <th z-table-head>AI</th>
-              <th z-table-head>Status</th>
+              <th z-table-head>Location</th>
+              <th z-table-head>Area</th>
+              <th z-table-head>Coordinates</th>
               <th z-table-head class="w-44 !text-right">Actions</th>
             </tr>
           </thead>
 
           <tbody z-table-body>
-            @for (category of filteredCategories(); track category.id) {
+            @for (loc of locations(); track loc.id) {
             <tr z-table-row>
               <td z-table-cell>
-                <p class="font-semibold">{{ category.name }}</p>
+                <p class="font-semibold">{{ loc.name }}</p>
                 <p class="max-w-md truncate text-xs text-muted-foreground">
-                  {{ category.description || 'No description provided' }}
+                  {{ loc.address || 'No address provided' }}
+                </p>
+              </td>
+
+              <td z-table-cell>
+                <p class="font-semibold">{{ loc.city || '-' }}</p>
+                <p class="text-xs text-muted-foreground">
+                  {{ loc.state || 'No state' }} {{ loc.postalCode || '' }}
                 </p>
               </td>
 
@@ -188,29 +172,9 @@
                 <span
                   class="inline-flex items-center gap-1 font-semibold text-primary"
                 >
-                  <ng-icon name="lucideSparkles" class="size-4!" />
-                  {{ category.pointsPerKg }} pts/kg
-                </span>
-                <p class="text-xs text-muted-foreground">
-                  {{ category.averageWeightKg }} kg/item average
-                </p>
-              </td>
-
-              <td z-table-cell>
-                <span
-                  class="rounded-md px-2 py-1 text-xs font-semibold"
-                  [class]="category.isAiDetectable ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'"
-                >
-                  {{ category.isAiDetectable ? 'Detectable' : 'Ignored' }}
-                </span>
-              </td>
-
-              <td z-table-cell>
-                <span
-                  class="rounded-md px-2 py-1 text-xs font-semibold"
-                  [class]="statusClass(category)"
-                >
-                  {{ statusLabel(category) }}
+                  <ng-icon name="lucideNavigation" class="size-4!" />
+                  {{ shortCoordinate(loc.latitude) }}, {{
+                  shortCoordinate(loc.longitude) }}
                 </span>
               </td>
 
@@ -221,7 +185,7 @@
                     zType="outline"
                     zSize="sm"
                     type="button"
-                    (click)="openEdit(category)"
+                    (click)="openEdit(loc)"
                   >
                     <ng-icon name="lucidePencil" class="size-4!" />
                     Edit
@@ -231,7 +195,7 @@
                     zType="destructive"
                     zSize="sm"
                     type="button"
-                    (click)="deleteCategory(category)"
+                    (click)="deleteLocation(loc)"
                   >
                     <ng-icon name="lucideTrash2" class="size-4!" />
                     Delete
@@ -241,10 +205,10 @@
             </tr>
             } @empty {
             <tr z-table-row>
-              <td z-table-cell colspan="5" class="py-10 text-center">
-                <p class="font-semibold">No waste categories found.</p>
+              <td z-table-cell colspan="4" class="py-10 text-center">
+                <p class="font-semibold">No locations found.</p>
                 <p class="mt-1 text-sm text-muted-foreground">
-                  Create a category before customers request pickups.
+                  Create a collection location to start receiving waste.
                 </p>
                 <div class="mt-4">
                   <button
@@ -253,7 +217,7 @@
                     type="button"
                     (click)="openAdd()"
                   >
-                    New Category
+                    New Location
                   </button>
                 </div>
               </td>
@@ -268,84 +232,87 @@
   @if (modalMode() === 'add' || modalMode() === 'edit') {
   <z-modal
     [isOpen]="true"
-    [title]="modalMode() === 'edit' ? 'Edit Waste Category' : 'Create Waste Category'"
-    [description]="modalMode() === 'edit' ? 'Update category points and rules' : 'Create a category customers can use for pickups'"
-    [okText]="modalMode() === 'edit' ? 'Save Changes' : 'Create Category'"
+    [title]="modalMode() === 'edit' ? 'Edit Location' : 'Create Location'"
+    [description]="modalMode() === 'edit' ? 'Update the selected location' : 'Create a waste collection location'"
+    [okText]="modalMode() === 'edit' ? 'Save Changes' : 'Create Location'"
     cancelText="Cancel"
     size="lg"
     (ok)="modalMode() === 'edit' ? saveEdit() : saveCreate()"
     (cancel)="closeModal()"
   >
-    <form [formGroup]="form" class="grid gap-4 sm:grid-cols-2">
+    <form [formGroup]="createForm" class="grid gap-4 sm:grid-cols-2">
       <z-form-field class="sm:col-span-2">
-        <z-form-label [zRequired]="true">Name</z-form-label>
+        <z-form-label>Search Google Maps</z-form-label>
+        <z-form-control>
+          <app-google-place-input
+            placeholder="Search collection location"
+            (placeSelected)="applyLocationPlace($event)"
+          />
+        </z-form-control>
+      </z-form-field>
+
+      <z-form-field class="sm:col-span-2">
+        <z-form-label [zRequired]="true">Location Name</z-form-label>
         <z-form-control>
           <input
             z-input
             type="text"
             formControlName="name"
-            placeholder="Plastic"
+            placeholder="Central Market"
             class="w-full"
           />
         </z-form-control>
       </z-form-field>
-
-      <z-form-field>
-        <z-form-label [zRequired]="true">Points Per Kg</z-form-label>
-        <z-form-control>
-          <input
-            z-input
-            type="number"
-            min="0"
-            step="1"
-            formControlName="pointsPerKg"
-            class="w-full"
-          />
-        </z-form-control>
-      </z-form-field>
-
-      <z-form-field>
-        <z-form-label [zRequired]="true">Average Weight Kg</z-form-label>
-        <z-form-control>
-          <input
-            z-input
-            type="number"
-            min="0"
-            step="0.001"
-            formControlName="averageWeightKg"
-            class="w-full"
-          />
-        </z-form-control>
-      </z-form-field>
-
-      <div class="grid gap-3 rounded border border-slate-200 p-3 sm:col-span-2">
-        <z-checkbox formControlName="isBanned" class="text-sm text-slate-700">
-          Banned category
-        </z-checkbox>
-        <z-checkbox
-          formControlName="isHazardous"
-          class="text-sm text-slate-700"
-        >
-          Hazardous category
-        </z-checkbox>
-        <z-checkbox
-          formControlName="isAiDetectable"
-          class="text-sm text-slate-700"
-        >
-          Available for AI image detection
-        </z-checkbox>
-      </div>
 
       <z-form-field class="sm:col-span-2">
-        <z-form-label>Description</z-form-label>
+        <z-form-label>Address</z-form-label>
         <z-form-control>
-          <textarea
+          <input
             z-input
-            formControlName="description"
-            rows="3"
-            placeholder="Accepted items, handling notes, or restrictions"
+            type="text"
+            formControlName="address"
+            placeholder="123 Main St"
             class="w-full"
-          ></textarea>
+          />
+        </z-form-control>
+      </z-form-field>
+
+      <z-form-field>
+        <z-form-label>City</z-form-label>
+        <z-form-control>
+          <input
+            z-input
+            type="text"
+            formControlName="city"
+            placeholder="Kuala Lumpur"
+            class="w-full"
+          />
+        </z-form-control>
+      </z-form-field>
+
+      <z-form-field>
+        <z-form-label>State</z-form-label>
+        <z-form-control>
+          <input
+            z-input
+            type="text"
+            formControlName="state"
+            placeholder="Selangor"
+            class="w-full"
+          />
+        </z-form-control>
+      </z-form-field>
+
+      <z-form-field>
+        <z-form-label>Postal Code</z-form-label>
+        <z-form-control>
+          <input
+            z-input
+            type="text"
+            formControlName="postalCode"
+            placeholder="50450"
+            class="w-full"
+          />
         </z-form-control>
       </z-form-field>
     </form>

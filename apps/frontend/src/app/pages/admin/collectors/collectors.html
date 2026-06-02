@@ -7,195 +7,229 @@
   </app-header>
 
   <div class="grid gap-3 sm:grid-cols-3">
-    <article class="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
-      <span class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary">
+    <article
+      class="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+    >
+      <span
+        class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
+      >
         <ng-icon name="lucideMapPin" class="size-5!" />
       </span>
       <span>
         <span class="block font-semibold">Locations</span>
-        <span class="block text-sm text-muted-foreground">{{ locations().length }} collection points</span>
+        <span class="block text-sm text-muted-foreground"
+          >{{ locations().length }} collection points</span
+        >
       </span>
     </article>
-    <article class="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
-      <span class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary">
+    <article
+      class="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+    >
+      <span
+        class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
+      >
         <ng-icon name="lucideNavigation" class="size-5!" />
       </span>
       <span>
         <span class="block font-semibold">Mapped</span>
-        <span class="block text-sm text-muted-foreground">{{ mappedCount() }} with coordinates</span>
+        <span class="block text-sm text-muted-foreground"
+          >{{ mappedCount() }} with coordinates</span
+        >
       </span>
     </article>
-    <article class="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
-      <span class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary">
+    <article
+      class="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+    >
+      <span
+        class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
+      >
         <ng-icon name="lucideMapPin" class="size-5!" />
       </span>
       <span>
         <span class="block font-semibold">Cities</span>
-        <span class="block text-sm text-muted-foreground">{{ cityCount() }} covered areas</span>
+        <span class="block text-sm text-muted-foreground"
+          >{{ cityCount() }} covered areas</span
+        >
       </span>
     </article>
   </div>
 
-  <section class="min-w-0 rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">
-    <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <h2 class="text-lg font-semibold">Collection Locations</h2>
-        <p class="text-sm text-muted-foreground">Create collection locations where collectors can send waste.</p>
-      </div>
-      <button z-button type="button" class="gap-2" (click)="openAdd()">
-        <ng-icon name="lucidePlus" class="size-4!" />
-        New Location
-      </button>
-    </div>
+  <section
+    class="min-w-0 rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6"
+  >
+    <app-table-header
+      title="Collection Locations"
+      description="Create collection locations where collectors can send waste."
+      [filters]="filters"
+      [activeFilter]="activeFilter()"
+      [showRefresh]="true"
+      (filterChange)="setFilter($event)"
+      (refresh)="refresh()"
+    />
 
-    <div class="grid gap-3 lg:hidden">
-      @for (loc of locations(); track loc.id) {
-      <article class="rounded-lg border border-border p-3">
-        <div class="min-w-0">
-          <p class="truncate font-semibold">{{ loc.name }}</p>
+    <app-fetch-state
+      [isLoading]="isLoading()"
+      [loadError]="loadError()"
+      loadingText="Loading locations..."
+    >
+      <div class="grid gap-3 lg:hidden">
+        @for (loc of filteredLocations(); track loc.id) {
+        <article class="rounded-lg border border-border p-3">
+          <div class="min-w-0">
+            <p class="truncate font-semibold">{{ loc.name }}</p>
+            <p class="mt-1 text-sm text-muted-foreground">
+              {{ loc.address || 'No address provided' }}
+            </p>
+          </div>
+
+          <dl class="mt-3 grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <dt class="text-xs text-muted-foreground">City</dt>
+              <dd class="mt-0.5 truncate font-semibold">
+                {{ loc.city || '—' }}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-xs text-muted-foreground">State</dt>
+              <dd class="mt-0.5 truncate font-semibold">
+                {{ loc.state || '—' }}
+              </dd>
+            </div>
+          </dl>
+
+          <div class="mt-4 grid grid-cols-2 gap-2">
+            <button
+              z-button
+              zType="outline"
+              zSize="sm"
+              type="button"
+              (click)="openEdit(loc)"
+            >
+              <ng-icon name="lucidePencil" class="size-4!" />
+              Edit
+            </button>
+            <button
+              z-button
+              zType="destructive"
+              zSize="sm"
+              type="button"
+              (click)="deleteLocation(loc)"
+            >
+              <ng-icon name="lucideTrash2" class="size-4!" />
+              Delete
+            </button>
+          </div>
+        </article>
+        } @empty {
+        <div
+          class="rounded-lg border border-dashed border-border p-8 text-center"
+        >
+          <p class="font-semibold">No locations found.</p>
           <p class="mt-1 text-sm text-muted-foreground">
-            {{ loc.address || 'No address provided' }}
+            Create a collection location to start receiving waste.
           </p>
-        </div>
-
-        <dl class="mt-3 grid grid-cols-2 gap-3 text-sm">
-          <div>
-            <dt class="text-xs text-muted-foreground">City</dt>
-            <dd class="mt-0.5 truncate font-semibold">
-              {{ loc.city || '—' }}
-            </dd>
+          <div class="mt-4">
+            <button z-button zType="default" type="button" (click)="openAdd()">
+              New Location
+            </button>
           </div>
-          <div>
-            <dt class="text-xs text-muted-foreground">State</dt>
-            <dd class="mt-0.5 truncate font-semibold">
-              {{ loc.state || '—' }}
-            </dd>
-          </div>
-        </dl>
-
-        <div class="mt-4 grid grid-cols-2 gap-2">
-          <button
-            z-button
-            zType="outline"
-            zSize="sm"
-            type="button"
-            (click)="openEdit(loc)"
-          >
-            <ng-icon name="lucidePencil" class="size-4!" />
-            Edit
-          </button>
-          <button
-            z-button
-            zType="destructive"
-            zSize="sm"
-            type="button"
-            (click)="deleteLocation(loc)"
-          >
-            <ng-icon name="lucideTrash2" class="size-4!" />
-            Delete
-          </button>
         </div>
-      </article>
-      } @empty {
-      <div class="rounded-lg border border-dashed border-border p-8 text-center">
-        <p class="font-semibold">No locations found.</p>
-        <p class="mt-1 text-sm text-muted-foreground">
-          Create a collection location to start receiving waste.
-        </p>
-        <div class="mt-4">
-          <button z-button zType="default" type="button" (click)="openAdd()">
-            New Location
-          </button>
-        </div>
+        }
       </div>
-      }
-    </div>
 
-    <div class="hidden max-w-full overflow-x-auto rounded-lg border border-border lg:block">
-      <table z-table class="min-w-[64rem] bg-card">
-        <caption z-table-caption class="sr-only">
-          Collection locations management table
-        </caption>
+      <div
+        class="hidden max-w-full overflow-x-auto rounded-lg border border-border lg:block"
+      >
+        <table z-table class="min-w-[64rem] bg-card">
+          <caption z-table-caption class="sr-only">
+            Collection locations management table
+          </caption>
 
-        <thead z-table-header>
-          <tr z-table-row>
-            <th z-table-head>Location</th>
-            <th z-table-head>Area</th>
-            <th z-table-head>Coordinates</th>
-            <th z-table-head class="w-44 !text-right">Actions</th>
-          </tr>
-        </thead>
+          <thead z-table-header>
+            <tr z-table-row>
+              <th z-table-head>Location</th>
+              <th z-table-head>Area</th>
+              <th z-table-head>Coordinates</th>
+              <th z-table-head class="w-44 !text-right">Actions</th>
+            </tr>
+          </thead>
 
-        <tbody z-table-body>
-          @for (loc of locations(); track loc.id) {
-          <tr z-table-row>
-            <td z-table-cell>
-              <p class="font-semibold">{{ loc.name }}</p>
-              <p class="max-w-md truncate text-xs text-muted-foreground">
-                {{ loc.address || 'No address provided' }}
-              </p>
-            </td>
+          <tbody z-table-body>
+            @for (loc of filteredLocations(); track loc.id) {
+            <tr z-table-row>
+              <td z-table-cell>
+                <p class="font-semibold">{{ loc.name }}</p>
+                <p class="max-w-md truncate text-xs text-muted-foreground">
+                  {{ loc.address || 'No address provided' }}
+                </p>
+              </td>
 
-            <td z-table-cell>
-              <p class="font-semibold">{{ loc.city || '-' }}</p>
-              <p class="text-xs text-muted-foreground">{{ loc.state || 'No state' }} {{ loc.postalCode || '' }}</p>
-            </td>
+              <td z-table-cell>
+                <p class="font-semibold">{{ loc.city || '-' }}</p>
+                <p class="text-xs text-muted-foreground">
+                  {{ loc.state || 'No state' }} {{ loc.postalCode || '' }}
+                </p>
+              </td>
 
-            <td z-table-cell>
-              <span class="inline-flex items-center gap-1 font-semibold text-primary">
-                <ng-icon name="lucideNavigation" class="size-4!" />
-                {{ shortCoordinate(loc.latitude) }}, {{ shortCoordinate(loc.longitude) }}
-              </span>
-            </td>
-
-            <td z-table-cell class="w-44 !text-right">
-              <div class="flex justify-end gap-2">
-                <button
-                  z-button
-                  zType="outline"
-                  zSize="sm"
-                  type="button"
-                  (click)="openEdit(loc)"
+              <td z-table-cell>
+                <span
+                  class="inline-flex items-center gap-1 font-semibold text-primary"
                 >
-                  <ng-icon name="lucidePencil" class="size-4!" />
-                  Edit
-                </button>
-                <button
-                  z-button
-                  zType="destructive"
-                  zSize="sm"
-                  type="button"
-                  (click)="deleteLocation(loc)"
-                >
-                  <ng-icon name="lucideTrash2" class="size-4!" />
-                  Delete
-                </button>
-              </div>
-            </td>
-          </tr>
-          } @empty {
-          <tr z-table-row>
-            <td z-table-cell colspan="4" class="py-10 text-center">
-              <p class="font-semibold">No locations found.</p>
-              <p class="mt-1 text-sm text-muted-foreground">
-                Create a collection location to start receiving waste.
-              </p>
-              <div class="mt-4">
-                <button
-                  z-button
-                  zType="default"
-                  type="button"
-                  (click)="openAdd()"
-                >
-                  New Location
-                </button>
-              </div>
-            </td>
-          </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+                  <ng-icon name="lucideNavigation" class="size-4!" />
+                  {{ shortCoordinate(loc.latitude) }}, {{
+                  shortCoordinate(loc.longitude) }}
+                </span>
+              </td>
+
+              <td z-table-cell class="w-44 !text-right">
+                <div class="flex justify-end gap-2">
+                  <button
+                    z-button
+                    zType="outline"
+                    zSize="sm"
+                    type="button"
+                    (click)="openEdit(loc)"
+                  >
+                    <ng-icon name="lucidePencil" class="size-4!" />
+                    Edit
+                  </button>
+                  <button
+                    z-button
+                    zType="destructive"
+                    zSize="sm"
+                    type="button"
+                    (click)="deleteLocation(loc)"
+                  >
+                    <ng-icon name="lucideTrash2" class="size-4!" />
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+            } @empty {
+            <tr z-table-row>
+              <td z-table-cell colspan="4" class="py-10 text-center">
+                <p class="font-semibold">No locations found.</p>
+                <p class="mt-1 text-sm text-muted-foreground">
+                  Create a collection location to start receiving waste.
+                </p>
+                <div class="mt-4">
+                  <button
+                    z-button
+                    zType="default"
+                    type="button"
+                    (click)="openAdd()"
+                  >
+                    New Location
+                  </button>
+                </div>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </app-fetch-state>
   </section>
 
   @if (modalMode() === 'add' || modalMode() === 'edit') {

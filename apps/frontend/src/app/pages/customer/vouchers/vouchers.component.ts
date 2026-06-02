@@ -12,6 +12,7 @@ import {
 import { firstValueFrom } from 'rxjs';
 
 import { AppHeaderComponent } from '@/ui/header/header.component';
+import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
 import { CustomerVoucherService } from '@/services/customer-voucher.service';
@@ -25,7 +26,7 @@ type VoucherTab = 'available' | 'redeemed';
 @Component({
   selector: 'app-customer-vouchers-page',
   templateUrl: './vouchers.html',
-  imports: [CommonModule, AppHeaderComponent, ZardButtonComponent, NgIcon],
+  imports: [CommonModule, AppHeaderComponent, FetchStateComponent, ZardButtonComponent, NgIcon],
   viewProviders: [
     provideIcons({
       lucideBadgeCheck,
@@ -47,6 +48,7 @@ export class CustomerVouchersPage implements OnInit {
   protected readonly vouchers = signal<CustomerVoucherCatalogItem[]>([]);
   protected readonly redemptions = signal<CustomerVoucherRedemption[]>([]);
   protected readonly isLoading = signal(true);
+  protected readonly loadError = signal('');
   protected readonly redeemingVoucherId = signal<string | null>(null);
 
   protected readonly redeemedCount = computed(() => this.redemptions().length);
@@ -133,6 +135,7 @@ export class CustomerVouchersPage implements OnInit {
 
   private async loadVouchers(): Promise<void> {
     this.isLoading.set(true);
+    this.loadError.set('');
     try {
       const [catalog, redemptions] = await Promise.all([
         firstValueFrom(this.voucherService.listVouchers()),
@@ -146,6 +149,7 @@ export class CustomerVouchersPage implements OnInit {
       console.error('Failed to load vouchers:', err);
       this.vouchers.set([]);
       this.redemptions.set([]);
+      this.loadError.set('Unable to load vouchers.');
     } finally {
       this.isLoading.set(false);
     }

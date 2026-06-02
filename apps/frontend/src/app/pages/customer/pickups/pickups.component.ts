@@ -1,9 +1,12 @@
 import { AppHeaderComponent } from '@/ui/header/header.component';
+import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
+import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { NgIcon, provideIcons } from '@ng-icons/core';
+import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import {
   lucideAlertCircle,
   lucideArrowUpRight,
@@ -34,7 +37,7 @@ type FilterOption = {
   selector: 'app-customer-pickups-page',
   templateUrl: './pickups.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, AppHeaderComponent, NgIcon, RouterLink],
+  imports: [CommonModule, AppHeaderComponent, TableHeaderComponent, ZardButtonComponent, FetchStateComponent, NgIcon, RouterLink],
   viewProviders: [
     provideIcons({
       lucideAlertCircle,
@@ -112,6 +115,10 @@ export class CustomerPickupsPage {
 
   protected setFilter(filter: RequestFilter): void {
     this.activeFilter.set(filter);
+  }
+
+  protected refresh(): void {
+    void this.loadPickupRequests();
   }
 
   protected statusLabel(status: PickupStatus): string {

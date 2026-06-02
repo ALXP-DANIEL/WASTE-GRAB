@@ -11,6 +11,7 @@ import { AppHeaderComponent } from '@/ui/header/header.component';
 import { ZardModalComponent } from '@/ui/zard/modal/modal.component';
 import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/ui/zard/form/form.component';
 import { ZardInputDirective } from '@/ui/zard/input';
+import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { ZardTableImports } from '@/ui/zard/table';
 import { ProfileModalComponent } from './profile-modal.component';
 import { AddressService } from '@/services/address.service';
@@ -18,6 +19,7 @@ import { GooglePlaceInputComponent, type GooglePlaceSelection } from '@/ui/googl
 import type { Address } from '@wastegrab/shared';
 
 type AddressModalMode = 'add' | 'edit' | null;
+type AddressFilter = 'all' | 'default' | 'other';
 
 type AddressItem = Address;
 
@@ -37,6 +39,7 @@ type AddressItem = Address;
     ZardFormLabelComponent,
     ZardFormControlComponent,
     ZardInputDirective,
+    TableHeaderComponent,
     GooglePlaceInputComponent,
   ],
   templateUrl: './profile.html',
@@ -51,12 +54,34 @@ export class ProfilePage implements OnInit {
   private readonly addressService = inject(AddressService);
 
   protected readonly address = signal<AddressItem[]>([] as AddressItem[]);
+  protected readonly isLoadingAddress = signal(true);
+  protected readonly loadAddressError = signal('');
   protected readonly isUploadingAvatar = signal(false);
+  protected readonly activeAddressFilter = signal<AddressFilter>('all');
   protected readonly addressModalMode = signal<AddressModalMode>(null);
   protected readonly editingAddressId = signal<string | null>(null);
+  protected readonly addressFilters: Array<{ value: AddressFilter; label: string }> = [
+    { value: 'all', label: 'All' },
+    { value: 'default', label: 'Default' },
+    { value: 'other', label: 'Other' },
+  ];
   protected readonly defaultAddress = computed(() =>
     this.address().find((address) => address.isDefault) ?? null,
   );
+  protected readonly filteredAddresses = computed(() => {
+    const addresses = this.address();
+    const filter = this.activeAddressFilter();
+
+    if (filter === 'default') {
+      return addresses.filter((address) => address.isDefault);
+    }
+
+    if (filter === 'other') {
+      return addresses.filter((address) => !address.isDefault);
+    }
+
+    return addresses;
+  });
 
   protected readonly addressForm = new FormGroup({
     label: new FormControl('', {
@@ -98,10 +123,19 @@ export class ProfilePage implements OnInit {
     if (!this.authService.hasLoadedSession()) {
       void this.authService.loadSession().subscribe();
     }
-    this.addressService.listAddress().subscribe({
-      next: (list) => this.address.set(list as AddressItem[]),
-      error: () => this.address.set([] as AddressItem[]),
-    });
+    this.loadAddresses();
+  }
+
+  protected retryLoadAddress(): void {
+    this.loadAddresses();
+  }
+
+  protected setAddressFilter(filter: AddressFilter): void {
+    this.activeAddressFilter.set(filter);
+  }
+
+  protected refreshAddresses(): void {
+    this.loadAddresses();
   }
 
   protected editProfile(): void {
@@ -293,6 +327,19 @@ export class ProfilePage implements OnInit {
           error: () => (window.location.href = '/auth'),
         });
       },
+    });
+  }
+
+  private loadAddresses(): void {
+    this.isLoadingAddress.set(true);
+    this.loadAddressError.set('');
+    this.addressService.listAddress().subscribe({
+      next: (list) => this.address.set(list as AddressItem[]),
+      error: () => {
+        this.address.set([] as AddressItem[]);
+        this.loadAddressError.set('Unable to load saved addresses.');
+      },
+      complete: () => this.isLoadingAddress.set(false),
     });
   }
 }

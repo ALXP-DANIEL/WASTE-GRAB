@@ -2,7 +2,13 @@
   <app-header mode="route" />
 
   <div>
-    @if (pickup(); as currentPickup) {
+    @if (isLoading()) {
+    <section
+      class="rounded-3xl border border-dashed border-border bg-card p-8 text-center text-muted-foreground shadow-sm"
+    >
+      <p class="font-semibold">Loading pickup details...</p>
+    </section>
+    } @else if (pickup(); as currentPickup) {
     <div class="space-y-3">
       <section
         class="space-y-3 rounded-3xl border border-border bg-card p-6 shadow-sm"
@@ -373,7 +379,8 @@
     >
       <h1 class="text-2xl font-bold">Pickup not found</h1>
       <p class="mt-2 text-sm text-muted-foreground">
-        The pickup you opened no longer exists or the slug is invalid.
+        {{ loadError() || 'The pickup you opened no longer exists or the slug is
+        invalid.' }}
       </p>
       <a
         routerLink="/customer/pickups"

@@ -17,12 +17,16 @@
       [class.bg-card]="activeTab() !== 'announcements'"
       (click)="selectTab('announcements')"
     >
-      <span class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary">
+      <span
+        class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
+      >
         <ng-icon name="lucideBell" class="size-5!" />
       </span>
       <span class="min-w-0">
         <span class="block font-semibold">Announcements</span>
-        <span class="block text-sm opacity-80">{{ logs().length }} recent batches</span>
+        <span class="block text-sm opacity-80"
+          >{{ logs().length }} recent batches</span
+        >
       </span>
     </button>
 
@@ -36,12 +40,16 @@
       [class.bg-card]="activeTab() !== 'deliveries'"
       (click)="selectTab('deliveries')"
     >
-      <span class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary">
+      <span
+        class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
+      >
         <ng-icon name="lucideRadio" class="size-5!" />
       </span>
       <span class="min-w-0">
         <span class="block font-semibold">Deliveries</span>
-        <span class="block text-sm opacity-80">{{ totalSent() }} recipient sends</span>
+        <span class="block text-sm opacity-80"
+          >{{ totalSent() }} recipient sends</span
+        >
       </span>
     </button>
 
@@ -55,75 +63,95 @@
       [class.bg-card]="activeTab() !== 'policy'"
       (click)="selectTab('policy')"
     >
-      <span class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary">
+      <span
+        class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
+      >
         <ng-icon name="lucidePin" class="size-5!" />
       </span>
       <span class="min-w-0">
         <span class="block font-semibold">Policy</span>
-        <span class="block text-sm opacity-80">{{ pinnedCount() }} pinned, {{ expiringCount() }} expiring</span>
+        <span class="block text-sm opacity-80"
+          >{{ pinnedCount() }} pinned, {{ expiringCount() }} expiring</span
+        >
       </span>
     </button>
   </div>
 
   @if (activeTab() === 'announcements') {
-    <section class="min-w-0 rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">
-      <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h2 class="text-lg font-semibold">Announcement Logs</h2>
-          <p class="text-sm text-muted-foreground">Create and review admin notification batches.</p>
-        </div>
-        <div class="flex flex-wrap gap-2">
-          <button z-button zType="outline" type="button" class="gap-2" (click)="refreshLogs()">
-            <ng-icon name="lucideRefreshCw" class="size-4!" />
-            Refresh
-          </button>
-          <button z-button type="button" class="gap-2" (click)="openAdd()">
-            <ng-icon name="lucidePlus" class="size-4!" />
-            New Announcement
-          </button>
-        </div>
-      </div>
+  <section
+    class="min-w-0 rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6"
+  >
+    <app-table-header
+      title="Announcement Logs"
+      description="Create and review admin notification batches."
+      [filters]="filters"
+      [activeFilter]="activeFilter()"
+      [showRefresh]="true"
+      (filterChange)="setFilter($event)"
+      (refresh)="refreshLogs()"
+    />
 
+    <app-fetch-state
+      [isLoading]="isLoading()"
+      [loadError]="loadError()"
+      loadingText="Loading announcements..."
+    >
       <div class="grid gap-3 lg:hidden">
-        @for (log of logs(); track log.id) {
-          <article class="rounded-lg border border-border p-3">
-            <div class="flex items-start justify-between gap-3">
-              <div class="min-w-0">
-                <p class="font-semibold">{{ log.title }}</p>
-                <p class="mt-1 line-clamp-2 text-sm text-muted-foreground">{{ log.message }}</p>
-              </div>
-              <z-badge zShape="pill" [zType]="log.isClearable ? 'secondary' : 'default'">
-                {{ log.isClearable ? 'Clearable' : 'Pinned' }}
-              </z-badge>
+        @for (log of filteredLogs(); track log.id) {
+        <article class="rounded-lg border border-border p-3">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="font-semibold">{{ log.title }}</p>
+              <p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                {{ log.message }}
+              </p>
             </div>
-            <dl class="mt-3 grid grid-cols-2 gap-3 text-sm">
-              <div>
-                <dt class="text-xs text-muted-foreground">Recipients</dt>
-                <dd class="font-semibold">{{ log.sentCount }}</dd>
-              </div>
-              <div>
-                <dt class="text-xs text-muted-foreground">Created</dt>
-                <dd class="font-semibold">{{ log.createdAt | date:'mediumDate' }}</dd>
-              </div>
-              <div>
-                <dt class="text-xs text-muted-foreground">Expires</dt>
-                <dd class="font-semibold">{{ log.expiresAt ? (log.expiresAt | date:'mediumDate') : 'Never' }}</dd>
-              </div>
-              <div>
-                <dt class="text-xs text-muted-foreground">Action</dt>
-                <dd class="truncate font-semibold">{{ log.actionUrl || '-' }}</dd>
-              </div>
-            </dl>
-          </article>
-        } @empty {
-          <div class="rounded-lg border border-dashed border-border p-8 text-center">
-            <p class="font-semibold">No announcements yet.</p>
-            <p class="mt-1 text-sm text-muted-foreground">Send an announcement to start the log.</p>
+            <z-badge
+              zShape="pill"
+              [zType]="log.isClearable ? 'secondary' : 'default'"
+            >
+              {{ log.isClearable ? 'Clearable' : 'Pinned' }}
+            </z-badge>
           </div>
+          <dl class="mt-3 grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <dt class="text-xs text-muted-foreground">Recipients</dt>
+              <dd class="font-semibold">{{ log.sentCount }}</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-muted-foreground">Created</dt>
+              <dd class="font-semibold">
+                {{ log.createdAt | date:'mediumDate' }}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-xs text-muted-foreground">Expires</dt>
+              <dd class="font-semibold">
+                {{ log.expiresAt ? (log.expiresAt | date:'mediumDate') : 'Never'
+                }}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-xs text-muted-foreground">Action</dt>
+              <dd class="truncate font-semibold">{{ log.actionUrl || '-' }}</dd>
+            </div>
+          </dl>
+        </article>
+        } @empty {
+        <div
+          class="rounded-lg border border-dashed border-border p-8 text-center"
+        >
+          <p class="font-semibold">No announcements yet.</p>
+          <p class="mt-1 text-sm text-muted-foreground">
+            Send an announcement to start the log.
+          </p>
+        </div>
         }
       </div>
 
-      <div class="hidden max-w-full overflow-x-auto rounded-lg border border-border lg:block">
+      <div
+        class="hidden max-w-full overflow-x-auto rounded-lg border border-border lg:block"
+      >
         <table z-table class="min-w-[76rem] bg-card">
           <thead z-table-header>
             <tr z-table-row>
@@ -135,48 +163,73 @@
             </tr>
           </thead>
           <tbody z-table-body>
-            @for (log of logs(); track log.id) {
-              <tr z-table-row>
-                <td z-table-cell>
-                  <p class="font-semibold">{{ log.title }}</p>
-                  <p class="max-w-md truncate text-xs text-muted-foreground">{{ log.message }}</p>
-                  <p class="mt-1 text-xs text-muted-foreground">Action: {{ log.actionUrl || '-' }}</p>
-                </td>
-                <td z-table-cell>
-                  <z-badge zShape="pill" [zType]="log.isClearable ? 'secondary' : 'default'">
-                    {{ log.isClearable ? 'Clearable' : 'Pinned' }}
-                  </z-badge>
-                </td>
-                <td z-table-cell>
-                  <span class="inline-flex items-center gap-1 font-semibold text-primary">
-                    <ng-icon name="lucideSend" class="size-4!" />
-                    {{ log.sentCount }}
-                  </span>
-                </td>
-                <td z-table-cell>{{ log.expiresAt ? (log.expiresAt | date:'mediumDate') : 'No expiry' }}</td>
-                <td z-table-cell>{{ log.createdAt | date:'medium' }}</td>
-              </tr>
+            @for (log of filteredLogs(); track log.id) {
+            <tr z-table-row>
+              <td z-table-cell>
+                <p class="font-semibold">{{ log.title }}</p>
+                <p class="max-w-md truncate text-xs text-muted-foreground">
+                  {{ log.message }}
+                </p>
+                <p class="mt-1 text-xs text-muted-foreground">
+                  Action: {{ log.actionUrl || '-' }}
+                </p>
+              </td>
+              <td z-table-cell>
+                <z-badge
+                  zShape="pill"
+                  [zType]="log.isClearable ? 'secondary' : 'default'"
+                >
+                  {{ log.isClearable ? 'Clearable' : 'Pinned' }}
+                </z-badge>
+              </td>
+              <td z-table-cell>
+                <span
+                  class="inline-flex items-center gap-1 font-semibold text-primary"
+                >
+                  <ng-icon name="lucideSend" class="size-4!" />
+                  {{ log.sentCount }}
+                </span>
+              </td>
+              <td z-table-cell>
+                {{ log.expiresAt ? (log.expiresAt | date:'mediumDate') : 'No
+                expiry' }}
+              </td>
+              <td z-table-cell>{{ log.createdAt | date:'medium' }}</td>
+            </tr>
             } @empty {
-              <tr z-table-row>
-                <td z-table-cell colspan="5" class="py-10 text-center">
-                  <p class="font-semibold">No announcements yet.</p>
-                  <p class="mt-1 text-sm text-muted-foreground">Send an announcement to start the log.</p>
-                </td>
-              </tr>
+            <tr z-table-row>
+              <td z-table-cell colspan="5" class="py-10 text-center">
+                <p class="font-semibold">No announcements yet.</p>
+                <p class="mt-1 text-sm text-muted-foreground">
+                  Send an announcement to start the log.
+                </p>
+              </td>
+            </tr>
             }
           </tbody>
         </table>
       </div>
-    </section>
-  }
+    </app-fetch-state>
+  </section>
+  } @if (activeTab() === 'deliveries') {
+  <section
+    class="min-w-0 rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6"
+  >
+    <app-table-header
+      title="Delivery Summary"
+      description="Recipient counts for recent admin announcements."
+      [filters]="filters"
+      [activeFilter]="activeFilter()"
+      [showRefresh]="true"
+      (filterChange)="setFilter($event)"
+      (refresh)="refreshLogs()"
+    />
 
-  @if (activeTab() === 'deliveries') {
-    <section class="min-w-0 rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">
-      <div class="mb-4">
-        <h2 class="text-lg font-semibold">Delivery Summary</h2>
-        <p class="text-sm text-muted-foreground">Recipient counts for recent admin announcements.</p>
-      </div>
-
+    <app-fetch-state
+      [isLoading]="isLoading()"
+      [loadError]="loadError()"
+      loadingText="Loading deliveries..."
+    >
       <div class="max-w-full overflow-x-auto rounded-lg border border-border">
         <table z-table class="min-w-[56rem] bg-card">
           <thead z-table-header>
@@ -188,41 +241,58 @@
             </tr>
           </thead>
           <tbody z-table-body>
-            @for (log of logs(); track log.id) {
-              <tr z-table-row>
-                <td z-table-cell>
-                  <p class="font-semibold">{{ log.title }}</p>
-                  <p class="text-xs text-muted-foreground">{{ log.message }}</p>
-                </td>
-                <td z-table-cell class="font-semibold text-primary">{{ log.sentCount }}</td>
-                <td z-table-cell>
-                  <span class="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">
-                    {{ log.type }}
-                  </span>
-                </td>
-                <td z-table-cell>{{ log.createdAt | date:'medium' }}</td>
-              </tr>
+            @for (log of filteredLogs(); track log.id) {
+            <tr z-table-row>
+              <td z-table-cell>
+                <p class="font-semibold">{{ log.title }}</p>
+                <p class="text-xs text-muted-foreground">{{ log.message }}</p>
+              </td>
+              <td z-table-cell class="font-semibold text-primary">
+                {{ log.sentCount }}
+              </td>
+              <td z-table-cell>
+                <span
+                  class="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700"
+                >
+                  {{ log.type }}
+                </span>
+              </td>
+              <td z-table-cell>{{ log.createdAt | date:'medium' }}</td>
+            </tr>
             } @empty {
-              <tr z-table-row>
-                <td z-table-cell colspan="4" class="py-10 text-center">
-                  <p class="font-semibold">No delivery logs yet.</p>
-                  <p class="mt-1 text-sm text-muted-foreground">Rows will appear after announcements are sent.</p>
-                </td>
-              </tr>
+            <tr z-table-row>
+              <td z-table-cell colspan="4" class="py-10 text-center">
+                <p class="font-semibold">No delivery logs yet.</p>
+                <p class="mt-1 text-sm text-muted-foreground">
+                  Rows will appear after announcements are sent.
+                </p>
+              </td>
+            </tr>
             }
           </tbody>
         </table>
       </div>
-    </section>
-  }
+    </app-fetch-state>
+  </section>
+  } @if (activeTab() === 'policy') {
+  <section
+    class="min-w-0 rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6"
+  >
+    <app-table-header
+      title="Notification Policy"
+      description="Review clearable, pinned, and expiring notification batches."
+      [filters]="filters"
+      [activeFilter]="activeFilter()"
+      [showRefresh]="true"
+      (filterChange)="setFilter($event)"
+      (refresh)="refreshLogs()"
+    />
 
-  @if (activeTab() === 'policy') {
-    <section class="min-w-0 rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">
-      <div class="mb-4">
-        <h2 class="text-lg font-semibold">Notification Policy</h2>
-        <p class="text-sm text-muted-foreground">Review clearable, pinned, and expiring notification batches.</p>
-      </div>
-
+    <app-fetch-state
+      [isLoading]="isLoading()"
+      [loadError]="loadError()"
+      loadingText="Loading policy..."
+    >
       <div class="grid gap-3 sm:grid-cols-3">
         <article class="rounded-lg border border-border p-4">
           <p class="text-sm text-muted-foreground">Clearable</p>
@@ -238,7 +308,9 @@
         </article>
       </div>
 
-      <div class="mt-4 max-w-full overflow-x-auto rounded-lg border border-border">
+      <div
+        class="mt-4 max-w-full overflow-x-auto rounded-lg border border-border"
+      >
         <table z-table class="min-w-[58rem] bg-card">
           <thead z-table-header>
             <tr z-table-row>
@@ -249,99 +321,128 @@
             </tr>
           </thead>
           <tbody z-table-body>
-            @for (log of logs(); track log.id) {
-              <tr z-table-row>
-                <td z-table-cell>
-                  <p class="font-semibold">{{ log.title }}</p>
-                  <p class="max-w-md truncate text-xs text-muted-foreground">{{ log.message }}</p>
-                </td>
-                <td z-table-cell>
-                  <z-badge zShape="pill" [zType]="log.isClearable ? 'secondary' : 'default'">
-                    {{ log.isClearable ? 'User clearable' : 'Pinned' }}
-                  </z-badge>
-                </td>
-                <td z-table-cell>{{ log.expiresAt ? (log.expiresAt | date:'mediumDate') : 'No expiry' }}</td>
-                <td z-table-cell>{{ log.createdAt | date:'mediumDate' }}</td>
-              </tr>
+            @for (log of filteredLogs(); track log.id) {
+            <tr z-table-row>
+              <td z-table-cell>
+                <p class="font-semibold">{{ log.title }}</p>
+                <p class="max-w-md truncate text-xs text-muted-foreground">
+                  {{ log.message }}
+                </p>
+              </td>
+              <td z-table-cell>
+                <z-badge
+                  zShape="pill"
+                  [zType]="log.isClearable ? 'secondary' : 'default'"
+                >
+                  {{ log.isClearable ? 'User clearable' : 'Pinned' }}
+                </z-badge>
+              </td>
+              <td z-table-cell>
+                {{ log.expiresAt ? (log.expiresAt | date:'mediumDate') : 'No
+                expiry' }}
+              </td>
+              <td z-table-cell>{{ log.createdAt | date:'mediumDate' }}</td>
+            </tr>
             } @empty {
-              <tr z-table-row>
-                <td z-table-cell colspan="4" class="py-10 text-center">
-                  <p class="font-semibold">No policy logs yet.</p>
-                  <p class="mt-1 text-sm text-muted-foreground">Rows will appear after announcements are sent.</p>
-                </td>
-              </tr>
+            <tr z-table-row>
+              <td z-table-cell colspan="4" class="py-10 text-center">
+                <p class="font-semibold">No policy logs yet.</p>
+                <p class="mt-1 text-sm text-muted-foreground">
+                  Rows will appear after announcements are sent.
+                </p>
+              </td>
+            </tr>
             }
           </tbody>
         </table>
       </div>
-    </section>
-  }
+    </app-fetch-state>
+  </section>
+  } @if (modalMode() === 'add') {
+  <z-modal
+    [isOpen]="true"
+    title="Send Announcement"
+    description="Send an in-app notification and optional PWA push to selected users"
+    okText="Send Announcement"
+    cancelText="Cancel"
+    size="lg"
+    (ok)="sendAnnouncement()"
+    (cancel)="closeModal()"
+  >
+    <form [formGroup]="announcementForm" class="grid gap-4 sm:grid-cols-2">
+      <z-form-field>
+        <z-form-label [zRequired]="true">Title</z-form-label>
+        <z-form-control>
+          <input
+            z-input
+            formControlName="title"
+            placeholder="Pickup schedule update"
+            class="w-full"
+          />
+        </z-form-control>
+      </z-form-field>
 
-  @if (modalMode() === 'add') {
-    <z-modal
-      [isOpen]="true"
-      title="Send Announcement"
-      description="Send an in-app notification and optional PWA push to selected users"
-      okText="Send Announcement"
-      cancelText="Cancel"
-      size="lg"
-      (ok)="sendAnnouncement()"
-      (cancel)="closeModal()"
-    >
-      <form [formGroup]="announcementForm" class="grid gap-4 sm:grid-cols-2">
-        <z-form-field>
-          <z-form-label [zRequired]="true">Title</z-form-label>
-          <z-form-control>
-            <input z-input formControlName="title" placeholder="Pickup schedule update" class="w-full" />
-          </z-form-control>
-        </z-form-field>
+      <z-form-field>
+        <z-form-label [zRequired]="true">Audience</z-form-label>
+        <z-form-control>
+          <z-select
+            formControlName="targetRole"
+            class="w-full"
+            zPlaceholder="Select audience"
+          >
+            @for (option of audienceOptions; track option.value) {
+            <z-select-item [zValue]="option.value">
+              {{ option.label }}
+            </z-select-item>
+            }
+          </z-select>
+        </z-form-control>
+      </z-form-field>
 
-        <z-form-field>
-          <z-form-label [zRequired]="true">Audience</z-form-label>
-          <z-form-control>
-            <z-select formControlName="targetRole" class="w-full" zPlaceholder="Select audience">
-              @for (option of audienceOptions; track option.value) {
-                <z-select-item [zValue]="option.value">
-                  {{ option.label }}
-                </z-select-item>
-              }
-            </z-select>
-          </z-form-control>
-        </z-form-field>
+      <z-form-field class="sm:col-span-2">
+        <z-form-label [zRequired]="true">Message</z-form-label>
+        <z-form-control>
+          <textarea
+            z-input
+            formControlName="message"
+            rows="4"
+            placeholder="Write the notification message"
+            class="w-full"
+          ></textarea>
+        </z-form-control>
+      </z-form-field>
 
-        <z-form-field class="sm:col-span-2">
-          <z-form-label [zRequired]="true">Message</z-form-label>
-          <z-form-control>
-            <textarea z-input formControlName="message" rows="4" placeholder="Write the notification message" class="w-full"></textarea>
-          </z-form-control>
-        </z-form-field>
+      <z-form-field>
+        <z-form-label>Action URL</z-form-label>
+        <z-form-control>
+          <input
+            z-input
+            formControlName="actionUrl"
+            placeholder="/customer/pickups"
+            class="w-full"
+          />
+        </z-form-control>
+      </z-form-field>
 
-        <z-form-field>
-          <z-form-label>Action URL</z-form-label>
-          <z-form-control>
-            <input z-input formControlName="actionUrl" placeholder="/customer/pickups" class="w-full" />
-          </z-form-control>
-        </z-form-field>
+      <z-form-field>
+        <z-form-label>Expires At</z-form-label>
+        <z-form-control>
+          <z-date-picker
+            formControlName="expiresAt"
+            placeholder="Pick expiry date"
+            zFormat="MMM d, y"
+            class="w-full"
+          />
+        </z-form-control>
+      </z-form-field>
 
-        <z-form-field>
-          <z-form-label>Expires At</z-form-label>
-          <z-form-control>
-            <z-date-picker
-              formControlName="expiresAt"
-              placeholder="Pick expiry date"
-              zFormat="MMM d, y"
-              class="w-full"
-            />
-          </z-form-control>
-        </z-form-field>
-
-        <z-checkbox
-          formControlName="isClearable"
-          class="rounded-lg border border-border bg-muted/20 px-3 py-2 text-sm text-foreground sm:col-span-2"
-        >
-          Users can clear this notification
-        </z-checkbox>
-      </form>
-    </z-modal>
+      <z-checkbox
+        formControlName="isClearable"
+        class="rounded-lg border border-border bg-muted/20 px-3 py-2 text-sm text-foreground sm:col-span-2"
+      >
+        Users can clear this notification
+      </z-checkbox>
+    </form>
+  </z-modal>
   }
 </section>

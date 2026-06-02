@@ -1,218 +1,253 @@
 <section class="grid min-w-0 gap-4 p-4 lg:p-8">
   <app-header mode="route">
-    <button z-button type="button" rightSide class="gap-2" (click)="openAddUser()">
+    <button
+      z-button
+      type="button"
+      rightSide
+      class="gap-2"
+      (click)="openAddUser()"
+    >
       <ng-icon name="lucidePlus" class="size-4!" />
       Add User
     </button>
   </app-header>
 
   <div class="grid gap-3 sm:grid-cols-3">
-    <article class="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
-      <span class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary">
+    <article
+      class="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+    >
+      <span
+        class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
+      >
         <ng-icon name="lucideUsers" class="size-5!" />
       </span>
       <span>
         <span class="block font-semibold">Customers</span>
-        <span class="block text-sm text-muted-foreground">{{ customerCount() }} user accounts</span>
+        <span class="block text-sm text-muted-foreground"
+          >{{ customerCount() }} user accounts</span
+        >
       </span>
     </article>
-    <article class="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
-      <span class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary">
+    <article
+      class="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+    >
+      <span
+        class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
+      >
         <ng-icon name="lucideTruck" class="size-5!" />
       </span>
       <span>
         <span class="block font-semibold">Collectors</span>
-        <span class="block text-sm text-muted-foreground">{{ collectorCount() }} field accounts</span>
+        <span class="block text-sm text-muted-foreground"
+          >{{ collectorCount() }} field accounts</span
+        >
       </span>
     </article>
-    <article class="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
-      <span class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary">
+    <article
+      class="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+    >
+      <span
+        class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
+      >
         <ng-icon name="lucideShield" class="size-5!" />
       </span>
       <span>
         <span class="block font-semibold">Admins</span>
-        <span class="block text-sm text-muted-foreground">{{ adminCount() }} operators</span>
+        <span class="block text-sm text-muted-foreground"
+          >{{ adminCount() }} operators</span
+        >
       </span>
     </article>
   </div>
 
-  <section class="min-w-0 rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">
-    <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <h2 class="text-lg font-semibold">User Management</h2>
-        <p class="text-sm text-muted-foreground">Manage user accounts, roles, and permissions.</p>
-      </div>
-      <button z-button type="button" class="gap-2" (click)="openAddUser()">
-        <ng-icon name="lucidePlus" class="size-4!" />
-        Add User
-      </button>
-    </div>
+  <section
+    class="min-w-0 rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6"
+  >
+    <app-table-header
+      title="User Management"
+      description="Manage user accounts, roles, and permissions."
+      [filters]="filters"
+      [activeFilter]="activeFilter()"
+      [showRefresh]="true"
+      (filterChange)="setFilter($event)"
+      (refresh)="refresh()"
+    />
 
-    <!-- Users Table -->
-    <div class="grid gap-3 lg:hidden">
-      @for (user of users(); track user.id) {
-      <article class="rounded-lg border border-border p-3">
-        <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
-            <p class="truncate font-semibold">{{ user.name }}</p>
-            <p class="truncate text-sm text-muted-foreground">{{ user.email }}</p>
+    <app-fetch-state
+      [isLoading]="isLoading()"
+      [loadError]="loadError()"
+      loadingText="Loading users..."
+    >
+      <!-- Users Table -->
+      <div class="grid gap-3 lg:hidden">
+        @for (user of filteredUsers(); track user.id) {
+        <article class="rounded-lg border border-border p-3">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="truncate font-semibold">{{ user.name }}</p>
+              <p class="truncate text-sm text-muted-foreground">
+                {{ user.email }}
+              </p>
+            </div>
+            <z-badge [zType]="user.role | roleBadgeType" zShape="pill">
+              {{ user.role | displayRole }}
+            </z-badge>
           </div>
-          <z-badge [zType]="user.role | roleBadgeType" zShape="pill">
-            {{ user.role | displayRole }}
-          </z-badge>
-        </div>
 
-        <dl class="mt-3 grid grid-cols-2 gap-3 text-sm">
-          <div>
-            <dt class="text-xs text-muted-foreground">Phone</dt>
-            <dd class="mt-0.5 truncate font-semibold">
-              {{ user.phone || '—' }}
-            </dd>
-          </div>
-          <div>
-            <dt class="text-xs text-muted-foreground">Joined</dt>
-            <dd class="mt-0.5 font-semibold">
-              {{ user.createdAt | date: 'MMM dd, yyyy' }}
-            </dd>
-          </div>
-        </dl>
-
-        <div class="mt-4 grid grid-cols-2 gap-2">
-          <button
-            z-button
-            zType="outline"
-            zSize="sm"
-            type="button"
-            (click)="openEditUser(user)"
-          >
-            <ng-icon name="lucidePencil" class="size-4!" />
-            Edit
-          </button>
-          <button
-            z-button
-            zType="destructive"
-            zSize="sm"
-            type="button"
-            (click)="deleteUser(user)"
-          >
-            <ng-icon name="lucideTrash2" class="size-4!" />
-            Delete
-          </button>
-        </div>
-      </article>
-      } @empty {
-      <div class="rounded-lg border border-dashed border-border p-8 text-center">
-        <p class="font-semibold">No users found.</p>
-        <p class="mt-1 text-sm text-muted-foreground">
-          Get started by adding your first user.
-        </p>
-        <div class="mt-4">
-          <button
-            z-button
-            zType="default"
-            type="button"
-            (click)="openAddUser()"
-          >
-            Add User
-          </button>
-        </div>
-      </div>
-      }
-    </div>
-
-    <div class="hidden max-w-full overflow-x-auto rounded-lg border border-border lg:block">
-      <table z-table class="min-w-[64rem] bg-card">
-        <caption z-table-caption class="sr-only">
-          Users management table
-        </caption>
-
-        <thead z-table-header>
-          <tr z-table-row>
-            <th z-table-head>Name</th>
-            <th z-table-head>Email</th>
-            <th z-table-head>Role</th>
-            <th z-table-head>Phone</th>
-            <th z-table-head>Joined</th>
-            <th z-table-head class="w-44 !text-right">Actions</th>
-          </tr>
-        </thead>
-
-        <tbody z-table-body>
-          @for (user of users(); track user.id) {
-          <tr z-table-row>
-            <td z-table-cell>
-              <p class="font-semibold">{{ user.name }}</p>
-            </td>
-
-            <td z-table-cell>
-              <p>{{ user.email }}</p>
-            </td>
-
-            <td z-table-cell>
-              <z-badge [zType]="user.role | roleBadgeType" zShape="pill">
-                {{ user.role | displayRole }}
-              </z-badge>
-            </td>
-
-            <td z-table-cell>
-              <p>{{ user.phone || '-' }}</p>
-            </td>
-
-            <td z-table-cell>
-              <p>
+          <dl class="mt-3 grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <dt class="text-xs text-muted-foreground">Phone</dt>
+              <dd class="mt-0.5 truncate font-semibold">
+                {{ user.phone || '—' }}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-xs text-muted-foreground">Joined</dt>
+              <dd class="mt-0.5 font-semibold">
                 {{ user.createdAt | date: 'MMM dd, yyyy' }}
-              </p>
-            </td>
+              </dd>
+            </div>
+          </dl>
 
-            <td z-table-cell class="w-44 !text-right">
-              <div class="flex justify-end gap-2">
-                <button
-                  z-button
-                  zType="outline"
-                  zSize="sm"
-                  type="button"
-                  (click)="openEditUser(user)"
-                >
-                  <ng-icon name="lucidePencil" class="size-4!" />
-                  Edit
-                </button>
+          <div class="mt-4 grid grid-cols-2 gap-2">
+            <button
+              z-button
+              zType="outline"
+              zSize="sm"
+              type="button"
+              (click)="openEditUser(user)"
+            >
+              <ng-icon name="lucidePencil" class="size-4!" />
+              Edit
+            </button>
+            <button
+              z-button
+              zType="destructive"
+              zSize="sm"
+              type="button"
+              (click)="deleteUser(user)"
+            >
+              <ng-icon name="lucideTrash2" class="size-4!" />
+              Delete
+            </button>
+          </div>
+        </article>
+        } @empty {
+        <div
+          class="rounded-lg border border-dashed border-border p-8 text-center"
+        >
+          <p class="font-semibold">No users found.</p>
+          <p class="mt-1 text-sm text-muted-foreground">
+            Get started by adding your first user.
+          </p>
+          <div class="mt-4">
+            <button
+              z-button
+              zType="default"
+              type="button"
+              (click)="openAddUser()"
+            >
+              Add User
+            </button>
+          </div>
+        </div>
+        }
+      </div>
 
-                <button
-                  z-button
-                  zType="destructive"
-                  zSize="sm"
-                  type="button"
-                  (click)="deleteUser(user)"
-                >
-                  <ng-icon name="lucideTrash2" class="size-4!" />
-                  Delete
-                </button>
-              </div>
-            </td>
-          </tr>
-          } @empty {
-          <tr z-table-row>
-            <td z-table-cell colspan="6" class="py-10 text-center">
-              <p class="font-semibold">No users found.</p>
-              <p class="mt-1 text-sm text-muted-foreground">
-                Get started by adding your first user.
-              </p>
-              <div class="mt-4">
-                <button
-                  z-button
-                  zType="default"
-                  type="button"
-                  (click)="openAddUser()"
-                >
-                  Add User
-                </button>
-              </div>
-            </td>
-          </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+      <div
+        class="hidden max-w-full overflow-x-auto rounded-lg border border-border lg:block"
+      >
+        <table z-table class="min-w-[64rem] bg-card">
+          <caption z-table-caption class="sr-only">
+            Users management table
+          </caption>
+
+          <thead z-table-header>
+            <tr z-table-row>
+              <th z-table-head>Name</th>
+              <th z-table-head>Email</th>
+              <th z-table-head>Role</th>
+              <th z-table-head>Phone</th>
+              <th z-table-head>Joined</th>
+              <th z-table-head class="w-44 !text-right">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody z-table-body>
+            @for (user of filteredUsers(); track user.id) {
+            <tr z-table-row>
+              <td z-table-cell>
+                <p class="font-semibold">{{ user.name }}</p>
+              </td>
+
+              <td z-table-cell>
+                <p>{{ user.email }}</p>
+              </td>
+
+              <td z-table-cell>
+                <z-badge [zType]="user.role | roleBadgeType" zShape="pill">
+                  {{ user.role | displayRole }}
+                </z-badge>
+              </td>
+
+              <td z-table-cell>
+                <p>{{ user.phone || '-' }}</p>
+              </td>
+
+              <td z-table-cell>
+                <p>{{ user.createdAt | date: 'MMM dd, yyyy' }}</p>
+              </td>
+
+              <td z-table-cell class="w-44 !text-right">
+                <div class="flex justify-end gap-2">
+                  <button
+                    z-button
+                    zType="outline"
+                    zSize="sm"
+                    type="button"
+                    (click)="openEditUser(user)"
+                  >
+                    <ng-icon name="lucidePencil" class="size-4!" />
+                    Edit
+                  </button>
+
+                  <button
+                    z-button
+                    zType="destructive"
+                    zSize="sm"
+                    type="button"
+                    (click)="deleteUser(user)"
+                  >
+                    <ng-icon name="lucideTrash2" class="size-4!" />
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+            } @empty {
+            <tr z-table-row>
+              <td z-table-cell colspan="6" class="py-10 text-center">
+                <p class="font-semibold">No users found.</p>
+                <p class="mt-1 text-sm text-muted-foreground">
+                  Get started by adding your first user.
+                </p>
+                <div class="mt-4">
+                  <button
+                    z-button
+                    zType="default"
+                    type="button"
+                    (click)="openAddUser()"
+                  >
+                    Add User
+                  </button>
+                </div>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </app-fetch-state>
   </section>
 </section>
 

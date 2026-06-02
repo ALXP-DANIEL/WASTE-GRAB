@@ -16,11 +16,10 @@ import { LocationService, type LocationRecord } from '@/services/location.servic
 import { GooglePlaceInputComponent, type GooglePlaceSelection } from '@/ui/google-place-input/google-place-input.component';
 
 type LocationModalMode = 'add' | 'edit' | null;
-type LocationFilter = 'all' | 'mapped' | 'unmapped';
 
 @Component({
-  selector: 'app-admin-collectors-page',
-  templateUrl: './collectors.html',
+  selector: 'app-admin-collection-location-page',
+  templateUrl: './collection-location.html',
   imports: [
     ReactiveFormsModule,
     AppHeaderComponent,
@@ -47,41 +46,21 @@ type LocationFilter = 'all' | 'mapped' | 'unmapped';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminCollectorsPage implements OnInit {
+export class AdminCollectionLocationPage implements OnInit {
   private readonly locationService = inject(LocationService);
   private readonly dialogService = inject(ZardDialogService);
 
   protected readonly locations = signal<LocationRecord[]>([]);
   protected readonly isLoading = signal(true);
   protected readonly loadError = signal('');
-  protected readonly activeFilter = signal<LocationFilter>('all');
   protected readonly modalMode = signal<LocationModalMode>(null);
   protected readonly editingLocationId = signal<string | null>(null);
-  protected readonly filters: Array<{ value: LocationFilter; label: string }> = [
-    { value: 'all', label: 'All' },
-    { value: 'mapped', label: 'Mapped' },
-    { value: 'unmapped', label: 'Unmapped' },
-  ];
   protected readonly mappedCount = computed(() => this.locations().filter((location) => (
     location.latitude !== null && location.longitude !== null
   )).length);
   protected readonly cityCount = computed(() => new Set(this.locations()
     .map((location) => location.city)
     .filter(Boolean)).size);
-  protected readonly filteredLocations = computed(() => {
-    const filter = this.activeFilter();
-    const locations = this.locations();
-
-    if (filter === 'mapped') {
-      return locations.filter((location) => location.latitude !== null && location.longitude !== null);
-    }
-
-    if (filter === 'unmapped') {
-      return locations.filter((location) => location.latitude === null || location.longitude === null);
-    }
-
-    return locations;
-  });
 
   protected readonly createForm = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
@@ -97,10 +76,6 @@ export class AdminCollectorsPage implements OnInit {
   ngOnInit(): void {
     this.disableGoogleLocationFields();
     this.loadLocations();
-  }
-
-  protected setFilter(filter: LocationFilter): void {
-    this.activeFilter.set(filter);
   }
 
   protected refresh(): void {

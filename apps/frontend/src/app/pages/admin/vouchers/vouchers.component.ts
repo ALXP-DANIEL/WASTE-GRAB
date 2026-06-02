@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -11,11 +11,14 @@ import {
   lucideScrollText,
   lucideTrash2,
 } from '@ng-icons/lucide';
+import { firstValueFrom } from 'rxjs';
 
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { ZardDatePickerComponent } from '@/ui/zard/date-picker';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
+import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
+import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/ui/zard/form/form.component';
 import { ZardInputDirective } from '@/ui/zard/input';
 import { ZardModalComponent } from '@/ui/zard/modal/modal.component';
@@ -31,6 +34,7 @@ import {
 
 type VoucherTab = 'catalog' | 'redemptions' | 'ledger';
 type VoucherModalMode = 'add' | 'edit' | null;
+type VoucherCatalogFilter = 'all' | VoucherStatus;
 
 @Component({
   selector: 'app-admin-vouchers-page',
@@ -40,6 +44,8 @@ type VoucherModalMode = 'add' | 'edit' | null;
     ReactiveFormsModule,
     AppHeaderComponent,
     ZardButtonComponent,
+    FetchStateComponent,
+    TableHeaderComponent,
     ZardDatePickerComponent,
     ZardModalComponent,
     ZardFormFieldComponent,
@@ -74,11 +80,54 @@ export class AdminVouchersPage implements OnInit {
     { value: VoucherStatus.EXPIRED, label: 'Expired' },
   ];
   protected readonly activeTab = signal<VoucherTab>('catalog');
+  protected readonly activeCatalogFilter = signal<VoucherCatalogFilter>('all');
+  protected readonly activeRedemptionFilter = signal<string>('all');
+  protected readonly activeLedgerFilter = signal<string>('all');
   protected readonly vouchers = signal<Voucher[]>([]);
   protected readonly redemptions = signal<AdminVoucherRedemptionLog[]>([]);
   protected readonly pointLedger = signal<AdminPointLedgerLog[]>([]);
+  protected readonly isLoading = signal(true);
+  protected readonly loadError = signal('');
   protected readonly modalMode = signal<VoucherModalMode>(null);
   protected readonly editingVoucherId = signal<string | null>(null);
+  protected readonly catalogFilters: Array<{ value: VoucherCatalogFilter; label: string }> = [
+    { value: 'all', label: 'All' },
+    { value: VoucherStatus.ACTIVE, label: 'Active' },
+    { value: VoucherStatus.INACTIVE, label: 'Inactive' },
+    { value: VoucherStatus.EXPIRED, label: 'Expired' },
+  ];
+  protected readonly redemptionFilters = computed<Array<{ value: string; label: string }>>(() => {
+    const statuses = [...new Set(this.redemptions().map((entry) => entry.status).filter(Boolean))];
+    return [
+      { value: 'all', label: 'All' },
+      ...statuses.map((status) => ({ value: status, label: status })),
+    ];
+  });
+  protected readonly ledgerFilters = computed<Array<{ value: string; label: string }>>(() => {
+    const types = [...new Set(this.pointLedger().map((entry) => entry.type).filter(Boolean))];
+    return [
+      { value: 'all', label: 'All' },
+      ...types.map((type) => ({ value: type, label: type })),
+    ];
+  });
+  protected readonly filteredVouchers = computed(() => {
+    const vouchers = this.vouchers();
+    const filter = this.activeCatalogFilter();
+    if (filter === 'all') return vouchers;
+    return vouchers.filter((voucher) => voucher.status === filter);
+  });
+  protected readonly filteredRedemptions = computed(() => {
+    const redemptions = this.redemptions();
+    const filter = this.activeRedemptionFilter();
+    if (filter === 'all') return redemptions;
+    return redemptions.filter((entry) => entry.status === filter);
+  });
+  protected readonly filteredPointLedger = computed(() => {
+    const entries = this.pointLedger();
+    const filter = this.activeLedgerFilter();
+    if (filter === 'all') return entries;
+    return entries.filter((entry) => entry.type === filter);
+  });
 
   protected readonly form = new FormGroup({
     title: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
@@ -92,13 +141,27 @@ export class AdminVouchersPage implements OnInit {
   });
 
   ngOnInit(): void {
-    this.loadVouchers();
-    this.loadRedemptions();
-    this.loadPointLedger();
+    void this.loadInitialData();
   }
 
   protected selectTab(tab: VoucherTab): void {
     this.activeTab.set(tab);
+  }
+
+  protected setCatalogFilter(filter: VoucherCatalogFilter): void {
+    this.activeCatalogFilter.set(filter);
+  }
+
+  protected setRedemptionFilter(filter: string): void {
+    this.activeRedemptionFilter.set(filter);
+  }
+
+  protected setLedgerFilter(filter: string): void {
+    this.activeLedgerFilter.set(filter);
+  }
+
+  protected refresh(): void {
+    void this.loadInitialData();
   }
 
   protected openAdd(): void {
@@ -202,25 +265,26 @@ export class AdminVouchersPage implements OnInit {
     return id ? id.slice(0, 8).toUpperCase() : '-';
   }
 
-  private loadVouchers(): void {
-    this.vouchersService.listVouchers().subscribe({
-      next: (vouchers) => this.vouchers.set(vouchers),
-      error: () => this.vouchers.set([]),
-    });
-  }
-
-  private loadRedemptions(): void {
-    this.vouchersService.listRedemptions().subscribe({
-      next: (redemptions) => this.redemptions.set(redemptions),
-      error: () => this.redemptions.set([]),
-    });
-  }
-
-  private loadPointLedger(): void {
-    this.vouchersService.listPointLedger().subscribe({
-      next: (ledger) => this.pointLedger.set(ledger),
-      error: () => this.pointLedger.set([]),
-    });
+  private async loadInitialData(): Promise<void> {
+    this.isLoading.set(true);
+    this.loadError.set('');
+    try {
+      const [vouchers, redemptions, pointLedger] = await Promise.all([
+        firstValueFrom(this.vouchersService.listVouchers()),
+        firstValueFrom(this.vouchersService.listRedemptions()),
+        firstValueFrom(this.vouchersService.listPointLedger()),
+      ]);
+      this.vouchers.set(vouchers);
+      this.redemptions.set(redemptions);
+      this.pointLedger.set(pointLedger);
+    } catch {
+      this.vouchers.set([]);
+      this.redemptions.set([]);
+      this.pointLedger.set([]);
+      this.loadError.set('Unable to load vouchers data.');
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
   private formPayload() {

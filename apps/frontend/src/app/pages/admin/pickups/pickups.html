@@ -1,135 +1,179 @@
 <section class="grid min-w-0 gap-4 p-4 lg:p-8">
   <app-header mode="route">
-    <button z-button type="button" rightSide zType="outline" class="gap-2" (click)="refresh()">
+    <button
+      z-button
+      type="button"
+      rightSide
+      zType="outline"
+      class="gap-2"
+      (click)="refresh()"
+    >
       <ng-icon name="lucideRefreshCw" class="size-4!" />
       Refresh
     </button>
   </app-header>
 
   <div class="grid gap-3 sm:grid-cols-4">
-    <article class="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
-      <span class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary">
+    <article
+      class="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+    >
+      <span
+        class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
+      >
         <ng-icon name="lucidePackageCheck" class="size-5!" />
       </span>
       <span>
         <span class="block font-semibold">Total</span>
-        <span class="block text-sm text-muted-foreground">{{ pickups().length }} pickup requests</span>
+        <span class="block text-sm text-muted-foreground"
+          >{{ pickups().length }} pickup requests</span
+        >
       </span>
     </article>
-    <article class="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
-      <span class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary">
+    <article
+      class="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+    >
+      <span
+        class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
+      >
         <ng-icon name="lucideTruck" class="size-5!" />
       </span>
       <span>
         <span class="block font-semibold">Active</span>
-        <span class="block text-sm text-muted-foreground">{{ activePickups().length }} in progress</span>
+        <span class="block text-sm text-muted-foreground"
+          >{{ activePickups().length }} in progress</span
+        >
       </span>
     </article>
-    <article class="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
-      <span class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary">
+    <article
+      class="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+    >
+      <span
+        class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
+      >
         <ng-icon name="lucideCheckCircle2" class="size-5!" />
       </span>
       <span>
         <span class="block font-semibold">Completed</span>
-        <span class="block text-sm text-muted-foreground">{{ completedPickups().length }} finished</span>
+        <span class="block text-sm text-muted-foreground"
+          >{{ completedPickups().length }} finished</span
+        >
       </span>
     </article>
-    <article class="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
-      <span class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary">
+    <article
+      class="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+    >
+      <span
+        class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
+      >
         <ng-icon name="lucideCoins" class="size-5!" />
       </span>
       <span>
         <span class="block font-semibold">Potential Points</span>
-        <span class="block text-sm text-muted-foreground">{{ totalPotentialPoints() }} pts</span>
+        <span class="block text-sm text-muted-foreground"
+          >{{ totalPotentialPoints() }} pts</span
+        >
       </span>
     </article>
   </div>
 
-  <section class="min-w-0 rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">
-    <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <h2 class="text-lg font-semibold">Pickup Requests</h2>
-        <p class="text-sm text-muted-foreground">Review customer pickup requests, status, collectors, images, and point estimates.</p>
-      </div>
-      <div class="flex flex-wrap gap-2">
-        @for (filter of filters; track filter.value) {
-          <button
-            z-button
-            type="button"
-            zSize="sm"
-            [zType]="activeFilter() === filter.value ? 'default' : 'outline'"
-            (click)="setFilter(filter.value)"
-          >
-            {{ filter.label }}
-          </button>
-        }
-      </div>
-    </div>
+  <section
+    class="min-w-0 rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6"
+  >
+    <app-table-header
+      title="Pickup Requests"
+      description="Review customer pickup requests, status, collectors, images, and point estimates."
+      [filters]="filters"
+      [activeFilter]="activeFilter()"
+      [showRefresh]="true"
+      (filterChange)="setFilter($event)"
+      (refresh)="refresh()"
+    />
 
-    @if (loadError()) {
-      <div class="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
-        {{ loadError() }}
-      </div>
-    }
-
-    @if (isLoading()) {
-      <div class="grid place-items-center rounded-lg border border-dashed border-border p-10 text-muted-foreground">
-        Loading pickup requests...
-      </div>
-    } @else {
+    <app-fetch-state
+      [isLoading]="isLoading()"
+      [loadError]="loadError()"
+      loadingText="Loading pickup requests..."
+    >
       <div class="grid gap-3 lg:hidden">
         @for (pickup of filteredPickups(); track pickup.id) {
-          <article class="rounded-lg border border-border p-3">
-            <div class="flex items-start gap-3">
-              @if (primaryImage(pickup)) {
-                <img [src]="primaryImage(pickup)!" alt="" class="size-16 rounded-lg object-cover" />
-              } @else {
-                <div class="grid size-16 place-items-center rounded-lg bg-muted text-muted-foreground">
-                  <ng-icon name="lucideImage" class="size-5!" />
-                </div>
-              }
-              <div class="min-w-0 flex-1">
-                <div class="flex items-start justify-between gap-2">
-                  <div class="min-w-0">
-                    <p class="font-semibold">#{{ shortId(pickup.id) }}</p>
-                    <p class="truncate text-sm text-muted-foreground">{{ pickup.user.name }} · {{ pickup.user.email }}</p>
-                  </div>
-                  <span class="shrink-0 rounded-md px-2 py-1 text-xs font-semibold" [class]="statusClass(pickup.status)">
-                    {{ statusLabel(pickup.status) }}
-                  </span>
-                </div>
-                <p class="mt-2 line-clamp-2 text-sm text-muted-foreground">{{ pickup.addressText }}</p>
-              </div>
+        <article class="rounded-lg border border-border p-3">
+          <div class="flex items-start gap-3">
+            @if (primaryImage(pickup)) {
+            <img
+              [src]="primaryImage(pickup)!"
+              alt=""
+              class="size-16 rounded-lg object-cover"
+            />
+            } @else {
+            <div
+              class="grid size-16 place-items-center rounded-lg bg-muted text-muted-foreground"
+            >
+              <ng-icon name="lucideImage" class="size-5!" />
             </div>
-
-            <dl class="mt-3 grid grid-cols-2 gap-3 text-sm">
-              <div>
-                <dt class="text-xs text-muted-foreground">Category</dt>
-                <dd class="truncate font-semibold">{{ categoryLabel(pickup) }}</dd>
+            }
+            <div class="min-w-0 flex-1">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <p class="font-semibold">#{{ shortId(pickup.id) }}</p>
+                  <p class="truncate text-sm text-muted-foreground">
+                    {{ pickup.user.name }} · {{ pickup.user.email }}
+                  </p>
+                </div>
+                <span
+                  class="shrink-0 rounded-md px-2 py-1 text-xs font-semibold"
+                  [class]="statusClass(pickup.status)"
+                >
+                  {{ statusLabel(pickup.status) }}
+                </span>
               </div>
-              <div>
-                <dt class="text-xs text-muted-foreground">Collector</dt>
-                <dd class="truncate font-semibold">{{ pickup.collector?.name || '-' }}</dd>
-              </div>
-              <div>
-                <dt class="text-xs text-muted-foreground">Weight</dt>
-                <dd class="font-semibold">{{ requestWeight(pickup) | number:'1.2-2' }} kg</dd>
-              </div>
-              <div>
-                <dt class="text-xs text-muted-foreground">Points</dt>
-                <dd class="font-semibold text-primary">{{ potentialPoints(pickup) }} pts</dd>
-              </div>
-            </dl>
-          </article>
-        } @empty {
-          <div class="rounded-lg border border-dashed border-border p-8 text-center">
-            <p class="font-semibold">No pickup requests found.</p>
-            <p class="mt-1 text-sm text-muted-foreground">Requests will appear after customers submit pickups.</p>
+              <p class="mt-2 line-clamp-2 text-sm text-muted-foreground">
+                {{ pickup.addressText }}
+              </p>
+            </div>
           </div>
+
+          <dl class="mt-3 grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <dt class="text-xs text-muted-foreground">Category</dt>
+              <dd class="truncate font-semibold">
+                {{ categoryLabel(pickup) }}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-xs text-muted-foreground">Collector</dt>
+              <dd class="truncate font-semibold">
+                {{ pickup.collector?.name || '-' }}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-xs text-muted-foreground">Weight</dt>
+              <dd class="font-semibold">
+                {{ requestWeight(pickup) | number:'1.2-2' }} kg
+              </dd>
+            </div>
+            <div>
+              <dt class="text-xs text-muted-foreground">Points</dt>
+              <dd class="font-semibold text-primary">
+                {{ potentialPoints(pickup) }} pts
+              </dd>
+            </div>
+          </dl>
+        </article>
+        } @empty {
+        <div
+          class="rounded-lg border border-dashed border-border p-8 text-center"
+        >
+          <p class="font-semibold">No pickup requests found.</p>
+          <p class="mt-1 text-sm text-muted-foreground">
+            Requests will appear after customers submit pickups.
+          </p>
+        </div>
         }
       </div>
 
-      <div class="hidden max-w-full overflow-x-auto rounded-lg border border-border lg:block">
+      <div
+        class="hidden max-w-full overflow-x-auto rounded-lg border border-border lg:block"
+      >
         <table z-table class="min-w-[86rem] bg-card">
           <thead z-table-header>
             <tr z-table-row>
@@ -144,62 +188,86 @@
           </thead>
           <tbody z-table-body>
             @for (pickup of filteredPickups(); track pickup.id) {
-              <tr z-table-row>
-                <td z-table-cell>
-                  <div class="flex items-center gap-3">
-                    @if (primaryImage(pickup)) {
-                      <img [src]="primaryImage(pickup)!" alt="" class="size-12 rounded-lg object-cover" />
-                    } @else {
-                      <div class="grid size-12 place-items-center rounded-lg bg-muted text-muted-foreground">
-                        <ng-icon name="lucideImage" class="size-4!" />
-                      </div>
-                    }
-                    <div class="min-w-0">
-                      <p class="font-semibold">#{{ shortId(pickup.id) }}</p>
-                      <p class="max-w-sm truncate text-xs text-muted-foreground">{{ categoryLabel(pickup) }}</p>
-                      <p class="max-w-sm truncate text-xs text-muted-foreground">{{ pickup.addressText }}</p>
-                    </div>
+            <tr z-table-row>
+              <td z-table-cell>
+                <div class="flex items-center gap-3">
+                  @if (primaryImage(pickup)) {
+                  <img
+                    [src]="primaryImage(pickup)!"
+                    alt=""
+                    class="size-12 rounded-lg object-cover"
+                  />
+                  } @else {
+                  <div
+                    class="grid size-12 place-items-center rounded-lg bg-muted text-muted-foreground"
+                  >
+                    <ng-icon name="lucideImage" class="size-4!" />
                   </div>
-                </td>
-                <td z-table-cell>
-                  <p class="font-semibold">{{ pickup.user.name }}</p>
-                  <p class="text-xs text-muted-foreground">{{ pickup.user.email }}</p>
-                </td>
-                <td z-table-cell>
-                  <span class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold" [class]="statusClass(pickup.status)">
-                    <ng-icon [name]="statusIcon(pickup.status)" class="size-3.5!" />
-                    {{ statusLabel(pickup.status) }}
-                  </span>
-                </td>
-                <td z-table-cell>
-                  <p class="font-semibold">{{ pickup.collector?.name || '-' }}</p>
-                  <p class="text-xs text-muted-foreground">{{ pickup.collector?.email || 'Unassigned' }}</p>
-                </td>
-                <td z-table-cell>
-                  <span class="inline-flex items-center gap-1 font-semibold">
-                    <ng-icon name="lucideScale" class="size-4!" />
-                    {{ requestWeight(pickup) | number:'1.2-2' }} kg
-                  </span>
-                </td>
-                <td z-table-cell>
-                  <span class="inline-flex items-center gap-1 font-semibold text-primary">
-                    <ng-icon name="lucideCoins" class="size-4!" />
-                    {{ potentialPoints(pickup) }} pts
-                  </span>
-                </td>
-                <td z-table-cell>{{ formatDate(pickup.createdAt) }}</td>
-              </tr>
+                  }
+                  <div class="min-w-0">
+                    <p class="font-semibold">#{{ shortId(pickup.id) }}</p>
+                    <p class="max-w-sm truncate text-xs text-muted-foreground">
+                      {{ categoryLabel(pickup) }}
+                    </p>
+                    <p class="max-w-sm truncate text-xs text-muted-foreground">
+                      {{ pickup.addressText }}
+                    </p>
+                  </div>
+                </div>
+              </td>
+              <td z-table-cell>
+                <p class="font-semibold">{{ pickup.user.name }}</p>
+                <p class="text-xs text-muted-foreground">
+                  {{ pickup.user.email }}
+                </p>
+              </td>
+              <td z-table-cell>
+                <span
+                  class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold"
+                  [class]="statusClass(pickup.status)"
+                >
+                  <ng-icon
+                    [name]="statusIcon(pickup.status)"
+                    class="size-3.5!"
+                  />
+                  {{ statusLabel(pickup.status) }}
+                </span>
+              </td>
+              <td z-table-cell>
+                <p class="font-semibold">{{ pickup.collector?.name || '-' }}</p>
+                <p class="text-xs text-muted-foreground">
+                  {{ pickup.collector?.email || 'Unassigned' }}
+                </p>
+              </td>
+              <td z-table-cell>
+                <span class="inline-flex items-center gap-1 font-semibold">
+                  <ng-icon name="lucideScale" class="size-4!" />
+                  {{ requestWeight(pickup) | number:'1.2-2' }} kg
+                </span>
+              </td>
+              <td z-table-cell>
+                <span
+                  class="inline-flex items-center gap-1 font-semibold text-primary"
+                >
+                  <ng-icon name="lucideCoins" class="size-4!" />
+                  {{ potentialPoints(pickup) }} pts
+                </span>
+              </td>
+              <td z-table-cell>{{ formatDate(pickup.createdAt) }}</td>
+            </tr>
             } @empty {
-              <tr z-table-row>
-                <td z-table-cell colspan="7" class="py-10 text-center">
-                  <p class="font-semibold">No pickup requests found.</p>
-                  <p class="mt-1 text-sm text-muted-foreground">Requests will appear after customers submit pickups.</p>
-                </td>
-              </tr>
+            <tr z-table-row>
+              <td z-table-cell colspan="7" class="py-10 text-center">
+                <p class="font-semibold">No pickup requests found.</p>
+                <p class="mt-1 text-sm text-muted-foreground">
+                  Requests will appear after customers submit pickups.
+                </p>
+              </td>
+            </tr>
             }
           </tbody>
         </table>
       </div>
-    }
+    </app-fetch-state>
   </section>
 </section>

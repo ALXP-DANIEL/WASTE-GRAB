@@ -11,10 +11,13 @@ import { ZardModalComponent } from '@/ui/zard/modal/modal.component';
 import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/ui/zard/form/form.component';
 import { ZardInputDirective } from '@/ui/zard/input';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
+import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
+import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { WasteCategoryService } from '@/services/waste-category.service';
 import type { WasteCategory } from '@wastegrab/shared';
 
 type WasteCategoryModalMode = 'add' | 'edit' | null;
+type WasteCategoryFilter = 'all' | 'active' | 'hazardous' | 'banned';
 
 @Component({
   selector: 'app-admin-waste-categories-page',
@@ -24,6 +27,8 @@ type WasteCategoryModalMode = 'add' | 'edit' | null;
     AppHeaderComponent,
     ...ZardTableImports,
     ZardButtonComponent,
+    FetchStateComponent,
+    TableHeaderComponent,
     ZardCheckboxComponent,
     ZardModalComponent,
     ZardFormFieldComponent,
@@ -49,13 +54,31 @@ export class AdminWasteCategoriesPage implements OnInit {
   private readonly dialogService = inject(ZardDialogService);
 
   protected readonly categories = signal<WasteCategory[]>([]);
+  protected readonly isLoading = signal(true);
+  protected readonly loadError = signal('');
+  protected readonly activeFilter = signal<WasteCategoryFilter>('all');
   protected readonly modalMode = signal<WasteCategoryModalMode>(null);
   protected readonly editingCategoryId = signal<string | null>(null);
+  protected readonly filters: Array<{ value: WasteCategoryFilter; label: string }> = [
+    { value: 'all', label: 'All' },
+    { value: 'active', label: 'Active' },
+    { value: 'hazardous', label: 'Hazardous' },
+    { value: 'banned', label: 'Banned' },
+  ];
   protected readonly activeCount = computed(() => this.categories().filter((category) => !category.isBanned).length);
   protected readonly aiCount = computed(() => this.categories().filter((category) => category.isAiDetectable).length);
   protected readonly restrictedCount = computed(() => this.categories().filter((category) => (
     category.isBanned || category.isHazardous
   )).length);
+  protected readonly filteredCategories = computed(() => {
+    const categories = this.categories();
+    const filter = this.activeFilter();
+
+    if (filter === 'active') return categories.filter((category) => !category.isBanned && !category.isHazardous);
+    if (filter === 'hazardous') return categories.filter((category) => category.isHazardous);
+    if (filter === 'banned') return categories.filter((category) => category.isBanned);
+    return categories;
+  });
 
   protected readonly form = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
@@ -68,6 +91,14 @@ export class AdminWasteCategoriesPage implements OnInit {
   });
 
   ngOnInit(): void {
+    this.loadCategories();
+  }
+
+  protected setFilter(filter: WasteCategoryFilter): void {
+    this.activeFilter.set(filter);
+  }
+
+  protected refresh(): void {
     this.loadCategories();
   }
 
@@ -167,9 +198,15 @@ export class AdminWasteCategoriesPage implements OnInit {
   }
 
   private loadCategories(): void {
+    this.isLoading.set(true);
+    this.loadError.set('');
     this.wasteCategoryService.listCategories().subscribe({
       next: (list) => this.categories.set(list),
-      error: () => this.categories.set([]),
+      error: () => {
+        this.categories.set([]);
+        this.loadError.set('Unable to load waste categories.');
+      },
+      complete: () => this.isLoading.set(false),
     });
   }
 }

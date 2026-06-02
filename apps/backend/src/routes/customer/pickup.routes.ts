@@ -234,10 +234,11 @@ pickupRouter.post(
   upload.array("images", 5),
   (async (req, res) => {
     const uploadRequest = req as PickupRequestUpload;
-    const user = await getCurrentUserFromRequest(uploadRequest);
     const files = uploadRequest.files ?? [];
 
     try {
+      const user = await getCurrentUserFromRequest(uploadRequest);
+
       if (!user) {
         res.status(401).json({ error: "Not authenticated." } as ApiErrorResponse);
         return;

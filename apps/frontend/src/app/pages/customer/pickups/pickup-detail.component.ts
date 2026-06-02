@@ -59,6 +59,8 @@ export class CustomerPickupDetailPage {
   private readonly pickupRequests = inject(PickupRequestService);
   private readonly dialogService = inject(ZardDialogService);
   private readonly remotePickup = signal<PickupRequestWithDetails | null>(null);
+  protected readonly isLoading = signal(true);
+  protected readonly loadError = signal('');
   protected readonly isCancelling = signal(false);
 
   protected readonly pickupId = toSignal(
@@ -171,8 +173,12 @@ export class CustomerPickupDetailPage {
   }
 
   private async loadPickupRequest(): Promise<void> {
+    this.isLoading.set(true);
+    this.loadError.set('');
     const id = this.pickupId();
     if (!id) {
+      this.isLoading.set(false);
+      this.loadError.set('Pickup not found.');
       return;
     }
 
@@ -181,6 +187,9 @@ export class CustomerPickupDetailPage {
       this.remotePickup.set(response.pickupRequest);
     } catch {
       this.remotePickup.set(null);
+      this.loadError.set('Unable to load pickup details.');
+    } finally {
+      this.isLoading.set(false);
     }
   }
 

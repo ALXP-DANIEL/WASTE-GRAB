@@ -21,7 +21,7 @@ const pages = {
     import('./pages/customer/pickups/pickup-detail.component').then((m) => m.CustomerPickupDetailPage),
   customerVouchers: () => import('./pages/customer/vouchers/vouchers.component').then((m) => m.CustomerVouchersPage),
   adminDashboard: () => import('./pages/admin/admin.component').then((m) => m.AdminPage),
-  adminCollectors: () => import('./pages/admin/collectors/collectors.component').then((m) => m.AdminCollectorsPage),
+  adminCollectors: () => import('./pages/admin/collection-locations/collection-location.component').then((m) => m.AdminCollectionLocationPage),
   adminPickups: () => import('./pages/admin/pickups/pickups.component').then((m) => m.AdminPickupsPage),
   adminUsers: () => import('./pages/admin/users/users.component').then((m) => m.AdminUsersPage),
   adminWasteCategories: () =>

@@ -4,6 +4,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import {
   lucideAlertTriangle,
   lucideChevronRight,
@@ -43,7 +44,7 @@ type DashboardStat = {
   selector: 'app-customer-page',
   templateUrl: './customer.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, AppHeaderComponent, ZardButtonComponent, NgIcon, RouterLink],
+  imports: [CommonModule, AppHeaderComponent, FetchStateComponent, ZardButtonComponent, NgIcon, RouterLink],
   viewProviders: [
     provideIcons({
       lucideAlertTriangle,
@@ -73,6 +74,7 @@ export class CustomerPage {
   protected readonly rewardSummary = signal<RewardSummary | null>(null);
   protected readonly voucherRedemptions = signal<CustomerVoucherRedemption[]>([]);
   protected readonly isLoadingRequests = signal(true);
+  protected readonly loadErrorRequests = signal('');
 
   protected readonly activeRequest = computed(
     () => this.requests().find((request) => this.isActiveStatus(request.status)) ?? null,
@@ -151,6 +153,7 @@ export class CustomerPage {
 
   private async loadPickupRequests(): Promise<void> {
     this.isLoadingRequests.set(true);
+    this.loadErrorRequests.set('');
     try {
       const [pickupResponse, rewardResponse, redemptionResponse] = await Promise.all([
         firstValueFrom(this.pickupRequests.listPickupRequests()),
@@ -162,6 +165,7 @@ export class CustomerPage {
       this.voucherRedemptions.set(redemptionResponse.redemptions);
     } catch (err) {
       console.error('Failed to load pickup requests:', err);
+      this.loadErrorRequests.set('Unable to load dashboard data.');
     } finally {
       this.isLoadingRequests.set(false);
     }
