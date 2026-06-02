@@ -240,6 +240,10 @@ export class AppHeaderComponent implements OnInit, OnDestroy {
 
   visibleWords = signal<string[]>([]);
 
+  // Interval handles to avoid overlapping intervals (fixes sleeping tab bug)
+  private quoteInterval?: number;
+  private fadeInterval?: number;
+  private wordInterval?: number;
   // -----------------------------
   // INIT
   // -----------------------------
@@ -262,29 +266,50 @@ export class AppHeaderComponent implements OnInit, OnDestroy {
 
     this.playQuoteAnimation();
 
-    setInterval(() => {
+    this.quoteInterval = window.setInterval(() => {
       this.playQuoteAnimation();
     }, 7000);
   }
 
   ngOnDestroy(): void {
     this.notificationService.stopRealtime();
+
+    if (this.quoteInterval) {
+      clearInterval(this.quoteInterval);
+    }
+
+    if (this.fadeInterval) {
+      clearInterval(this.fadeInterval);
+    }
+
+    if (this.wordInterval) {
+      clearInterval(this.wordInterval);
+    }
   }
 
   // -----------------------------
   // MAIN ANIMATION (FIXED)
   // -----------------------------
   private playQuoteAnimation(): void {
+    if (this.fadeInterval) {
+      clearInterval(this.fadeInterval);
+    }
+
+    if (this.wordInterval) {
+      clearInterval(this.wordInterval);
+    }
+
     const newQuote = this.getRandomQuote();
     const newWords = newQuote.split(' ');
 
-    // STEP 1: fade OUT old words (smooth shrink)
     const current = [...this.visibleWords()];
     let i = current.length;
 
-    const fadeOut = setInterval(() => {
+    this.fadeInterval = window.setInterval(() => {
       if (i <= 0) {
-        clearInterval(fadeOut);
+        if (this.fadeInterval) {
+          clearInterval(this.fadeInterval);
+        }
 
         // STEP 2: reset then animate in new words
         this.visibleWords.set([]);
@@ -299,11 +324,18 @@ export class AppHeaderComponent implements OnInit, OnDestroy {
 
   // STEP 3: animate IN words
   private animateWordsIn(words: string[]): void {
+    if (this.wordInterval) {
+      clearInterval(this.wordInterval);
+    }
+
     let index = 0;
 
-    const interval = setInterval(() => {
+    this.wordInterval = window.setInterval(() => {
       if (index >= words.length) {
-        clearInterval(interval);
+        if (this.wordInterval) {
+          clearInterval(this.wordInterval);
+        }
+
         return;
       }
 
