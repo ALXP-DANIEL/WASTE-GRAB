@@ -6,7 +6,7 @@ import type {
   AuthResponse,
   ChangePasswordInput,
   ChangePasswordResponse,
-  CompleteCustomerOnboardingResponse,
+  CompleteOnboardingResponse,
   CreateUserInput,
   ForgotPasswordInput,
   ForgotPasswordResponse,
@@ -19,7 +19,7 @@ import type {
 import {
   changePassword,
   clearAuthCookie,
-  completeCustomerOnboarding,
+  completeOnboarding,
   createAuthCookie,
   getCurrentUserFromRequest,
   loginUser,
@@ -249,7 +249,7 @@ authRouter.patch(
   }) as RequestHandler,
 );
 
-authRouter.post("/onboarding/customer/complete", async (req: Request, res: Response) => {
+authRouter.post("/onboarding/complete", async (req: Request, res: Response) => {
   const user = await getCurrentUserFromRequest(req);
 
   if (!user) {
@@ -259,8 +259,8 @@ authRouter.post("/onboarding/customer/complete", async (req: Request, res: Respo
   }
 
   try {
-    const updatedUser = await completeCustomerOnboarding(user.id);
-    const payload: CompleteCustomerOnboardingResponse = { user: updatedUser };
+    const updatedUser = await completeOnboarding(user.id);
+    const payload: CompleteOnboardingResponse = { user: updatedUser };
     res.json(payload);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to complete onboarding.";

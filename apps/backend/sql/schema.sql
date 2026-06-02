@@ -9,7 +9,7 @@ CREATE TABLE users (
   passwordHash VARCHAR(255) NOT NULL,
   phone VARCHAR(20),
   role ENUM('CUSTOMER', 'COLLECTOR', 'ADMIN') DEFAULT 'CUSTOMER',
-  has_completed_customer_onboarding BOOLEAN NOT NULL DEFAULT FALSE,
+  has_completed_onboarding BOOLEAN NOT NULL DEFAULT FALSE,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_email (email),
   INDEX idx_role (role),

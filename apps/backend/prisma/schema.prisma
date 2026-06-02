@@ -71,7 +71,7 @@ model User {
   phone        String?   @db.VarChar(20)
   avatarUrl    String?   @map("avatar_url") @db.Text
   role         UserRole  @default(CUSTOMER)
-  hasCompletedCustomerOnboarding Boolean @default(false) @map("has_completed_customer_onboarding")
+  hasCompletedOnboarding Boolean @default(false) @map("has_completed_onboarding")
   createdAt    DateTime  @default(now()) @map("created_at")
   address      Address[]
 

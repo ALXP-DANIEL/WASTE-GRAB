@@ -7,7 +7,7 @@ const admin = {
   phone: null,
   role: 'ADMIN',
   profileImageUrl: null,
-  hasCompletedCustomerOnboarding: true,
+  hasCompletedOnboarding: true,
   createdAt: '2026-01-01T00:00:00.000Z',
 };
 

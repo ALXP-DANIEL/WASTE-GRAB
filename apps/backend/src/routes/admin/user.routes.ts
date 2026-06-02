@@ -163,7 +163,7 @@ function toUserResponse(user: {
   phone: string | null;
   avatarUrl: string | null;
   role: string;
-  hasCompletedCustomerOnboarding: boolean;
+  hasCompletedOnboarding: boolean;
   createdAt: Date;
 }): User {
   return {
@@ -173,7 +173,7 @@ function toUserResponse(user: {
     phone: user.phone ?? null,
     avatarUrl: user.avatarUrl ?? null,
     role: user.role as UserRole,
-    hasCompletedCustomerOnboarding: user.hasCompletedCustomerOnboarding,
+    hasCompletedOnboarding: user.hasCompletedOnboarding,
     createdAt: user.createdAt.toISOString(),
   };
 }

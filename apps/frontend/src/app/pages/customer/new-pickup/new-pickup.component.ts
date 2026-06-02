@@ -531,7 +531,7 @@ export class CustomerNewPickupPage implements AfterViewInit, OnDestroy {
       stageRadius: 10,
       onCloseClick: () => {
         localStorage.setItem(NEW_PICKUP_TOUR_KEY, 'true');
-        void this.authService.completeCustomerOnboarding().subscribe({
+        void this.authService.completeOnboarding().subscribe({
           next: () => {
             this.productTour?.destroy();
             this.productTour = null;
@@ -641,7 +641,7 @@ export class CustomerNewPickupPage implements AfterViewInit, OnDestroy {
             onNextClick: (_element, _step, opts) => {
               // Finish tour and reset wizard to step one
               localStorage.setItem(NEW_PICKUP_TOUR_KEY, 'true');
-              void this.authService.completeCustomerOnboarding().subscribe({
+              void this.authService.completeOnboarding().subscribe({
                 next: () => {
                   opts.driver.destroy();
                   this.productTour = null;

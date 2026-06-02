@@ -235,10 +235,10 @@ export async function updateAvatar(
   return toUserResponse(updatedUser);
 }
 
-export async function completeCustomerOnboarding(userId: string): Promise<User> {
+export async function completeOnboarding(userId: string): Promise<User> {
   const updatedUser = await prisma.user.update({
     where: { id: userId },
-    data: { hasCompletedCustomerOnboarding: true },
+    data: { hasCompletedOnboarding: true },
   });
 
   return toUserResponse(updatedUser);
@@ -421,7 +421,7 @@ function toUserResponse(user: UserRecord): User {
     phone: user.phone,
     avatarUrl: user.avatarUrl,
     role: user.role as UserRole,
-    hasCompletedCustomerOnboarding: user.hasCompletedCustomerOnboarding,
+    hasCompletedOnboarding: user.hasCompletedOnboarding,
     createdAt: user.createdAt.toISOString(),
   };
 }

@@ -60,7 +60,7 @@ describe("roboflow AI route", () => {
       phone: null,
       role: "CUSTOMER",
       profileImageUrl: null,
-      hasCompletedCustomerOnboarding: true,
+      hasCompletedOnboarding: true,
       createdAt: new Date().toISOString(),
     });
   });
