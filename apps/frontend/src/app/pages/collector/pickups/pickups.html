@@ -74,6 +74,72 @@
       </button>
     </div>
 
+    @if (pickupScope === 'my') {
+    <section class="mb-4 overflow-hidden rounded-lg border border-border bg-background">
+      <div class="grid gap-0 xl:grid-cols-[minmax(0,1fr)_22rem]">
+        <div class="min-h-80 bg-muted">
+          @if (routeStopMapUrl(); as mapUrl) {
+          <iframe
+            [src]="mapUrl"
+            title="Assigned pickup route map"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            class="h-80 w-full border-0"
+          ></iframe>
+          } @else {
+          <div class="grid h-80 place-items-center p-6 text-center">
+            <div>
+              <ng-icon name="lucideNavigation" class="mx-auto size-8! text-muted-foreground" />
+              <p class="mt-3 font-semibold">Route map unavailable</p>
+              <p class="mt-1 max-w-md text-sm text-muted-foreground">
+                Use your location and keep active assigned pickups with saved coordinates to show the stop route.
+              </p>
+            </div>
+          </div>
+          }
+        </div>
+
+        <aside class="border-t border-border p-4 xl:border-l xl:border-t-0">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h2 class="font-semibold">Assigned Route</h2>
+              <p class="text-sm text-muted-foreground">{{ routeStops().length }} active stop{{ routeStops().length === 1 ? '' : 's' }}</p>
+            </div>
+            @if (routeStopDirectionsUrl(); as directionsUrl) {
+            <a
+              [href]="directionsUrl"
+              target="_blank"
+              rel="noreferrer"
+              class="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              <ng-icon name="lucideNavigation" class="size-4!" />
+              Open
+            </a>
+            }
+          </div>
+
+          <div class="mt-4 grid max-h-64 gap-2 overflow-y-auto pr-1">
+            @for (pickup of routeStops(); track pickup.id; let index = $index) {
+            <a [routerLink]="[pickup.id]" class="flex gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:bg-muted/40">
+              <span class="grid size-7 shrink-0 place-items-center rounded-md bg-primary text-xs font-bold text-primary-foreground">
+                {{ routeStopLabel(index) }}
+              </span>
+              <span class="min-w-0">
+                <span class="block truncate text-sm font-semibold">#{{ shortId(pickup.id) }} · {{ distanceLabel(pickup) }}</span>
+                <span class="block truncate text-xs text-muted-foreground">{{ pickup.addressText }}</span>
+              </span>
+            </a>
+            } @empty {
+            <div class="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
+              Accepted pickups appear here while they are still active.
+            </div>
+            }
+          </div>
+        </aside>
+      </div>
+    </section>
+    }
+
     <app-fetch-state
       [isLoading]="isLoading()"
       [loadError]="loadError()"
@@ -112,6 +178,12 @@
             <div>
               <dt class="text-xs text-muted-foreground">Distance</dt>
               <dd class="font-semibold">{{ distanceLabel(pickup) }}</dd>
+              @if (routeFitLabel(pickup); as fitLabel) {
+              <dd class="mt-1 inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold" [class]="routeFitClass(pickup)">
+                <ng-icon name="lucideNavigation" class="size-3!" />
+                {{ fitLabel }}
+              </dd>
+              }
             </div>
             <div>
               <dt class="text-xs text-muted-foreground">Weight</dt>
@@ -175,10 +247,17 @@
                 </span>
               </td>
               <td z-table-cell>
-                <span class="inline-flex items-center gap-1 font-semibold">
-                  <ng-icon name="lucideNavigation" class="size-4!" />
-                  {{ distanceLabel(pickup) }}
-                </span>
+                <div class="grid gap-1">
+                  <span class="inline-flex items-center gap-1 font-semibold">
+                    <ng-icon name="lucideNavigation" class="size-4!" />
+                    {{ distanceLabel(pickup) }}
+                  </span>
+                  @if (routeFitLabel(pickup); as fitLabel) {
+                  <span class="inline-flex w-fit items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold" [class]="routeFitClass(pickup)">
+                    {{ fitLabel }}
+                  </span>
+                  }
+                </div>
               </td>
               <td z-table-cell>
                 <p class="font-semibold">{{ pickup.collector?.name || '-' }}</p>

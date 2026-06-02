@@ -58,7 +58,7 @@ test('customer can view and cancel a pickup request', async ({ page }) => {
 
   await page.goto('/customer/pickups/pickup-request-id');
 
-  await expect(page.getByRole('heading', { name: 'pickup-request-id' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '#PICKUP-' })).toBeVisible();
   await expect(page.getByText('Plastic, Paper')).toBeVisible();
   await expect(page.getByText(addresses[0].formattedAddress).first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Cancel Request' })).toBeVisible();
@@ -66,7 +66,7 @@ test('customer can view and cancel a pickup request', async ({ page }) => {
   await page.getByRole('button', { name: 'Cancel Request' }).click();
   await page.getByRole('button', { name: 'Cancel Request' }).last().click();
 
-  await expect(page.getByText('Cancelled', { exact: true })).toBeVisible();
+  await expect(page.getByText('Cancelled', { exact: true }).first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Cancel Request' })).toHaveCount(0);
 });
 

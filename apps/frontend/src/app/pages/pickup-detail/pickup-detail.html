@@ -115,6 +115,150 @@
         }
       </section>
 
+      @if (isCollectorDetail() && mapEmbedUrl(currentPickup)) {
+      <section class="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+        <div class="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between lg:p-6">
+          <div>
+            <h2 class="text-lg font-semibold">Pickup Map</h2>
+            <p class="text-sm text-muted-foreground">
+              Check the route from your location to the customer pickup address.
+            </p>
+          </div>
+
+          @if (routeUrl(currentPickup); as directionsUrl) {
+          <a
+            [href]="directionsUrl"
+            target="_blank"
+            rel="noreferrer"
+            class="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            <ng-icon name="lucideNavigation" class="size-4!" />
+            View route
+          </a>
+          } @else if (context === 'collector') {
+          <span class="text-sm text-muted-foreground">
+            Allow location access to show the route to the customer.
+          </span>
+          }
+        </div>
+
+        <iframe
+          [src]="mapEmbedUrl(currentPickup)"
+          title="Pickup map"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          class="h-72 w-full border-0"
+        ></iframe>
+      </section>
+      }
+
+      @if (isCollectorDetail()) {
+      <section class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <h2 class="text-lg font-semibold">Collector Actions</h2>
+            <p class="text-sm text-muted-foreground">Move this pickup through the collection workflow.</p>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            @if (canAcceptPickup()) {
+            <button
+              type="button"
+              class="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+              (click)="acceptPickup()"
+              [disabled]="isCollectorActionRunning() || isPreparingAcceptRoute()"
+            >
+              @if (isPreparingAcceptRoute()) {
+              <ng-icon name="lucideLoaderCircle" class="size-4! animate-spin" />
+              Preparing route
+              } @else {
+              <ng-icon name="lucideTruck" class="size-4!" />
+              Accept Pickup
+              }
+            </button>
+            }
+
+            @if (canMarkArrived()) {
+            <button
+              type="button"
+              class="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+              (click)="markArrived()"
+              [disabled]="isCollectorActionRunning()"
+            >
+              <ng-icon name="lucideMapPin" class="size-4!" />
+              Mark Arrived
+            </button>
+            }
+
+            @if (canCompletePickup()) {
+            <button
+              type="button"
+              class="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+              (click)="completePickup()"
+              [disabled]="isCollectorActionRunning()"
+            >
+              <ng-icon name="lucidePackageCheck" class="size-4!" />
+              Complete Pickup
+            </button>
+            }
+          </div>
+        </div>
+
+        @if (canVerifyPickup()) {
+        <div class="mt-4 rounded-lg border border-border bg-background p-3">
+          <div class="mb-3">
+            <p class="font-semibold">Verify item weights</p>
+            <p class="text-sm text-muted-foreground">Enter the actual weight collected for every item.</p>
+          </div>
+
+          <div class="grid gap-3">
+            @for (item of currentPickup.items; track item.id) {
+            <label class="grid gap-2 rounded-lg border border-border bg-card p-3 sm:grid-cols-[1fr_12rem] sm:items-center">
+              <span>
+                <span class="block font-semibold">{{ itemLabel(item) }}</span>
+                <span class="text-xs text-muted-foreground">Estimate: {{ estimatedWeight(item) | number:'1.2-2' }} kg</span>
+              </span>
+              <span class="relative">
+                <input
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  class="h-10 w-full rounded-md border border-border bg-background pl-3 pr-10 text-sm outline-none focus:border-primary"
+                  [ngModel]="verificationWeight(item)"
+                  (ngModelChange)="setVerificationWeight(item.id, $event)"
+                />
+                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground">kg</span>
+              </span>
+            </label>
+            }
+          </div>
+
+          <button
+            type="button"
+            class="mt-3 inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+            (click)="verifyPickup()"
+            [disabled]="isCollectorActionRunning()"
+          >
+            <ng-icon name="lucideCheckCircle2" class="size-4!" />
+            Verify Items
+          </button>
+        </div>
+        }
+
+        @if (collectorActionError()) {
+        <p class="mt-3 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm font-medium text-destructive">
+          {{ collectorActionError() }}
+        </p>
+        }
+
+        @if (!canAcceptPickup() && !canMarkArrived() && !canVerifyPickup() && !canCompletePickup()) {
+        <p class="mt-4 text-sm text-muted-foreground">
+          No collector action is available for the current status.
+        </p>
+        }
+      </section>
+      }
+
       <section class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">
         <div class="mb-5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -272,6 +416,21 @@
               <h2 class="text-lg font-semibold">Location</h2>
             </div>
             <p class="font-semibold">{{ currentPickup.addressText }}</p>
+            @if (routeUrl(currentPickup); as routeUrl) {
+            <a
+              [href]="routeUrl"
+              target="_blank"
+              rel="noreferrer"
+              class="mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              <ng-icon name="lucideNavigation" class="size-4!" />
+              View collector route
+            </a>
+            } @else if (context === 'customer' && currentPickup.collectorId) {
+            <p class="mt-3 text-sm text-muted-foreground">
+              Route will appear after the collector shares their latest location.
+            </p>
+            }
           </section>
 
           <section class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">

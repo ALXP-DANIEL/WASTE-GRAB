@@ -9,6 +9,10 @@ export type CollectorLocation = {
 };
 
 export type CollectorPickupScope = 'available' | 'my' | 'all';
+export type VerifyPickupItemInput = {
+  itemId: string;
+  actualWeight: number;
+};
 
 @Injectable({ providedIn: 'root' })
 export class CollectorPickupService {
@@ -48,5 +52,21 @@ export class CollectorPickupService {
       ...this.requestOptions,
       params,
     });
+  }
+
+  acceptPickup(id: string) {
+    return this.http.patch<GetCollectorPickupRequestResponse>(`${this.apiUrl}/${id}/accept`, {}, this.requestOptions);
+  }
+
+  markArrived(id: string) {
+    return this.http.patch<GetCollectorPickupRequestResponse>(`${this.apiUrl}/${id}/arrive`, {}, this.requestOptions);
+  }
+
+  verifyPickup(id: string, items: VerifyPickupItemInput[]) {
+    return this.http.patch<GetCollectorPickupRequestResponse>(`${this.apiUrl}/${id}/verify`, { items }, this.requestOptions);
+  }
+
+  completePickup(id: string) {
+    return this.http.patch<GetCollectorPickupRequestResponse>(`${this.apiUrl}/${id}/complete`, {}, this.requestOptions);
   }
 }

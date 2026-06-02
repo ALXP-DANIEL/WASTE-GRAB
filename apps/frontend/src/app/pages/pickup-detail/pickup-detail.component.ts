@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { DomSanitizer, type SafeResourceUrl } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -22,10 +24,12 @@ import {
 } from '@ng-icons/lucide';
 import { AdminPickupService } from '@/services/admin-pickup.service';
 import { CollectorPickupService, type CollectorLocation, type CollectorPickupScope } from '@/services/collector-pickup.service';
+import { AuthService } from '@/services/auth.service';
 import { PickupRequestService } from '@/services/pickup-request.service';
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
+import { Z_MODAL_DATA } from '@/ui/zard/dialog/dialog.service';
 import { PickupStatus, type AdminPickupRequest, type CollectorPickupRequest, type PickupItem, type PickupRequestWithDetails } from '@wastegrab/shared';
 import { firstValueFrom, map } from 'rxjs';
 
@@ -46,6 +50,26 @@ type AiSuggestedPayload = {
     estimatedWeight: number | string | null;
   }>;
 };
+type AcceptPickupDialogData = {
+  pickup: PickupDetail;
+  origin: CollectorLocation;
+  stops: AcceptPickupRouteStop[];
+  title: string;
+  category: string;
+  distance: string;
+  weight: string;
+  points: number;
+  routeUrl: string;
+};
+type AcceptPickupRouteStop = {
+  id: string;
+  title: string;
+  addressText: string;
+  latitude: string;
+  longitude: string;
+  distanceKm: string | null;
+  isCandidate: boolean;
+};
 
 const PICKUP_STATUS_FLOW = [
   PickupStatus.PENDING,
@@ -56,9 +80,102 @@ const PICKUP_STATUS_FLOW = [
 ] as const;
 
 @Component({
+  selector: 'app-accept-pickup-dialog',
+  imports: [CommonModule, NgIcon],
+  template: `
+    <div class="grid gap-4">
+      <div class="overflow-hidden rounded-lg border border-border">
+        <iframe
+          [src]="mapUrl"
+          title="Pickup route preview"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          class="h-64 w-full border-0"
+        ></iframe>
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-2">
+        <div class="rounded-lg border border-border bg-background p-3">
+          <p class="text-xs text-muted-foreground">Pickup</p>
+          <p class="mt-1 font-semibold">{{ data.title }}</p>
+        </div>
+        <div class="rounded-lg border border-border bg-background p-3">
+          <p class="text-xs text-muted-foreground">Distance</p>
+          <p class="mt-1 font-semibold">{{ data.distance }}</p>
+        </div>
+        <div class="rounded-lg border border-border bg-background p-3">
+          <p class="text-xs text-muted-foreground">Estimated weight</p>
+          <p class="mt-1 font-semibold">{{ data.weight }}</p>
+        </div>
+        <div class="rounded-lg border border-border bg-background p-3">
+          <p class="text-xs text-muted-foreground">Potential points</p>
+          <p class="mt-1 font-semibold">{{ data.points }} pts</p>
+        </div>
+      </div>
+
+      <div class="rounded-lg border border-border bg-background p-3">
+        <p class="text-xs text-muted-foreground">Customer address</p>
+        <p class="mt-1 text-sm font-semibold">{{ data.pickup.addressText }}</p>
+      </div>
+
+      <div class="rounded-lg border border-border bg-background p-3">
+        <div class="flex items-center justify-between gap-3">
+          <p class="text-sm font-semibold">Route stops</p>
+          <p class="text-xs text-muted-foreground">{{ data.stops.length }} stop{{ data.stops.length === 1 ? '' : 's' }}</p>
+        </div>
+        <div class="mt-3 grid max-h-40 gap-2 overflow-y-auto pr-1">
+          @for (stop of data.stops; track stop.id; let index = $index) {
+          <div class="flex gap-3 rounded-md border border-border bg-card p-2">
+            <span class="grid size-7 shrink-0 place-items-center rounded-md bg-primary text-xs font-bold text-primary-foreground">
+              {{ stopLabel(index) }}
+            </span>
+            <span class="min-w-0">
+              <span class="block truncate text-sm font-semibold">
+                {{ stop.title }}
+                @if (stop.isCandidate) {
+                <span class="text-primary"> · new</span>
+                }
+              </span>
+              <span class="block truncate text-xs text-muted-foreground">{{ stop.addressText }}</span>
+            </span>
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-sm text-muted-foreground">Confirm only after the full stop route looks right.</p>
+        <a
+          [href]="data.routeUrl"
+          target="_blank"
+          rel="noreferrer"
+          class="inline-flex h-9 items-center justify-center gap-2 rounded-md border border-border bg-background px-3 text-sm font-semibold transition-colors hover:bg-muted"
+        >
+          <ng-icon name="lucideNavigation" class="size-4!" />
+          Open route
+        </a>
+      </div>
+    </div>
+  `,
+  viewProviders: [provideIcons({ lucideNavigation })],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class AcceptPickupDialogComponent {
+  protected readonly data = inject<AcceptPickupDialogData>(Z_MODAL_DATA);
+  private readonly sanitizer = inject(DomSanitizer);
+  protected readonly mapUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+    `https://maps.google.com/maps?saddr=${encodeURIComponent(`${this.data.origin.latitude},${this.data.origin.longitude}`)}&daddr=${encodeURIComponent(this.data.stops.map((stop) => `${stop.latitude},${stop.longitude}`).join(' to:'))}&dirflg=d&output=embed`,
+  );
+
+  protected stopLabel(index: number): string {
+    return String.fromCharCode(65 + index);
+  }
+}
+
+@Component({
   selector: 'app-pickup-detail-page',
   templateUrl: './pickup-detail.html',
-  imports: [CommonModule, AppHeaderComponent, FetchStateComponent, RouterLink, NgIcon],
+  imports: [CommonModule, FormsModule, AppHeaderComponent, FetchStateComponent, RouterLink, NgIcon],
   viewProviders: [
     provideIcons({
       lucideArrowLeft,
@@ -85,12 +202,19 @@ export class PickupDetailPage {
   private readonly adminPickups = inject(AdminPickupService);
   private readonly collectorPickups = inject(CollectorPickupService);
   private readonly customerPickups = inject(PickupRequestService);
+  private readonly auth = inject(AuthService);
   private readonly dialogService = inject(ZardDialogService);
+  private readonly sanitizer = inject(DomSanitizer);
 
   protected readonly pickup = signal<PickupDetail | null>(null);
   protected readonly isLoading = signal(true);
   protected readonly loadError = signal('');
   protected readonly isCancelling = signal(false);
+  protected readonly isCollectorActionRunning = signal(false);
+  protected readonly isPreparingAcceptRoute = signal(false);
+  protected readonly collectorActionError = signal('');
+  protected readonly verificationWeights = signal<Record<string, number | null>>({});
+  protected readonly collectorLocation = signal<CollectorLocation | null>(null);
   protected readonly context = this.readContext();
   protected readonly pickupScope = this.readPickupScope();
 
@@ -173,6 +297,29 @@ export class PickupDetailPage {
   });
   protected readonly timelineProgressWidth = computed(() => `calc((100% - 2.5rem) * ${this.timelineProgress() / 100})`);
   protected readonly timelineGridClass = computed(() => this.timelineSteps().length <= 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-5');
+  protected readonly currentCollectorId = computed(() => this.auth.currentUser()?.id ?? null);
+  protected readonly isCollectorDetail = computed(() => this.context === 'collector');
+  protected readonly isAssignedToCurrentCollector = computed(() => {
+    const pickup = this.pickup();
+    const collectorId = this.currentCollectorId();
+    return Boolean(pickup && collectorId && pickup.collectorId === collectorId);
+  });
+  protected readonly canAcceptPickup = computed(() => {
+    const pickup = this.pickup();
+    return Boolean(this.isCollectorDetail() && pickup?.status === PickupStatus.PENDING && pickup.collectorId === null && !this.isCollectorActionRunning());
+  });
+  protected readonly canMarkArrived = computed(() => {
+    const pickup = this.pickup();
+    return Boolean(this.isCollectorDetail() && this.isAssignedToCurrentCollector() && pickup?.status === PickupStatus.ACCEPTED && !this.isCollectorActionRunning());
+  });
+  protected readonly canVerifyPickup = computed(() => {
+    const pickup = this.pickup();
+    return Boolean(this.isCollectorDetail() && this.isAssignedToCurrentCollector() && pickup?.status === PickupStatus.ARRIVED && !this.isCollectorActionRunning());
+  });
+  protected readonly canCompletePickup = computed(() => {
+    const pickup = this.pickup();
+    return Boolean(this.isCollectorDetail() && this.isAssignedToCurrentCollector() && pickup?.status === PickupStatus.VERIFIED && !this.isCollectorActionRunning());
+  });
 
   constructor() {
     void this.loadPickup();
@@ -241,6 +388,18 @@ export class PickupDetailPage {
     return weight === null ? null : Math.round(weight * (item.category?.pointsPerKg ?? 0));
   }
 
+  protected verificationWeight(item: PickupItem): number | null {
+    return this.verificationWeights()[item.id] ?? null;
+  }
+
+  protected setVerificationWeight(itemId: string, value: number | string | null): void {
+    const parsed = value === null || value === '' ? null : Number(value);
+    this.verificationWeights.update((weights) => ({
+      ...weights,
+      [itemId]: Number.isFinite(parsed) && parsed !== null ? parsed : null,
+    }));
+  }
+
   protected estimateSourceLabel(item: PickupItem): string {
     return this.isAiEstimate(item) ? 'AI estimate' : 'Customer estimate';
   }
@@ -285,6 +444,32 @@ export class PickupDetailPage {
 
   protected showDistance(pickup: PickupDetail): boolean {
     return 'distanceKm' in pickup;
+  }
+
+  protected routeUrl(pickup: PickupDetail): string | null {
+    const origin = this.routeOrigin(pickup);
+    if (!pickup.latitude || !pickup.longitude || !origin) {
+      return null;
+    }
+
+    const destination = `${pickup.latitude},${pickup.longitude}`;
+    return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(`${origin.latitude},${origin.longitude}`)}&destination=${encodeURIComponent(destination)}&travelmode=driving`;
+  }
+
+  protected mapEmbedUrl(pickup: PickupDetail): SafeResourceUrl | null {
+    if (!pickup.latitude || !pickup.longitude) {
+      return null;
+    }
+
+    const destination = `${pickup.latitude},${pickup.longitude}`;
+    const origin = this.routeOrigin(pickup);
+    const url = origin
+      ? `https://maps.google.com/maps?saddr=${encodeURIComponent(`${origin.latitude},${origin.longitude}`)}&daddr=${encodeURIComponent(destination)}&dirflg=d&output=embed`
+      : `https://maps.google.com/maps?q=${encodeURIComponent(destination)}&z=14&output=embed`;
+
+    return this.sanitizer.bypassSecurityTrustResourceUrl(
+      url,
+    );
   }
 
   protected showCategoryId(): boolean {
@@ -347,6 +532,37 @@ export class PickupDetailPage {
     });
   }
 
+  protected acceptPickup(): void {
+    void this.confirmAcceptPickup();
+  }
+
+  protected markArrived(): void {
+    void this.runCollectorAction(() => this.collectorPickups.markArrived(this.pickupId()));
+  }
+
+  protected verifyPickup(): void {
+    const pickup = this.pickup();
+    if (!pickup) {
+      return;
+    }
+
+    const items = pickup.items.map((item) => ({
+      itemId: item.id,
+      actualWeight: Number(this.verificationWeight(item)),
+    }));
+
+    if (items.some((item) => !Number.isFinite(item.actualWeight) || item.actualWeight <= 0)) {
+      this.collectorActionError.set('Enter a verified weight for every item.');
+      return;
+    }
+
+    void this.runCollectorAction(() => this.collectorPickups.verifyPickup(this.pickupId(), items));
+  }
+
+  protected completePickup(): void {
+    void this.runCollectorAction(() => this.collectorPickups.completePickup(this.pickupId()));
+  }
+
   private async loadPickup(): Promise<void> {
     const id = this.pickupId();
     this.isLoading.set(true);
@@ -361,7 +577,7 @@ export class PickupDetailPage {
 
     try {
       const response = await this.fetchPickup(id);
-      this.pickup.set(response.pickupRequest);
+      this.setPickup(response.pickupRequest);
     } catch {
       this.pickup.set(null);
       this.loadError.set('Unable to load pickup details.');
@@ -397,13 +613,126 @@ export class PickupDetailPage {
         });
       });
 
-      return {
+      const location = {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
       };
+      this.collectorLocation.set(location);
+      return location;
     } catch {
       return null;
     }
+  }
+
+  private async confirmAcceptPickup(): Promise<void> {
+    const pickup = this.pickup();
+    this.collectorActionError.set('');
+
+    if (!pickup || !pickup.latitude || !pickup.longitude) {
+      this.dialogService.create({
+        zTitle: 'Route unavailable',
+        zDescription: 'This pickup does not have a saved pickup location, so it cannot be accepted yet.',
+        zOkText: 'OK',
+        zCancelText: null,
+        zWidth: 'max-w-sm',
+      });
+      return;
+    }
+
+    this.isPreparingAcceptRoute.set(true);
+    try {
+      const location = this.collectorLocation() ?? await this.requestCollectorLocation();
+      if (!location) {
+        this.dialogService.create({
+          zTitle: 'Location required',
+          zDescription: 'Allow location access first so you can check the route before accepting this pickup.',
+          zOkText: 'OK',
+          zCancelText: null,
+          zWidth: 'max-w-sm',
+        });
+        return;
+      }
+
+      const stops = await this.acceptanceRouteStops(pickup, location);
+      this.dialogService.create<AcceptPickupDialogComponent, AcceptPickupDialogData>({
+        zTitle: 'Review route before accepting',
+        zDescription: 'Check your active stops and this pickup before claiming the order.',
+        zContent: AcceptPickupDialogComponent,
+        zData: {
+          pickup,
+          origin: location,
+          stops,
+          title: `#${this.shortId(pickup.id)}`,
+          category: this.categoryLabel(pickup),
+          distance: this.distanceLabel(pickup),
+          weight: `${this.requestWeight(pickup).toFixed(2)} kg`,
+          points: this.potentialPoints(pickup),
+          routeUrl: this.routeUrlForStops(location, stops),
+        },
+        zOkText: 'Accept Pickup',
+        zCancelText: 'Review More',
+        zWidth: 'min(44rem, calc(100vw - 2rem))',
+        zOnOk: () => {
+          void this.runCollectorAction(() => this.collectorPickups.acceptPickup(this.pickupId()));
+        },
+      });
+    } finally {
+      this.isPreparingAcceptRoute.set(false);
+    }
+  }
+
+  private async acceptanceRouteStops(pickup: PickupDetail, location: CollectorLocation): Promise<AcceptPickupRouteStop[]> {
+    const candidate = this.toAcceptPickupRouteStop(pickup, true);
+    let assignedStops: AcceptPickupRouteStop[] = [];
+
+    try {
+      const response = await firstValueFrom(this.collectorPickups.listPickups({
+        location,
+        scope: 'my',
+      }));
+      assignedStops = response.pickupRequests
+        .filter((assignedPickup) =>
+          assignedPickup.id !== pickup.id &&
+          this.isActivePickupStatus(assignedPickup.status) &&
+          Boolean(assignedPickup.latitude && assignedPickup.longitude),
+        )
+        .map((assignedPickup) => this.toAcceptPickupRouteStop(assignedPickup, false));
+    } catch {
+      assignedStops = [];
+    }
+
+    return [...assignedStops, candidate].sort((a, b) => this.routeStopSortValue(a) - this.routeStopSortValue(b));
+  }
+
+  private toAcceptPickupRouteStop(pickup: PickupDetail, isCandidate: boolean): AcceptPickupRouteStop {
+    return {
+      id: pickup.id,
+      title: `#${this.shortId(pickup.id)}`,
+      addressText: pickup.addressText,
+      latitude: String(pickup.latitude),
+      longitude: String(pickup.longitude),
+      distanceKm: 'distanceKm' in pickup ? pickup.distanceKm : null,
+      isCandidate,
+    };
+  }
+
+  private routeUrlForStops(origin: CollectorLocation, stops: AcceptPickupRouteStop[]): string {
+    const destinationStop = stops[stops.length - 1];
+    const waypoints = stops
+      .slice(0, -1)
+      .map((stop) => `${stop.latitude},${stop.longitude}`)
+      .join('|');
+    const waypointParam = waypoints ? `&waypoints=${encodeURIComponent(waypoints)}` : '';
+
+    return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(`${origin.latitude},${origin.longitude}`)}&destination=${encodeURIComponent(`${destinationStop.latitude},${destinationStop.longitude}`)}${waypointParam}&travelmode=driving`;
+  }
+
+  private routeStopSortValue(stop: AcceptPickupRouteStop): number {
+    return stop.distanceKm === null ? Number.POSITIVE_INFINITY : Number(stop.distanceKm);
+  }
+
+  private isActivePickupStatus(status: PickupStatus): boolean {
+    return ![PickupStatus.COMPLETED, PickupStatus.CANCELLED].includes(status);
   }
 
   private async cancelPickup(): Promise<void> {
@@ -415,7 +744,7 @@ export class PickupDetailPage {
     this.isCancelling.set(true);
     try {
       const response = await firstValueFrom(this.customerPickups.cancelPickupRequest(id));
-      this.pickup.set(response.pickupRequest);
+      this.setPickup(response.pickupRequest);
     } catch {
       this.dialogService.create({
         zTitle: 'Unable to cancel',
@@ -431,6 +760,36 @@ export class PickupDetailPage {
 
   private requestWeight(pickup: PickupDetail): number {
     return pickup.items.reduce((total, item) => total + this.itemWeight(item), 0);
+  }
+
+  private async runCollectorAction(action: () => ReturnType<CollectorPickupService['acceptPickup']>): Promise<void> {
+    if (!this.pickupId()) {
+      return;
+    }
+
+    this.isCollectorActionRunning.set(true);
+    this.collectorActionError.set('');
+
+    try {
+      const response = await firstValueFrom(action());
+      this.setPickup(response.pickupRequest);
+    } catch {
+      this.collectorActionError.set('Unable to update pickup. Please try again.');
+    } finally {
+      this.isCollectorActionRunning.set(false);
+    }
+  }
+
+  private setPickup(pickup: PickupDetail): void {
+    this.pickup.set(pickup);
+    this.verificationWeights.set(
+      Object.fromEntries(
+        pickup.items.map((item) => [
+          item.id,
+          Number(item.actualWeight ?? item.estimatedWeight ?? 0),
+        ]),
+      ),
+    );
   }
 
   private potentialPoints(pickup: PickupDetail): number {
@@ -477,6 +836,14 @@ export class PickupDetailPage {
 
   private roundWeight(value: number | string | null): number {
     return Number(Number(value ?? 0).toFixed(2));
+  }
+
+  private routeOrigin(_pickup: PickupDetail): CollectorLocation | null {
+    if (this.context === 'collector') {
+      return this.collectorLocation();
+    }
+
+    return null;
   }
 
   private readContext(): PickupDetailContext {

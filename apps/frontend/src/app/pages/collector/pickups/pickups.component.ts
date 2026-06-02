@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { DomSanitizer, type SafeResourceUrl } from '@angular/platform-browser';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideArrowUpRight,
@@ -29,6 +30,20 @@ import { ZardTableImports } from '@/ui/zard/table';
 
 type PickupFilter = 'all' | 'available' | 'assigned' | 'completed' | 'cancelled';
 type LocationStatus = 'idle' | 'requesting' | 'granted' | 'denied' | 'unsupported';
+type CoordinatePair = {
+  latitude: number;
+  longitude: number;
+};
+type RouteFitAnchor = CoordinatePair & {
+  label: string;
+};
+type RouteFit = {
+  label: string;
+  distanceKm: number;
+  isOffRoute: boolean;
+};
+
+const ROUTE_FIT_THRESHOLD_KM = 15;
 
 @Component({
   selector: 'app-collector-pickups-page',
@@ -56,9 +71,11 @@ type LocationStatus = 'idle' | 'requesting' | 'granted' | 'denied' | 'unsupporte
 export class CollectorPickupsPage {
   private readonly pickupService = inject(CollectorPickupService);
   private readonly route = inject(ActivatedRoute);
+  private readonly sanitizer = inject(DomSanitizer);
 
   protected readonly pickupScope = this.readPickupScope();
   protected readonly pickups = signal<CollectorPickupRequest[]>([]);
+  protected readonly routeAnchorPickups = signal<CollectorPickupRequest[]>([]);
   protected readonly isLoading = signal(true);
   protected readonly loadError = signal('');
   protected readonly activeFilter = signal<PickupFilter>('all');
@@ -90,11 +107,56 @@ export class CollectorPickupsPage {
   protected readonly tableTitle = computed(() => this.pickupScope === 'my' ? 'My Pickups' : 'Available Pickup Requests');
   protected readonly tableDescription = computed(() => this.pickupScope === 'my'
     ? 'Review pickup requests assigned to you.'
-    : 'Review available customer pickup requests sorted by nearest known location.');
+    : 'Review available customer pickup requests sorted by how well they fit your current route.');
+  protected readonly routeStops = computed(() => {
+    if (this.pickupScope !== 'my') {
+      return [];
+    }
+
+    return this.assignedPickups()
+      .filter((pickup) => this.hasPickupCoordinates(pickup))
+      .sort((a, b) => this.routeSortValue(a) - this.routeSortValue(b));
+  });
+  protected readonly routeStopMapUrl = computed<SafeResourceUrl | null>(() => {
+    const location = this.collectorLocation();
+    const stops = this.routeStops();
+
+    if (!location || stops.length === 0) {
+      return null;
+    }
+
+    const encodedOrigin = encodeURIComponent(`${location.latitude},${location.longitude}`);
+    const destination = stops
+      .map((pickup) => `${pickup.latitude},${pickup.longitude}`)
+      .join(' to:');
+    const url = `https://maps.google.com/maps?saddr=${encodedOrigin}&daddr=${encodeURIComponent(destination)}&dirflg=d&output=embed`;
+
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  });
+  protected readonly routeStopDirectionsUrl = computed(() => {
+    const location = this.collectorLocation();
+    const stops = this.routeStops();
+
+    if (!location || stops.length === 0) {
+      return null;
+    }
+
+    const origin = `${location.latitude},${location.longitude}`;
+    const destination = `${stops[stops.length - 1].latitude},${stops[stops.length - 1].longitude}`;
+    const waypoints = stops
+      .slice(0, -1)
+      .map((pickup) => `${pickup.latitude},${pickup.longitude}`)
+      .join('|');
+    const waypointParam = waypoints ? `&waypoints=${encodeURIComponent(waypoints)}` : '';
+
+    return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}${waypointParam}&travelmode=driving`;
+  });
 
   protected readonly filteredPickups = computed(() => {
     const filter = this.activeFilter();
-    const pickups = this.pickups();
+    const pickups = this.pickupScope === 'available'
+      ? this.routeSortedAvailablePickups(this.pickups())
+      : this.pickups();
 
     if (filter === 'available') return pickups.filter((pickup) => pickup.collectorId === null && this.isActiveStatus(pickup.status));
     if (filter === 'assigned') return pickups.filter((pickup) => pickup.collectorId !== null && this.isActiveStatus(pickup.status));
@@ -109,8 +171,11 @@ export class CollectorPickupsPage {
         return 'Requesting collector location...';
       case 'granted': {
         const accuracy = this.collectorLocationAccuracy();
+        const routeStops = this.routeAnchorPickups().length;
         return this.collectorLocation()
-          ? `Sorted from your browser location${accuracy === null ? '' : `, accuracy +/- ${Math.round(accuracy)} m`}.`
+          ? routeStops > 0
+            ? `Sorted by your route with ${routeStops} active stop${routeStops === 1 ? '' : 's'}${accuracy === null ? '' : `, accuracy +/- ${Math.round(accuracy)} m`}.`
+            : `Sorted from your browser location${accuracy === null ? '' : `, accuracy +/- ${Math.round(accuracy)} m`}.`
           : 'Sorted by nearest known pickup location.';
       }
       case 'denied':
@@ -192,6 +257,43 @@ export class CollectorPickupsPage {
     return pickup.distanceKm === null ? '-' : `${pickup.distanceKm} km`;
   }
 
+  protected routeFitLabel(pickup: CollectorPickupRequest): string | null {
+    return this.routeFit(pickup)?.label ?? null;
+  }
+
+  protected routeFitClass(pickup: CollectorPickupRequest): string {
+    return this.routeFit(pickup)?.isOffRoute
+      ? 'bg-muted text-muted-foreground'
+      : 'bg-primary/10 text-primary';
+  }
+
+  private routeFit(pickup: CollectorPickupRequest): RouteFit | null {
+    if (this.pickupScope !== 'available' || pickup.collectorId !== null || !this.isActiveStatus(pickup.status)) {
+      return null;
+    }
+
+    const fit = this.nearestRouteFitAnchor(pickup);
+    if (!fit) {
+      return null;
+    }
+
+    return fit.distanceKm > ROUTE_FIT_THRESHOLD_KM
+      ? {
+          label: 'Off route',
+          distanceKm: fit.distanceKm,
+          isOffRoute: true,
+        }
+      : {
+          label: fit.anchor.label,
+          distanceKm: fit.distanceKm,
+          isOffRoute: false,
+        };
+  }
+
+  protected routeStopLabel(index: number): string {
+    return String.fromCharCode(65 + index);
+  }
+
   private async loadPickups(requestLocation = true): Promise<void> {
     this.isLoading.set(true);
     this.loadError.set('');
@@ -204,11 +306,37 @@ export class CollectorPickupsPage {
         scope: this.pickupScope,
       }));
       this.pickups.set(response.pickupRequests);
+      await this.loadRouteAnchors(location, response.pickupRequests);
     } catch {
       this.loadError.set('Unable to load pickup requests.');
       this.pickups.set([]);
+      this.routeAnchorPickups.set([]);
     } finally {
       this.isLoading.set(false);
+    }
+  }
+
+  private async loadRouteAnchors(location: CollectorLocation | null, loadedPickups: CollectorPickupRequest[]): Promise<void> {
+    if (this.pickupScope === 'my') {
+      this.routeAnchorPickups.set(loadedPickups.filter((pickup) => this.isActiveStatus(pickup.status) && this.hasPickupCoordinates(pickup)));
+      return;
+    }
+
+    if (!location) {
+      this.routeAnchorPickups.set([]);
+      return;
+    }
+
+    try {
+      const response = await firstValueFrom(this.pickupService.listPickups({
+        location,
+        scope: 'my',
+      }));
+      this.routeAnchorPickups.set(
+        response.pickupRequests.filter((pickup) => this.isActiveStatus(pickup.status) && this.hasPickupCoordinates(pickup)),
+      );
+    } catch {
+      this.routeAnchorPickups.set([]);
     }
   }
 
@@ -244,6 +372,110 @@ export class CollectorPickupsPage {
 
   private isActiveStatus(status: PickupStatus): boolean {
     return ![PickupStatus.COMPLETED, PickupStatus.CANCELLED].includes(status);
+  }
+
+  private hasPickupCoordinates(pickup: CollectorPickupRequest): boolean {
+    return Boolean(pickup.latitude && pickup.longitude);
+  }
+
+  private routeSortValue(pickup: CollectorPickupRequest): number {
+    return pickup.distanceKm === null ? Number.POSITIVE_INFINITY : Number(pickup.distanceKm);
+  }
+
+  private routeSortedAvailablePickups(pickups: CollectorPickupRequest[]): CollectorPickupRequest[] {
+    const anchors = this.routeFitAnchors();
+    if (anchors.length === 0) {
+      return [...pickups];
+    }
+
+    return [...pickups].sort((a, b) => {
+      const aScore = this.nearestRouteAnchorDistance(a, anchors);
+      const bScore = this.nearestRouteAnchorDistance(b, anchors);
+
+      if (aScore !== bScore) {
+        return aScore - bScore;
+      }
+
+      return this.routeSortValue(a) - this.routeSortValue(b);
+    });
+  }
+
+  private routeFitAnchors(): RouteFitAnchor[] {
+    const location = this.collectorLocation();
+    const anchors: RouteFitAnchor[] = location
+      ? [{ ...location, label: 'Nearest collector' }]
+      : [];
+
+    anchors.push(
+      ...this.routeAnchorPickups()
+        .map((pickup, index) => {
+          const coordinates = this.pickupCoordinates(pickup);
+
+          return coordinates ? { ...coordinates, label: `Nearest stop ${this.routeStopLabel(index)}` } : null;
+        })
+        .filter((coordinates): coordinates is RouteFitAnchor => coordinates !== null),
+    );
+
+    return anchors;
+  }
+
+  private nearestRouteFitAnchor(pickup: CollectorPickupRequest): { anchor: RouteFitAnchor; distanceKm: number } | null {
+    const coordinates = this.pickupCoordinates(pickup);
+    const anchors = this.routeFitAnchors();
+
+    if (!coordinates || anchors.length === 0) {
+      return null;
+    }
+
+    return anchors.reduce<{ anchor: RouteFitAnchor; distanceKm: number } | null>((nearest, anchor) => {
+      const distanceKm = this.calculateDistanceKm(anchor, coordinates);
+      if (!nearest) {
+        return { anchor, distanceKm };
+      }
+
+      return distanceKm < nearest.distanceKm
+        ? { anchor, distanceKm }
+        : nearest;
+    }, null);
+  }
+
+  private nearestRouteAnchorDistance(pickup: CollectorPickupRequest, anchors: CoordinatePair[]): number {
+    const coordinates = this.pickupCoordinates(pickup);
+    if (!coordinates) {
+      return Number.POSITIVE_INFINITY;
+    }
+
+    return Math.min(...anchors.map((anchor) => this.calculateDistanceKm(anchor, coordinates)));
+  }
+
+  private pickupCoordinates(pickup: CollectorPickupRequest): CoordinatePair | null {
+    const latitude = Number(pickup.latitude);
+    const longitude = Number(pickup.longitude);
+
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return null;
+    }
+
+    return { latitude, longitude };
+  }
+
+  private calculateDistanceKm(from: CoordinatePair, to: CoordinatePair): number {
+    const earthRadiusKm = 6371;
+    const latitudeDelta = this.toRadians(to.latitude - from.latitude);
+    const longitudeDelta = this.toRadians(to.longitude - from.longitude);
+    const fromLatitudeRadians = this.toRadians(from.latitude);
+    const toLatitudeRadians = this.toRadians(to.latitude);
+    const haversine =
+      Math.sin(latitudeDelta / 2) ** 2 +
+      Math.cos(fromLatitudeRadians) *
+        Math.cos(toLatitudeRadians) *
+        Math.sin(longitudeDelta / 2) ** 2;
+
+    return 2 * earthRadiusKm * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
+  }
+
+  private toRadians(value: number): number {
+    return (value * Math.PI) / 180;
   }
 
   private readPickupScope(): CollectorPickupScope {
