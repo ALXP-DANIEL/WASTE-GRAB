@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { SwPush } from '@angular/service-worker';
 import type {
@@ -16,6 +17,7 @@ export class NotificationService {
   private readonly http = inject(HttpClient);
   private readonly swPush = inject(SwPush);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly apiUrl = `${environment.apiBaseUrl}/notifications`;
   private readonly opts = { withCredentials: true as const };
   private events: EventSource | null = null;
@@ -23,11 +25,22 @@ export class NotificationService {
   readonly notifications = signal<Notification[]>([]);
   readonly unreadCount = signal(0);
   readonly webPushPublicKey = signal<string | null>(null);
-  readonly canEnablePush = computed(() => this.swPush.isEnabled && Boolean(this.webPushPublicKey()));
+  readonly pushSubscription = signal<PushSubscription | null>(null);
+  readonly hasEnabledPush = computed(() => Boolean(this.pushSubscription()));
+  readonly canEnablePush = computed(() => (
+    this.swPush.isEnabled &&
+    this.browserCanUsePush() &&
+    Boolean(this.webPushPublicKey()) &&
+    !this.pushSubscription()
+  ));
 
   constructor() {
     // Only subscribe to `notificationClicks` when service worker push is enabled.
     if (this.swPush.isEnabled) {
+      this.swPush.subscription
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((subscription) => this.pushSubscription.set(subscription));
+
       this.swPush.notificationClicks.subscribe(({ notification }) => {
         const url = notification.data?.url;
         if (typeof url === 'string' && url.startsWith('/')) {
@@ -123,6 +136,20 @@ export class NotificationService {
   async enablePushNotifications(): Promise<void> {
     const publicKey = this.webPushPublicKey();
 
+    if (this.pushSubscription()) {
+      return;
+    }
+
+    if (!this.browserCanUsePush()) {
+      throw new Error(
+        'Push notifications require HTTPS and a browser that supports service-worker push. On iPhone, open the installed Home Screen app instead of a normal Safari tab.',
+      );
+    }
+
+    if (typeof Notification !== 'undefined' && Notification.permission === 'denied') {
+      throw new Error('Notifications were blocked in the browser settings.');
+    }
+
     if (!this.swPush.isEnabled || !publicKey) {
       throw new Error('Push notifications are not available in this browser session.');
     }
@@ -133,11 +160,23 @@ export class NotificationService {
     const payload = subscription.toJSON() as PushSubscriptionInput;
 
     await firstValueFrom(this.http.post<void>(`${this.apiUrl}/push-subscriptions`, payload, this.opts));
+    this.pushSubscription.set(subscription);
   }
 
   private openNotification(notification: Notification): void {
     if (notification.actionUrl) {
       void this.router.navigateByUrl(notification.actionUrl);
     }
+  }
+
+  private browserCanUsePush(): boolean {
+    return (
+      typeof window !== 'undefined' &&
+      window.isSecureContext &&
+      typeof navigator !== 'undefined' &&
+      'serviceWorker' in navigator &&
+      typeof PushManager !== 'undefined' &&
+      typeof Notification !== 'undefined'
+    );
   }
 }

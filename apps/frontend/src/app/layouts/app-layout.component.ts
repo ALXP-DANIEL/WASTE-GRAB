@@ -332,6 +332,10 @@ export class AppLayout {
   ));
   protected readonly canInstallPwa = computed(() => this.installPrompt() !== null || this.isIosSafari());
   protected readonly notificationStatus = computed(() => {
+    if (this.notificationService.hasEnabledPush()) {
+      return 'enabled';
+    }
+
     if (typeof Notification === 'undefined') {
       return 'unavailable';
     }
@@ -404,13 +408,15 @@ export class AppLayout {
   }
 
   protected notificationStatusLabel(): string {
+    if (this.notificationStatus() === 'enabled') {
+      return 'Notifications are enabled.';
+    }
+
     if (!this.notificationService.canEnablePush()) {
       return 'Push notifications are not available in this browser session.';
     }
 
     switch (this.notificationStatus()) {
-      case 'enabled':
-        return 'Notifications are enabled.';
       case 'denied':
         return 'Notifications were blocked in the browser settings.';
       default:

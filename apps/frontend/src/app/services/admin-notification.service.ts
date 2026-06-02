@@ -4,6 +4,8 @@ import type {
   ListAdminNotificationLogsResponse,
   SendAdminNotificationInput,
   SendAdminNotificationResponse,
+  UpdateAdminNotificationInput,
+  AdminNotificationLog,
 } from '@wastegrab/shared';
 import { environment } from '../../environments/environment';
 
@@ -19,5 +21,13 @@ export class AdminNotificationService {
 
   listLogs() {
     return this.http.get<ListAdminNotificationLogsResponse>(this.apiUrl, this.opts);
+  }
+
+  updateNotification(logId: string, payload: UpdateAdminNotificationInput) {
+    return this.http.patch<AdminNotificationLog>(`${this.apiUrl}/${encodeURIComponent(logId)}`, payload, this.opts);
+  }
+
+  deleteNotification(logId: string) {
+    return this.http.delete<void>(`${this.apiUrl}/${encodeURIComponent(logId)}`, this.opts);
   }
 }

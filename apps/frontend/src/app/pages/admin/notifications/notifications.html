@@ -102,9 +102,10 @@
           <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
               <p class="font-semibold">{{ log.title }}</p>
-              <p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
-                {{ log.message }}
-              </p>
+              <div
+                class="mt-1 line-clamp-3 text-sm text-muted-foreground [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_em]:italic [&_h1]:text-base [&_h1]:font-semibold [&_h2]:text-sm [&_h2]:font-semibold [&_h3]:text-sm [&_h3]:font-semibold [&_li]:ml-4 [&_li]:list-disc [&_p+p]:mt-1 [&_strong]:font-semibold [&_ul]:mt-1"
+                [innerHTML]="log.message | notificationMarkdown"
+              ></div>
             </div>
             <z-badge
               zShape="pill"
@@ -136,6 +137,24 @@
               <dd class="truncate font-semibold">{{ log.actionUrl || '-' }}</dd>
             </div>
           </dl>
+          <div class="mt-3 flex justify-end gap-2">
+            <button
+              type="button"
+              class="grid size-9 place-items-center rounded-md border border-border text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              aria-label="Edit announcement"
+              (click)="openEdit(log)"
+            >
+              <ng-icon name="lucidePencil" class="size-4!" />
+            </button>
+            <button
+              type="button"
+              class="grid size-9 place-items-center rounded-md border border-red-100 text-red-600 transition hover:bg-red-50"
+              aria-label="Delete announcement"
+              (click)="deleteAnnouncement(log)"
+            >
+              <ng-icon name="lucideTrash2" class="size-4!" />
+            </button>
+          </div>
         </article>
         } @empty {
         <div
@@ -160,6 +179,7 @@
               <th z-table-head>Recipients</th>
               <th z-table-head>Expiry</th>
               <th z-table-head>Created</th>
+              <th z-table-head class="text-right">Actions</th>
             </tr>
           </thead>
           <tbody z-table-body>
@@ -167,9 +187,10 @@
             <tr z-table-row>
               <td z-table-cell>
                 <p class="font-semibold">{{ log.title }}</p>
-                <p class="max-w-md truncate text-xs text-muted-foreground">
-                  {{ log.message }}
-                </p>
+                <div
+                  class="max-w-md text-xs text-muted-foreground [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_em]:italic [&_h1]:truncate [&_h1]:font-semibold [&_h2]:truncate [&_h2]:font-semibold [&_h3]:truncate [&_h3]:font-semibold [&_li]:ml-4 [&_li]:list-disc [&_p]:truncate [&_strong]:font-semibold"
+                  [innerHTML]="log.message | notificationMarkdown"
+                ></div>
                 <p class="mt-1 text-xs text-muted-foreground">
                   Action: {{ log.actionUrl || '-' }}
                 </p>
@@ -195,10 +216,30 @@
                 expiry' }}
               </td>
               <td z-table-cell>{{ log.createdAt | date:'medium' }}</td>
+              <td z-table-cell>
+                <div class="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    class="grid size-8 place-items-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                    aria-label="Edit announcement"
+                    (click)="openEdit(log)"
+                  >
+                    <ng-icon name="lucidePencil" class="size-4!" />
+                  </button>
+                  <button
+                    type="button"
+                    class="grid size-8 place-items-center rounded-md text-red-600 transition hover:bg-red-50"
+                    aria-label="Delete announcement"
+                    (click)="deleteAnnouncement(log)"
+                  >
+                    <ng-icon name="lucideTrash2" class="size-4!" />
+                  </button>
+                </div>
+              </td>
             </tr>
             } @empty {
             <tr z-table-row>
-              <td z-table-cell colspan="5" class="py-10 text-center">
+              <td z-table-cell colspan="6" class="py-10 text-center">
                 <p class="font-semibold">No announcements yet.</p>
                 <p class="mt-1 text-sm text-muted-foreground">
                   Send an announcement to start the log.
@@ -238,6 +279,7 @@
               <th z-table-head>Recipients</th>
               <th z-table-head>Type</th>
               <th z-table-head>Created</th>
+              <th z-table-head class="text-right">Actions</th>
             </tr>
           </thead>
           <tbody z-table-body>
@@ -245,7 +287,10 @@
             <tr z-table-row>
               <td z-table-cell>
                 <p class="font-semibold">{{ log.title }}</p>
-                <p class="text-xs text-muted-foreground">{{ log.message }}</p>
+                <div
+                  class="text-xs text-muted-foreground [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_em]:italic [&_h1]:font-semibold [&_h2]:font-semibold [&_h3]:font-semibold [&_li]:ml-4 [&_li]:list-disc [&_p+p]:mt-1 [&_strong]:font-semibold [&_ul]:mt-1"
+                  [innerHTML]="log.message | notificationMarkdown"
+                ></div>
               </td>
               <td z-table-cell class="font-semibold text-primary">
                 {{ log.sentCount }}
@@ -258,10 +303,30 @@
                 </span>
               </td>
               <td z-table-cell>{{ log.createdAt | date:'medium' }}</td>
+              <td z-table-cell>
+                <div class="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    class="grid size-8 place-items-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                    aria-label="Edit announcement"
+                    (click)="openEdit(log)"
+                  >
+                    <ng-icon name="lucidePencil" class="size-4!" />
+                  </button>
+                  <button
+                    type="button"
+                    class="grid size-8 place-items-center rounded-md text-red-600 transition hover:bg-red-50"
+                    aria-label="Delete announcement"
+                    (click)="deleteAnnouncement(log)"
+                  >
+                    <ng-icon name="lucideTrash2" class="size-4!" />
+                  </button>
+                </div>
+              </td>
             </tr>
             } @empty {
             <tr z-table-row>
-              <td z-table-cell colspan="4" class="py-10 text-center">
+              <td z-table-cell colspan="5" class="py-10 text-center">
                 <p class="font-semibold">No delivery logs yet.</p>
                 <p class="mt-1 text-sm text-muted-foreground">
                   Rows will appear after announcements are sent.
@@ -318,6 +383,7 @@
               <th z-table-head>Clear Policy</th>
               <th z-table-head>Expires</th>
               <th z-table-head>Created</th>
+              <th z-table-head class="text-right">Actions</th>
             </tr>
           </thead>
           <tbody z-table-body>
@@ -325,9 +391,10 @@
             <tr z-table-row>
               <td z-table-cell>
                 <p class="font-semibold">{{ log.title }}</p>
-                <p class="max-w-md truncate text-xs text-muted-foreground">
-                  {{ log.message }}
-                </p>
+                <div
+                  class="max-w-md text-xs text-muted-foreground [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_em]:italic [&_h1]:truncate [&_h1]:font-semibold [&_h2]:truncate [&_h2]:font-semibold [&_h3]:truncate [&_h3]:font-semibold [&_li]:ml-4 [&_li]:list-disc [&_p]:truncate [&_strong]:font-semibold"
+                  [innerHTML]="log.message | notificationMarkdown"
+                ></div>
               </td>
               <td z-table-cell>
                 <z-badge
@@ -342,10 +409,30 @@
                 expiry' }}
               </td>
               <td z-table-cell>{{ log.createdAt | date:'mediumDate' }}</td>
+              <td z-table-cell>
+                <div class="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    class="grid size-8 place-items-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                    aria-label="Edit announcement"
+                    (click)="openEdit(log)"
+                  >
+                    <ng-icon name="lucidePencil" class="size-4!" />
+                  </button>
+                  <button
+                    type="button"
+                    class="grid size-8 place-items-center rounded-md text-red-600 transition hover:bg-red-50"
+                    aria-label="Delete announcement"
+                    (click)="deleteAnnouncement(log)"
+                  >
+                    <ng-icon name="lucideTrash2" class="size-4!" />
+                  </button>
+                </div>
+              </td>
             </tr>
             } @empty {
             <tr z-table-row>
-              <td z-table-cell colspan="4" class="py-10 text-center">
+              <td z-table-cell colspan="5" class="py-10 text-center">
                 <p class="font-semibold">No policy logs yet.</p>
                 <p class="mt-1 text-sm text-muted-foreground">
                   Rows will appear after announcements are sent.
@@ -361,11 +448,12 @@
   } @if (modalMode() === 'add') {
   <z-modal
     [isOpen]="true"
-    title="Send Announcement"
-    description="Send an in-app notification and optional PWA push to selected users"
-    okText="Send Announcement"
+    [title]="modalMode() === 'edit' ? 'Edit Announcement' : 'Send Announcement'"
+    [description]="modalMode() === 'edit' ? 'Update the in-app notification rows for this announcement batch' : 'Send an in-app notification and optional PWA push to selected users'"
+    [okText]="modalMode() === 'edit' ? 'Save Changes' : 'Send Announcement'"
     cancelText="Cancel"
     size="lg"
+    [isSubmitting]="isSending()"
     (ok)="sendAnnouncement()"
     (cancel)="closeModal()"
   >
@@ -382,6 +470,7 @@
         </z-form-control>
       </z-form-field>
 
+      @if (modalMode() === 'add') {
       <z-form-field>
         <z-form-label [zRequired]="true">Audience</z-form-label>
         <z-form-control>
@@ -398,19 +487,51 @@
           </z-select>
         </z-form-control>
       </z-form-field>
+      } @else {
+      <div class="rounded-lg border border-border bg-muted/20 px-3 py-2 text-sm text-muted-foreground">
+        Editing existing recipient notifications. Audience cannot be changed after send.
+      </div>
+      }
 
       <z-form-field class="sm:col-span-2">
         <z-form-label [zRequired]="true">Message</z-form-label>
         <z-form-control>
-          <textarea
-            z-input
-            formControlName="message"
-            rows="4"
-            placeholder="Write the notification message"
-            class="w-full"
-          ></textarea>
+          <div class="overflow-hidden rounded-lg border border-input bg-background">
+            <div class="flex flex-wrap items-center gap-1 border-b border-border bg-muted/30 p-2">
+              @for (action of editorActions; track action.format) {
+              <button
+                type="button"
+                class="grid size-8 place-items-center rounded-md text-muted-foreground transition hover:bg-background hover:text-foreground"
+                [attr.aria-label]="action.label"
+                [title]="action.label"
+                (click)="applyMessageFormat(action.format, messageEditor)"
+              >
+                <ng-icon [name]="action.icon" class="size-4!" />
+              </button>
+              }
+            </div>
+            <textarea
+              #messageEditor
+              z-input
+              formControlName="message"
+              rows="7"
+              placeholder="# Pickup update&#10;&#10;**Important:** Collection starts earlier tomorrow.&#10;&#10;- Keep recyclables outside by 8 AM"
+              class="w-full rounded-none border-0 focus-visible:ring-0"
+            ></textarea>
+          </div>
         </z-form-control>
       </z-form-field>
+
+      <section class="sm:col-span-2 rounded-lg border border-border bg-muted/20 p-4">
+        <div class="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
+          <ng-icon name="lucideEye" class="size-4!" />
+          Preview
+        </div>
+        <div
+          class="min-h-24 rounded-lg border border-border bg-background p-4 text-sm leading-6 text-foreground [&_code]:rounded [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_em]:italic [&_h1]:text-xl [&_h1]:font-semibold [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:text-base [&_h3]:font-semibold [&_li]:ml-5 [&_li]:list-disc [&_p+p]:mt-2 [&_strong]:font-semibold [&_ul]:mt-2"
+          [innerHTML]="announcementForm.controls.message.value | notificationMarkdown"
+        ></div>
+      </section>
 
       <z-form-field>
         <z-form-label>Action URL</z-form-label>

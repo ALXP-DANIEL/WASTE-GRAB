@@ -32,6 +32,7 @@ import {
 import { AuthService } from '@/services/auth.service';
 import { NotificationService } from '@/services/notification.service';
 import type { Notification } from '@wastegrab/shared';
+import { NotificationMarkdownPipe } from '@/utils/notification-markdown.pipe';
 
 @Component({
   selector: 'app-header',
@@ -42,6 +43,7 @@ import type { Notification } from '@wastegrab/shared';
     ZardDropdownDirective,
     ZardDropdownMenuContentComponent,
     ZardDropdownMenuItemComponent,
+    NotificationMarkdownPipe,
     NgIcon,
   ],
   template: `
@@ -173,7 +175,10 @@ import type { Notification } from '@wastegrab/shared';
 
                 <span class="min-w-0 flex-1">
                   <span class="block text-sm font-medium text-slate-900">{{ item.title }}</span>
-                  <span class="mt-0.5 block text-xs leading-5 text-slate-500">{{ item.message }}</span>
+                  <span
+                    class="mt-0.5 block text-xs leading-5 text-slate-500 [&_code]:rounded [&_code]:bg-slate-100 [&_code]:px-1 [&_em]:italic [&_h1]:text-sm [&_h1]:font-semibold [&_h2]:text-sm [&_h2]:font-semibold [&_h3]:text-xs [&_h3]:font-semibold [&_li]:ml-4 [&_li]:list-disc [&_p+p]:mt-1 [&_strong]:font-semibold [&_ul]:mt-1"
+                    [innerHTML]="item.message | notificationMarkdown"
+                  ></span>
                   <span class="mt-1 block text-[11px] text-slate-400">{{ notificationTime(item) }}</span>
                 </span>
 
@@ -397,15 +402,24 @@ export class AppHeaderComponent implements OnInit, OnDestroy {
   }
 
   protected enablePushNotifications(): void {
-    void this.notificationService.enablePushNotifications().catch((err: unknown) => {
-      const message = err instanceof Error ? err.message : 'Unable to enable device notifications.';
-      this.dialogService.create({
-        zTitle: 'Notifications unavailable',
-        zDescription: message,
-        zOkText: 'OK',
-        zWidth: 'max-w-sm',
+    void this.notificationService.enablePushNotifications()
+      .then(() => {
+        this.dialogService.create({
+          zTitle: 'Notifications enabled',
+          zDescription: 'This device will receive WasteGrab updates.',
+          zOkText: 'Done',
+          zWidth: 'max-w-sm',
+        });
+      })
+      .catch((err: unknown) => {
+        const message = err instanceof Error ? err.message : 'Unable to enable device notifications.';
+        this.dialogService.create({
+          zTitle: 'Notifications unavailable',
+          zDescription: message,
+          zOkText: 'OK',
+          zWidth: 'max-w-sm',
+        });
       });
-    });
   }
 
   protected notificationTime(notification: Notification): string {

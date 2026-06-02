@@ -5,14 +5,27 @@ import type {
   ListAdminNotificationLogsResponse,
   SendAdminNotificationInput,
   SendAdminNotificationResponse,
+  UpdateAdminNotificationInput,
 } from "@wastegrab/shared";
 import { NotificationTargetRole } from "@wastegrab/shared";
 import { getCurrentUserFromRequest } from "../../services/auth.service.js";
 import { createNotifications } from "../../services/notification.service.js";
+import { emitNotificationEvent } from "../../services/notification-stream.service.js";
 import { prisma } from "../../prisma.js";
 import { getBody } from "../../utils/request.js";
 
 const adminNotificationRouter = Router();
+const ADMIN_ANNOUNCEMENT_TYPE = "ADMIN_ANNOUNCEMENT";
+
+type AdminNotificationBatchKey = {
+  title: string;
+  message: string;
+  type: string;
+  actionUrl: string | null;
+  isClearable: boolean;
+  expiresAt: string | null;
+  createdAt: string;
+};
 
 async function requireAdmin(req: Request, res: Response, next: NextFunction) {
   const user = await getCurrentUserFromRequest(req);
@@ -28,7 +41,7 @@ adminNotificationRouter.get("/", requireAdmin, async (_req: Request, res: Respon
   const rows = await prisma.notification.groupBy({
     by: ["title", "message", "type", "actionUrl", "isClearable", "expiresAt", "createdAt"],
     where: {
-      type: "ADMIN_ANNOUNCEMENT",
+      type: ADMIN_ANNOUNCEMENT_TYPE,
     },
     _count: {
       id: true,
@@ -41,7 +54,15 @@ adminNotificationRouter.get("/", requireAdmin, async (_req: Request, res: Respon
 
   const payload: ListAdminNotificationLogsResponse = {
     logs: rows.map((row): AdminNotificationLog => ({
-      id: `${row.createdAt.toISOString()}-${row.title}`,
+      id: encodeBatchKey({
+        title: row.title,
+        message: row.message,
+        type: row.type,
+        actionUrl: row.actionUrl,
+        isClearable: row.isClearable,
+        expiresAt: row.expiresAt?.toISOString() ?? null,
+        createdAt: row.createdAt.toISOString(),
+      }),
       title: row.title,
       message: row.message,
       type: row.type,
@@ -89,7 +110,7 @@ adminNotificationRouter.post("/", requireAdmin, async (req: Request, res: Respon
     userId: user.id,
     title,
     message,
-    type: "ADMIN_ANNOUNCEMENT",
+    type: ADMIN_ANNOUNCEMENT_TYPE,
     actionUrl,
     isClearable,
     expiresAt,
@@ -97,6 +118,110 @@ adminNotificationRouter.post("/", requireAdmin, async (req: Request, res: Respon
 
   const payload: SendAdminNotificationResponse = { sentCount };
   res.status(201).json(payload);
+});
+
+adminNotificationRouter.patch("/:logId", requireAdmin, async (req: Request, res: Response) => {
+  const key = decodeBatchKey(String(req.params.logId));
+  if (!key || key.type !== ADMIN_ANNOUNCEMENT_TYPE) {
+    res.status(404).json({ error: "Announcement batch not found." } as ApiErrorResponse);
+    return;
+  }
+
+  const input = getBody(req.body) as Partial<UpdateAdminNotificationInput>;
+  const title = normalizeText(input.title);
+  const message = normalizeText(input.message);
+  const actionUrl = normalizeOptionalText(input.actionUrl);
+  const expiresAt = normalizeOptionalDate(input.expiresAt);
+  const isClearable = input.isClearable !== false;
+
+  if (!title || !message) {
+    res.status(400).json({ error: "title and message are required." } as ApiErrorResponse);
+    return;
+  }
+
+  if (input.expiresAt && !expiresAt) {
+    res.status(400).json({ error: "expiresAt must be a valid date." } as ApiErrorResponse);
+    return;
+  }
+
+  const where = batchWhere(key);
+  const recipients = await prisma.notification.findMany({
+    where,
+    distinct: ["userId"],
+    select: { userId: true },
+  });
+
+  if (recipients.length === 0) {
+    res.status(404).json({ error: "Announcement batch not found." } as ApiErrorResponse);
+    return;
+  }
+
+  const updated = await prisma.notification.updateMany({
+    where,
+    data: {
+      title,
+      message,
+      actionUrl,
+      isClearable,
+      expiresAt,
+    },
+  });
+
+  for (const recipient of recipients) {
+    emitNotificationEvent(recipient.userId);
+  }
+
+  const updatedKey: AdminNotificationBatchKey = {
+    title,
+    message,
+    type: key.type,
+    actionUrl,
+    isClearable,
+    expiresAt: expiresAt?.toISOString() ?? null,
+    createdAt: key.createdAt,
+  };
+
+  const payload: AdminNotificationLog = {
+    id: encodeBatchKey(updatedKey),
+    title,
+    message,
+    type: key.type,
+    actionUrl,
+    isClearable,
+    expiresAt: expiresAt?.toISOString() ?? null,
+    createdAt: key.createdAt,
+    sentCount: updated.count,
+  };
+
+  res.json(payload);
+});
+
+adminNotificationRouter.delete("/:logId", requireAdmin, async (req: Request, res: Response) => {
+  const key = decodeBatchKey(String(req.params.logId));
+  if (!key || key.type !== ADMIN_ANNOUNCEMENT_TYPE) {
+    res.status(404).json({ error: "Announcement batch not found." } as ApiErrorResponse);
+    return;
+  }
+
+  const where = batchWhere(key);
+  const recipients = await prisma.notification.findMany({
+    where,
+    distinct: ["userId"],
+    select: { userId: true },
+  });
+
+  if (recipients.length === 0) {
+    res.status(404).json({ error: "Announcement batch not found." } as ApiErrorResponse);
+    return;
+  }
+
+  await prisma.notification.deleteMany({ where });
+
+  for (const recipient of recipients) {
+    emitNotificationEvent(recipient.userId);
+  }
+
+  res.status(204).send();
 });
 
 function normalizeText(value: unknown): string {
@@ -126,6 +251,49 @@ function normalizeTargetRole(value: unknown): NotificationTargetRole | null {
   return Object.values(NotificationTargetRole).includes(value as NotificationTargetRole)
     ? value as NotificationTargetRole
     : null;
+}
+
+function encodeBatchKey(key: AdminNotificationBatchKey): string {
+  return Buffer.from(JSON.stringify(key), "utf8").toString("base64url");
+}
+
+function decodeBatchKey(value: string): AdminNotificationBatchKey | null {
+  try {
+    const parsed = JSON.parse(Buffer.from(value, "base64url").toString("utf8")) as Partial<AdminNotificationBatchKey>;
+    if (
+      typeof parsed.title !== "string" ||
+      typeof parsed.message !== "string" ||
+      typeof parsed.type !== "string" ||
+      typeof parsed.createdAt !== "string" ||
+      typeof parsed.isClearable !== "boolean"
+    ) {
+      return null;
+    }
+
+    return {
+      title: parsed.title,
+      message: parsed.message,
+      type: parsed.type,
+      actionUrl: typeof parsed.actionUrl === "string" ? parsed.actionUrl : null,
+      isClearable: parsed.isClearable,
+      expiresAt: typeof parsed.expiresAt === "string" ? parsed.expiresAt : null,
+      createdAt: parsed.createdAt,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function batchWhere(key: AdminNotificationBatchKey) {
+  return {
+    title: key.title,
+    message: key.message,
+    type: key.type,
+    actionUrl: key.actionUrl,
+    isClearable: key.isClearable,
+    expiresAt: key.expiresAt ? new Date(key.expiresAt) : null,
+    createdAt: new Date(key.createdAt),
+  };
 }
 
 export default adminNotificationRouter;

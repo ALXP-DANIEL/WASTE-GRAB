@@ -52,6 +52,14 @@ export type SendAdminNotificationResponse = {
   sentCount: number;
 };
 
+export type UpdateAdminNotificationInput = {
+  title: string;
+  message: string;
+  actionUrl?: string | null;
+  isClearable?: boolean;
+  expiresAt?: string | null;
+};
+
 export type AdminNotificationLog = {
   id: string;
   title: string;

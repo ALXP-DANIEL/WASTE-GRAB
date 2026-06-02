@@ -2,7 +2,22 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideBell, lucidePin, lucidePlus, lucideRadio, lucideRefreshCw, lucideSend } from '@ng-icons/lucide';
+import {
+  lucideBell,
+  lucideBold,
+  lucideEye,
+  lucideHeading1,
+  lucideHeading2,
+  lucideItalic,
+  lucideList,
+  lucidePencil,
+  lucidePin,
+  lucidePlus,
+  lucideRadio,
+  lucideRefreshCw,
+  lucideSend,
+  lucideTrash2,
+} from '@ng-icons/lucide';
 import { NotificationTargetRole, type AdminNotificationLog } from '@wastegrab/shared';
 
 import { ROUTE_PATHS, routePath } from '@/app.routes';
@@ -20,10 +35,12 @@ import { ZardInputDirective } from '@/ui/zard/input';
 import { ZardModalComponent } from '@/ui/zard/modal/modal.component';
 import { ZardSelectImports } from '@/ui/zard/select/select.imports';
 import { ZardTableImports } from '@/ui/zard/table';
+import { NotificationMarkdownPipe } from '@/utils/notification-markdown.pipe';
 
 type NotificationTab = 'announcements' | 'deliveries' | 'policy';
-type NotificationModalMode = 'add' | null;
+type NotificationModalMode = 'add' | 'edit' | null;
 type NotificationFilter = 'all' | 'clearable' | 'pinned' | 'expiring';
+type MarkdownFormat = 'h1' | 'h2' | 'bold' | 'italic' | 'list';
 
 @Component({
   selector: 'app-admin-notifications-page',
@@ -44,6 +61,7 @@ type NotificationFilter = 'all' | 'clearable' | 'pinned' | 'expiring';
     ZardFormLabelComponent,
     ZardFormControlComponent,
     ZardInputDirective,
+    NotificationMarkdownPipe,
     NgIcon,
     ...ZardSelectImports,
     ...ZardTableImports,
@@ -51,11 +69,19 @@ type NotificationFilter = 'all' | 'clearable' | 'pinned' | 'expiring';
   viewProviders: [
     provideIcons({
       lucideBell,
+      lucideBold,
+      lucideEye,
+      lucideHeading1,
+      lucideHeading2,
+      lucideItalic,
+      lucideList,
+      lucidePencil,
       lucidePin,
       lucidePlus,
       lucideRadio,
       lucideRefreshCw,
       lucideSend,
+      lucideTrash2,
     }),
   ],
 })
@@ -78,11 +104,19 @@ export class AdminNotificationsPage implements OnInit {
   protected readonly activeTab = signal<NotificationTab>('announcements');
   protected readonly activeFilter = signal<NotificationFilter>('all');
   protected readonly modalMode = signal<NotificationModalMode>(null);
+  protected readonly editingLog = signal<AdminNotificationLog | null>(null);
   protected readonly filters: Array<{ value: NotificationFilter; label: string }> = [
     { value: 'all', label: 'All' },
     { value: 'clearable', label: 'Clearable' },
     { value: 'pinned', label: 'Pinned' },
     { value: 'expiring', label: 'Expiring' },
+  ];
+  protected readonly editorActions: Array<{ format: MarkdownFormat; label: string; icon: string }> = [
+    { format: 'h1', label: 'Heading 1', icon: 'lucideHeading1' },
+    { format: 'h2', label: 'Heading 2', icon: 'lucideHeading2' },
+    { format: 'bold', label: 'Bold', icon: 'lucideBold' },
+    { format: 'italic', label: 'Italic', icon: 'lucideItalic' },
+    { format: 'list', label: 'Bullet list', icon: 'lucideList' },
   ];
   protected readonly totalSent = computed(() => this.logs().reduce((sum, log) => sum + log.sentCount, 0));
   protected readonly pinnedCount = computed(() => this.logs().filter((log) => !log.isClearable).length);
@@ -120,6 +154,7 @@ export class AdminNotificationsPage implements OnInit {
   }
 
   protected openAdd(): void {
+    this.editingLog.set(null);
     this.announcementForm.reset({
       title: '',
       message: '',
@@ -131,8 +166,41 @@ export class AdminNotificationsPage implements OnInit {
     this.modalMode.set('add');
   }
 
+  protected openEdit(log: AdminNotificationLog): void {
+    this.editingLog.set(log);
+    this.announcementForm.reset({
+      title: log.title,
+      message: log.message,
+      targetRole: NotificationTargetRole.ALL,
+      actionUrl: log.actionUrl ?? '',
+      isClearable: log.isClearable,
+      expiresAt: toDate(log.expiresAt),
+    });
+    this.modalMode.set('edit');
+  }
+
   protected closeModal(): void {
     this.modalMode.set(null);
+    this.editingLog.set(null);
+  }
+
+  protected applyMessageFormat(format: MarkdownFormat, textarea: HTMLTextAreaElement): void {
+    const control = this.announcementForm.controls.message;
+    const value = control.value;
+    const start = textarea.selectionStart ?? value.length;
+    const end = textarea.selectionEnd ?? value.length;
+    const selected = value.slice(start, end);
+    const replacement = formatMarkdownSelection(format, selected);
+    const nextValue = `${value.slice(0, start)}${replacement}${value.slice(end)}`;
+
+    control.setValue(nextValue);
+    control.markAsDirty();
+
+    window.setTimeout(() => {
+      textarea.focus();
+      const cursorStart = start + replacement.length;
+      textarea.setSelectionRange(cursorStart, cursorStart);
+    });
   }
 
   protected sendAnnouncement(): void {
@@ -143,6 +211,39 @@ export class AdminNotificationsPage implements OnInit {
 
     const value = this.announcementForm.getRawValue();
     this.isSending.set(true);
+
+    if (this.modalMode() === 'edit') {
+      const log = this.editingLog();
+      if (!log) {
+        this.isSending.set(false);
+        return;
+      }
+
+      this.notificationService.updateNotification(log.id, {
+        title: value.title,
+        message: value.message,
+        actionUrl: value.actionUrl || null,
+        isClearable: value.isClearable,
+        expiresAt: toEndOfDayIso(value.expiresAt),
+      }).subscribe({
+        next: (updated) => {
+          this.logs.update((logs) => logs.map((item) => item.id === log.id ? updated : item));
+          this.closeModal();
+        },
+        error: (err) => {
+          this.isSending.set(false);
+          this.dialogService.create({
+            zTitle: 'Update failed',
+            zDescription: getErrorMessage(err) || 'Unable to update announcement.',
+            zOkText: 'OK',
+            zWidth: 'max-w-sm',
+          });
+        },
+        complete: () => this.isSending.set(false),
+      });
+      return;
+    }
+
     this.notificationService.sendNotification({
       title: value.title,
       message: value.message,
@@ -170,6 +271,7 @@ export class AdminNotificationsPage implements OnInit {
         this.loadLogs();
       },
       error: (err) => {
+        this.isSending.set(false);
         this.dialogService.create({
           zTitle: 'Send failed',
           zDescription: getErrorMessage(err) || 'Unable to send announcement.',
@@ -178,6 +280,30 @@ export class AdminNotificationsPage implements OnInit {
         });
       },
       complete: () => this.isSending.set(false),
+    });
+  }
+
+  protected deleteAnnouncement(log: AdminNotificationLog): void {
+    this.dialogService.create({
+      zTitle: 'Delete Announcement',
+      zDescription: `Delete "${log.title}" for all ${log.sentCount} recipient${log.sentCount === 1 ? '' : 's'}?`,
+      zOkText: 'Delete',
+      zOkDestructive: true,
+      zCancelText: 'Cancel',
+      zWidth: 'max-w-sm',
+      zOnOk: () => {
+        this.notificationService.deleteNotification(log.id).subscribe({
+          next: () => this.logs.update((logs) => logs.filter((item) => item.id !== log.id)),
+          error: (err) => {
+            this.dialogService.create({
+              zTitle: 'Delete failed',
+              zDescription: getErrorMessage(err) || 'Unable to delete announcement.',
+              zOkText: 'OK',
+              zWidth: 'max-w-sm',
+            });
+          },
+        });
+      },
     });
   }
 
@@ -210,6 +336,10 @@ function toEndOfDayIso(date: Date | null): string | null {
   return expiry.toISOString();
 }
 
+function toDate(value: string | null): Date | null {
+  return value ? new Date(value) : null;
+}
+
 function getErrorMessage(err: unknown): string | null {
   if (typeof err !== 'object' || err === null || !('error' in err)) {
     return null;
@@ -222,4 +352,28 @@ function getErrorMessage(err: unknown): string | null {
   }
 
   return null;
+}
+
+function formatMarkdownSelection(format: MarkdownFormat, selected: string): string {
+  const text = selected.trim();
+
+  switch (format) {
+    case 'h1':
+      return prefixMarkdownLines(text || 'Heading', '# ');
+    case 'h2':
+      return prefixMarkdownLines(text || 'Section heading', '## ');
+    case 'bold':
+      return `**${text || 'bold text'}**`;
+    case 'italic':
+      return `*${text || 'italic text'}*`;
+    case 'list':
+      return prefixMarkdownLines(text || 'List item', '- ');
+  }
+}
+
+function prefixMarkdownLines(value: string, prefix: string): string {
+  return value
+    .split('\n')
+    .map((line) => `${prefix}${line.replace(/^#{1,3}\s+|^[-*]\s+/, '')}`)
+    .join('\n');
 }
