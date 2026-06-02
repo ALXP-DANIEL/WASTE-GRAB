@@ -30,6 +30,17 @@ These instructions are shared by GitHub Copilot and Codex. Keep workspace behavi
 - For generators or scaffolding, prefer Nx generators and check generator options before use.
 - For unfamiliar Nx options, plugin behavior, or migration details, check Nx docs or command help before assuming.
 
+## Graphify Workflow
+
+- This repo intentionally keeps a focused Graphify graph in `graphify-out/`.
+- Do not run `graphify update .` from the repository root; that pulls in tooling, generated files, reports, and hidden workspace content and makes the graph noisy.
+- Default refresh path: use the VS Code task `Graphify: update codebase graph`, which runs `tools/graphify/update-codebase-graphify.sh label`.
+- The helper script also supports `tools/graphify/update-codebase-graphify.sh ast` for no-LLM AST refresh and `tools/graphify/update-codebase-graphify.sh deep` for slower local/self-hosted LLM semantic extraction. Use these intentionally from the terminal rather than adding extra VS Code task noise.
+- The focused corpus is backend routes/services/middleware/config, frontend pages/services/routes, shared types, and e2e source/config. Runtime outputs such as Playwright reports, Graphify cache internals, `.github`, `.agents`, `.vscode`, and generated Prisma clients must stay out of the graph corpus.
+- When using LM Studio, set `OLLAMA_BASE_URL=http://127.0.0.1:1234/v1`, `OLLAMA_MODEL=<loaded model id>`, `OLLAMA_API_KEY=lm-studio`, and `GRAPHIFY_BACKEND=ollama`; keep `GRAPHIFY_MAX_CONCURRENCY=1` for local models.
+- The Graphify script checks `/v1/models`; if LM Studio is not running or the requested model is not loaded, ask the developer to start LM Studio, load the model, and rerun the task.
+- After a refresh, `graphify-out/GRAPH_REPORT.md`, `graphify-out/graph.html`, `graphify-out/graph.json`, `graphify-out/manifest.json`, and `graphify-out/cache/stat-index.json` should agree on the same focused graph.
+
 ## Codebase Conventions
 
 - Follow existing Angular, Express, Prisma, and shared type patterns.
