@@ -180,6 +180,7 @@
           class="block h-72"
           [origin]="routeMapOrigin(currentPickup)"
           [stops]="routeMapStops(currentPickup)"
+          [collectionPoints]="collectionPointMarkers()"
         />
       </section>
       } @if (isCollectorDetail()) {
@@ -289,7 +290,12 @@
         >
           {{ collectorActionError() }}
         </p>
-        } @if (!canAcceptPickup() && !canMarkArrived() && !canVerifyPickup() &&
+        } @if (isCollectorActionLoading()) {
+        <p class="mt-4 inline-flex items-center gap-2 text-sm text-muted-foreground">
+          <ng-icon name="lucideLoaderCircle" class="size-4! animate-spin" />
+          Loading collector actions...
+        </p>
+        } @else if (!canAcceptPickup() && !canMarkArrived() && !canVerifyPickup() &&
         !canCompletePickup()) {
         <p class="mt-4 text-sm text-muted-foreground">
           No collector action is available for the current status.

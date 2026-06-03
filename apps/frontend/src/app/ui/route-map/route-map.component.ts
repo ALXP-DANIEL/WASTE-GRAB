@@ -9,7 +9,6 @@ import {
   OnChanges,
   OnDestroy,
   PLATFORM_ID,
-  SimpleChanges,
   viewChild,
 } from '@angular/core';
 import maplibregl, { type GeoJSONSource, type LngLatBoundsLike, type Map, type Marker } from 'maplibre-gl';
@@ -23,6 +22,7 @@ export type RouteMapStop = RouteMapPoint & {
   label: string;
   title?: string;
   subtitle?: string;
+  kind?: 'pickup' | 'collection';
 };
 
 type Coordinate = [number, number];
@@ -34,6 +34,12 @@ type OsrmRouteResponse = {
     };
   }>;
 };
+
+const MALAYSIA_BOUNDS: LngLatBoundsLike = [
+  [99.0, -1.8],
+  [120.5, 8.2],
+];
+const ROUTE_REQUEST_TIMEOUT_MS = 8_000;
 
 @Component({
   selector: 'app-route-map',
@@ -97,6 +103,42 @@ type OsrmRouteResponse = {
     :host ::ng-deep .maplibregl-popup-tip {
       display: none;
     }
+
+    :host ::ng-deep .route-marker {
+      align-items: center;
+      border: 2px solid hsl(var(--background));
+      box-shadow: 0 10px 24px rgb(15 23 42 / 0.2);
+      display: grid;
+      font-size: 0.8rem;
+      font-weight: 800;
+      height: 2rem;
+      justify-items: center;
+      line-height: 1;
+      width: 2rem;
+    }
+
+    :host ::ng-deep .route-marker-origin {
+      border-radius: 9999px;
+    }
+
+    :host ::ng-deep .route-marker-pickup {
+      border-radius: 9999px;
+      outline: 2px solid rgb(255 255 255 / 0.8);
+      outline-offset: 1px;
+    }
+
+    :host ::ng-deep .route-marker-collection {
+      border-radius: 9999px;
+      height: 2.25rem;
+      outline: 2px solid rgb(255 255 255 / 0.9);
+      outline-offset: 1px;
+      width: 2.25rem;
+    }
+
+    :host ::ng-deep .route-marker-collection svg {
+      height: 1.2rem;
+      width: 1.2rem;
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -106,14 +148,17 @@ export class RouteMapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   @Input() origin: RouteMapPoint | null = null;
   @Input() stops: RouteMapStop[] = [];
+  @Input() collectionPoints: RouteMapStop[] = [];
 
   protected loadError = '';
+  protected isRouteLoading = false;
 
   private map: Map | null = null;
   private markers: Marker[] = [];
   private resizeObserver: ResizeObserver | null = null;
   private resizeFrame: number | null = null;
   private routeRequestId = 0;
+  private renderedRouteSignature = '';
 
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId)) {
@@ -123,12 +168,12 @@ export class RouteMapComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.createMap();
   }
 
-  ngOnChanges(_changes: SimpleChanges): void {
+  ngOnChanges(): void {
     if (!this.map) {
       return;
     }
 
-    void this.renderRoute();
+    this.renderRouteIfChanged();
   }
 
   ngOnDestroy(): void {
@@ -148,6 +193,9 @@ export class RouteMapComponent implements AfterViewInit, OnChanges, OnDestroy {
       container: this.mapHost().nativeElement,
       center: firstCoordinate,
       zoom: 11,
+      minZoom: 5,
+      maxZoom: 16,
+      maxBounds: MALAYSIA_BOUNDS,
       attributionControl: false,
       style: {
         version: 8,
@@ -177,8 +225,22 @@ export class RouteMapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
     this.map.on('load', () => {
       this.queueResize();
-      void this.renderRoute();
+      this.renderRouteIfChanged();
     });
+  }
+
+  private renderRouteIfChanged(): void {
+    if (!this.map?.loaded()) {
+      return;
+    }
+
+    const signature = this.routeSignature();
+    if (signature === this.renderedRouteSignature) {
+      return;
+    }
+
+    this.renderedRouteSignature = signature;
+    void this.renderRoute();
   }
 
   private async renderRoute(): Promise<void> {
@@ -189,13 +251,16 @@ export class RouteMapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
     const requestId = ++this.routeRequestId;
     const coordinates = this.routeCoordinates();
+    const viewportCoordinates = this.viewportCoordinates();
     this.loadError = '';
+    this.isRouteLoading = coordinates.length >= 2;
     map.resize();
     this.renderMarkers();
-    this.renderRouteLine(coordinates);
-    this.fitToCoordinates(coordinates);
+    this.fitToCoordinates(viewportCoordinates);
 
     if (coordinates.length < 2) {
+      this.isRouteLoading = false;
+      this.renderRouteLine(coordinates);
       return;
     }
 
@@ -214,12 +279,28 @@ export class RouteMapComponent implements AfterViewInit, OnChanges, OnDestroy {
       }
 
       this.loadError = 'Showing stop order. Driving route is unavailable right now.';
+      this.renderRouteLine(coordinates);
+      this.fitToCoordinates(viewportCoordinates);
+    } finally {
+      if (requestId === this.routeRequestId) {
+        this.isRouteLoading = false;
+      }
     }
   }
 
   private async fetchRouteCoordinates(coordinates: Coordinate[]): Promise<Coordinate[]> {
     const coordinatePath = coordinates.map(([longitude, latitude]) => `${longitude},${latitude}`).join(';');
-    const response = await fetch(`https://router.project-osrm.org/route/v1/driving/${coordinatePath}?overview=full&geometries=geojson`);
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), ROUTE_REQUEST_TIMEOUT_MS);
+
+    let response: Response;
+    try {
+      response = await fetch(`https://router.project-osrm.org/route/v1/driving/${coordinatePath}?overview=full&geometries=geojson`, {
+        signal: controller.signal,
+      });
+    } finally {
+      window.clearTimeout(timeout);
+    }
 
     if (!response.ok) {
       throw new Error('Unable to load OSRM route.');
@@ -239,7 +320,7 @@ export class RouteMapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
     const originCoordinate = this.toCoordinate(this.origin);
     if (originCoordinate) {
-      this.markers.push(this.createMarker('You', 'bg-foreground text-background', originCoordinate));
+      this.markers.push(this.createMarker('You', 'origin', originCoordinate));
     }
 
     for (const stop of this.stops) {
@@ -248,14 +329,37 @@ export class RouteMapComponent implements AfterViewInit, OnChanges, OnDestroy {
         continue;
       }
 
-      this.markers.push(this.createMarker(stop.label, 'bg-primary text-primary-foreground', coordinate, stop.title, stop.subtitle));
+      this.markers.push(this.createMarker(stop.label, stop.kind === 'collection' ? 'collection' : 'pickup', coordinate, stop.title, stop.subtitle));
+    }
+
+    for (const point of this.collectionPoints) {
+      const coordinate = this.toCoordinate(point);
+      if (!coordinate) {
+        continue;
+      }
+
+      this.markers.push(this.createMarker(point.label, 'collection', coordinate, point.title, point.subtitle));
     }
   }
 
-  private createMarker(label: string, className: string, coordinate: Coordinate, title?: string, subtitle?: string): Marker {
+  private createMarker(label: string, kind: 'origin' | 'pickup' | 'collection', coordinate: Coordinate, title?: string, subtitle?: string): Marker {
     const markerElement = document.createElement('div');
-    markerElement.className = `grid size-8 place-items-center rounded-full border-2 border-background text-xs font-bold shadow-md ${className}`;
-    markerElement.textContent = label;
+    markerElement.className = `route-marker route-marker-${kind}`;
+    this.applyMarkerColors(markerElement, kind);
+    if (kind === 'collection') {
+      markerElement.innerHTML = `
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 21h18" />
+          <path d="M5 21V9l7-4 7 4v12" />
+          <path d="M9 21v-6h6v6" />
+          <path d="M9 10h.01" />
+          <path d="M15 10h.01" />
+        </svg>
+      `;
+      markerElement.setAttribute('aria-label', label);
+    } else {
+      markerElement.textContent = label;
+    }
 
     const marker = new maplibregl.Marker({ element: markerElement, anchor: 'center' }).setLngLat(coordinate);
     if (title || subtitle) {
@@ -268,6 +372,23 @@ export class RouteMapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
     marker.addTo(this.map as Map);
     return marker;
+  }
+
+  private applyMarkerColors(element: HTMLElement, kind: 'origin' | 'pickup' | 'collection'): void {
+    if (kind === 'origin') {
+      element.style.backgroundColor = '#111827';
+      element.style.color = '#ffffff';
+      return;
+    }
+
+    if (kind === 'collection') {
+      element.style.backgroundColor = '#f59e0b';
+      element.style.color = '#111827';
+      return;
+    }
+
+    element.style.backgroundColor = '#16a34a';
+    element.style.color = '#ffffff';
   }
 
   private renderRouteLine(coordinates: Coordinate[]): void {
@@ -350,7 +471,7 @@ export class RouteMapComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.resizeFrame = requestAnimationFrame(() => {
       this.resizeFrame = null;
       this.map?.resize();
-      this.fitToCoordinates(this.routeCoordinates());
+      this.fitToCoordinates(this.viewportCoordinates());
     });
   }
 
@@ -359,6 +480,37 @@ export class RouteMapComponent implements AfterViewInit, OnChanges, OnDestroy {
       this.toCoordinate(this.origin),
       ...this.stops.map((stop) => this.toCoordinate(stop)),
     ].filter((coordinate): coordinate is Coordinate => coordinate !== null);
+  }
+
+  private collectionPointCoordinates(): Coordinate[] {
+    return this.collectionPoints
+      .map((point) => this.toCoordinate(point))
+      .filter((coordinate): coordinate is Coordinate => coordinate !== null);
+  }
+
+  private viewportCoordinates(): Coordinate[] {
+    const routeCoordinates = this.routeCoordinates();
+    return routeCoordinates.length > 0 ? routeCoordinates : this.collectionPointCoordinates();
+  }
+
+  private routeSignature(): string {
+    const origin = this.toCoordinate(this.origin);
+    const stops = this.stops
+      .map((stop) => {
+        const coordinate = this.toCoordinate(stop);
+        return coordinate ? `${stop.kind ?? 'pickup'}:${stop.label}:${coordinate[0]},${coordinate[1]}` : null;
+      })
+      .filter((value): value is string => value !== null)
+      .join('|');
+    const collectionPoints = this.collectionPoints
+      .map((point) => {
+        const coordinate = this.toCoordinate(point);
+        return coordinate ? `${point.label}:${coordinate[0]},${coordinate[1]}` : null;
+      })
+      .filter((value): value is string => value !== null)
+      .join('|');
+
+    return `${origin ? `${origin[0]},${origin[1]}` : 'no-origin'}>${stops}>${collectionPoints}`;
   }
 
   private toCoordinate(point: RouteMapPoint | null): Coordinate | null {

@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import type { GetCollectorPickupRequestResponse, ListCollectorPickupRequestsResponse } from '@wastegrab/shared';
+import type { CollectionLocation, GetCollectorPickupRequestResponse, ListCollectorPickupRequestsResponse } from '@wastegrab/shared';
 import { environment } from '../../environments/environment';
 
 export type CollectorLocation = {
@@ -52,6 +52,10 @@ export class CollectorPickupService {
       ...this.requestOptions,
       params,
     });
+  }
+
+  listCollectionLocations() {
+    return this.http.get<CollectionLocation[]>(`${this.apiUrl}/collection-locations`, this.requestOptions);
   }
 
   acceptPickup(id: string) {

@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideArrowLeft,
@@ -30,7 +30,7 @@ import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { RouteMapComponent, type RouteMapPoint, type RouteMapStop } from '@/ui/route-map/route-map.component';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
 import { Z_MODAL_DATA } from '@/ui/zard/dialog/dialog.service';
-import { PickupStatus, type AdminPickupRequest, type CollectorPickupRequest, type PickupItem, type PickupRequestWithDetails } from '@wastegrab/shared';
+import { PickupStatus, type AdminPickupRequest, type CollectionLocation, type CollectorPickupRequest, type PickupItem, type PickupRequestWithDetails } from '@wastegrab/shared';
 import { firstValueFrom, map } from 'rxjs';
 
 type PickupDetailContext = 'admin' | 'collector' | 'customer';
@@ -54,6 +54,7 @@ type AcceptPickupDialogData = {
   pickup: PickupDetail;
   origin: CollectorLocation;
   stops: AcceptPickupRouteStop[];
+  collectionPoints: CollectionLocation[];
   title: string;
   category: string;
   distance: string;
@@ -69,6 +70,13 @@ type AcceptPickupRouteStop = {
   longitude: string;
   distanceKm: string | null;
   isCandidate: boolean;
+};
+type DropoffLocationOption = CollectionLocation & {
+  distanceKm: number;
+};
+type DropoffDialogData = {
+  origin: CollectorLocation;
+  locations: DropoffLocationOption[];
 };
 
 const PICKUP_STATUS_FLOW = [
@@ -89,6 +97,7 @@ const PICKUP_STATUS_FLOW = [
           class="block h-64"
           [origin]="data.origin"
           [stops]="routeStops()"
+          [collectionPoints]="collectionPointMarkers()"
         />
       </div>
 
@@ -173,6 +182,129 @@ export class AcceptPickupDialogComponent {
   protected stopLabel(index: number): string {
     return String.fromCharCode(65 + index);
   }
+
+  protected collectionPointMarkers(): RouteMapStop[] {
+    return this.data.collectionPoints
+      .filter((location) => location.latitude !== null && location.longitude !== null)
+      .map((location) => ({
+        label: 'D',
+        title: location.name,
+        subtitle: [
+          location.address,
+          location.city,
+          location.state,
+          location.postalCode,
+        ].filter(Boolean).join(', ') || 'Collection location',
+        latitude: Number(location.latitude),
+        longitude: Number(location.longitude),
+        kind: 'collection',
+      }));
+  }
+}
+
+@Component({
+  selector: 'app-dropoff-location-dialog',
+  imports: [CommonModule, NgIcon, RouteMapComponent],
+  template: `
+    <div class="grid gap-4">
+      @if (selectedLocation(); as selected) {
+      <div class="overflow-hidden rounded-lg border border-border">
+        <app-route-map
+          class="block h-64"
+          [origin]="data.origin"
+          [stops]="routeStops(selected)"
+          [collectionPoints]="collectionPointMarkers(selected)"
+        />
+      </div>
+      }
+
+      <div class="grid max-h-72 gap-2 overflow-y-auto pr-1">
+        @for (location of data.locations; track location.id) {
+        <button
+          type="button"
+          class="grid gap-1 rounded-lg border p-3 text-left transition-colors hover:bg-muted/40"
+          [class.border-primary]="selectedLocationId() === location.id"
+          [class.border-border]="selectedLocationId() !== location.id"
+          (click)="selectedLocationId.set(location.id)"
+        >
+          <span class="flex items-start justify-between gap-3">
+            <span class="min-w-0">
+              <span class="block truncate text-sm font-semibold">{{ location.name }}</span>
+              <span class="block truncate text-xs text-muted-foreground">{{ locationLabel(location) }}</span>
+            </span>
+            <span class="shrink-0 rounded-md bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
+              {{ location.distanceKm | number:'1.1-1' }} km
+            </span>
+          </span>
+        </button>
+        }
+      </div>
+
+      @if (selectedLocation(); as selected) {
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-sm text-muted-foreground">Open the route when you are ready to drop the collected waste.</p>
+        <a
+          [href]="routeUrl(selected)"
+          target="_blank"
+          rel="noreferrer"
+          class="inline-flex h-9 items-center justify-center gap-2 rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+        >
+          <ng-icon name="lucideNavigation" class="size-4!" />
+          Open drop-off route
+        </a>
+      </div>
+      }
+    </div>
+  `,
+  viewProviders: [provideIcons({ lucideNavigation })],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class DropoffLocationDialogComponent {
+  protected readonly data = inject<DropoffDialogData>(Z_MODAL_DATA);
+  protected readonly selectedLocationId = signal(this.data.locations[0]?.id ?? null);
+
+  protected selectedLocation(): DropoffLocationOption | null {
+    return this.data.locations.find((location) => location.id === this.selectedLocationId()) ?? this.data.locations[0] ?? null;
+  }
+
+  protected routeStops(location: DropoffLocationOption): RouteMapStop[] {
+    return [{
+      label: 'D',
+      title: location.name,
+      subtitle: this.locationLabel(location),
+      latitude: location.latitude ?? 0,
+      longitude: location.longitude ?? 0,
+      kind: 'collection',
+    }];
+  }
+
+  protected collectionPointMarkers(selected: DropoffLocationOption): RouteMapStop[] {
+    return this.data.locations
+      .filter((location) => location.id !== selected.id)
+      .map((location) => ({
+        label: 'D',
+        title: location.name,
+        subtitle: this.locationLabel(location),
+        latitude: location.latitude ?? 0,
+        longitude: location.longitude ?? 0,
+        kind: 'collection',
+      }));
+  }
+
+  protected routeUrl(location: DropoffLocationOption): string {
+    const origin = `${this.data.origin.latitude},${this.data.origin.longitude}`;
+    const destination = `${location.latitude},${location.longitude}`;
+    return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&travelmode=driving`;
+  }
+
+  protected locationLabel(location: CollectionLocation): string {
+    return [
+      location.address,
+      location.city,
+      location.state,
+      location.postalCode,
+    ].filter(Boolean).join(', ') || 'Collection location';
+  }
 }
 
 @Component({
@@ -207,6 +339,7 @@ export class PickupDetailPage {
   private readonly customerPickups = inject(PickupRequestService);
   private readonly auth = inject(AuthService);
   private readonly dialogService = inject(ZardDialogService);
+  private readonly router = inject(Router);
 
   protected readonly pickup = signal<PickupDetail | null>(null);
   protected readonly isLoading = signal(true);
@@ -217,6 +350,7 @@ export class PickupDetailPage {
   protected readonly collectorActionError = signal('');
   protected readonly verificationWeights = signal<Record<string, number | null>>({});
   protected readonly collectorLocation = signal<CollectorLocation | null>(null);
+  protected readonly collectionLocations = signal<CollectionLocation[]>([]);
   protected readonly context = this.readContext();
   protected readonly pickupScope = this.readPickupScope();
 
@@ -301,6 +435,15 @@ export class PickupDetailPage {
   protected readonly timelineGridClass = computed(() => this.timelineSteps().length <= 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-5');
   protected readonly currentCollectorId = computed(() => this.auth.currentUser()?.id ?? null);
   protected readonly isCollectorDetail = computed(() => this.context === 'collector');
+  protected readonly isCollectorActionLoading = computed(() =>
+    this.isCollectorDetail() &&
+    (
+      this.isLoading() ||
+      this.isCollectorActionRunning() ||
+      this.isPreparingAcceptRoute() ||
+      !this.auth.hasLoadedSession()
+    ),
+  );
   protected readonly isAssignedToCurrentCollector = computed(() => {
     const pickup = this.pickup();
     const collectorId = this.currentCollectorId();
@@ -324,7 +467,14 @@ export class PickupDetailPage {
   });
 
   constructor() {
-    void this.loadPickup();
+    effect(() => {
+      const id = this.pickupId();
+      if (!id) {
+        return;
+      }
+
+      void this.loadPickup();
+    });
   }
 
   protected shortId(id: string): string {
@@ -449,7 +599,7 @@ export class PickupDetailPage {
   }
 
   protected routeUrl(pickup: PickupDetail): string | null {
-    const origin = this.routeOrigin(pickup);
+    const origin = this.routeOrigin();
     if (!pickup.latitude || !pickup.longitude || !origin) {
       return null;
     }
@@ -459,7 +609,7 @@ export class PickupDetailPage {
   }
 
   protected routeMapOrigin(pickup: PickupDetail): RouteMapPoint | null {
-    return this.routeOrigin(pickup);
+    return pickup.latitude && pickup.longitude ? this.routeOrigin() : null;
   }
 
   protected routeMapStops(pickup: PickupDetail): RouteMapStop[] {
@@ -474,6 +624,28 @@ export class PickupDetailPage {
       latitude: pickup.latitude,
       longitude: pickup.longitude,
     }];
+  }
+
+  protected collectionPointMarkers(): RouteMapStop[] {
+    return this.collectionLocations()
+      .filter((location) => location.latitude !== null && location.longitude !== null)
+      .map((location) => ({
+        label: 'D',
+        title: location.name,
+        subtitle: this.locationLabel(location),
+        latitude: Number(location.latitude),
+        longitude: Number(location.longitude),
+        kind: 'collection',
+      }));
+  }
+
+  protected locationLabel(location: CollectionLocation): string {
+    return [
+      location.address,
+      location.city,
+      location.state,
+      location.postalCode,
+    ].filter(Boolean).join(', ') || 'Collection location';
   }
 
   protected showCategoryId(): boolean {
@@ -541,7 +713,7 @@ export class PickupDetailPage {
   }
 
   protected markArrived(): void {
-    void this.runCollectorAction(() => this.collectorPickups.markArrived(this.pickupId()));
+    void this.runOrderedCollectorAction(() => this.collectorPickups.markArrived(this.pickupId()));
   }
 
   protected verifyPickup(): void {
@@ -560,11 +732,14 @@ export class PickupDetailPage {
       return;
     }
 
-    void this.runCollectorAction(() => this.collectorPickups.verifyPickup(this.pickupId(), items));
+    void this.runOrderedCollectorAction(() => this.collectorPickups.verifyPickup(this.pickupId(), items));
   }
 
   protected completePickup(): void {
-    void this.runCollectorAction(() => this.collectorPickups.completePickup(this.pickupId()));
+    void this.runOrderedCollectorAction(
+      () => this.collectorPickups.completePickup(this.pickupId()),
+      { showNextStopPrompt: true },
+    );
   }
 
   private async loadPickup(): Promise<void> {
@@ -582,6 +757,7 @@ export class PickupDetailPage {
     try {
       const response = await this.fetchPickup(id);
       this.setPickup(response.pickupRequest);
+      await this.loadCollectionLocations();
     } catch {
       this.pickup.set(null);
       this.loadError.set('Unable to load pickup details.');
@@ -601,6 +777,19 @@ export class PickupDetailPage {
 
     const location = await this.requestCollectorLocation();
     return firstValueFrom(this.collectorPickups.getPickup(id, { location }));
+  }
+
+  private async loadCollectionLocations(): Promise<void> {
+    if (this.context !== 'collector') {
+      this.collectionLocations.set([]);
+      return;
+    }
+
+    try {
+      this.collectionLocations.set(await firstValueFrom(this.collectorPickups.listCollectionLocations()));
+    } catch {
+      this.collectionLocations.set([]);
+    }
   }
 
   private async requestCollectorLocation(): Promise<CollectorLocation | null> {
@@ -666,6 +855,7 @@ export class PickupDetailPage {
           pickup,
           origin: location,
           stops,
+          collectionPoints: this.collectionLocations(),
           title: `#${this.shortId(pickup.id)}`,
           category: this.categoryLabel(pickup),
           distance: this.distanceLabel(pickup),
@@ -766,22 +956,202 @@ export class PickupDetailPage {
     return pickup.items.reduce((total, item) => total + this.itemWeight(item), 0);
   }
 
-  private async runCollectorAction(action: () => ReturnType<CollectorPickupService['acceptPickup']>): Promise<void> {
+  private async runOrderedCollectorAction(
+    action: () => ReturnType<CollectorPickupService['acceptPickup']>,
+    options: { showNextStopPrompt?: boolean } = {},
+  ): Promise<void> {
+    if (!await this.ensureCurrentPickupIsNextStop()) {
+      return;
+    }
+
+    await this.runCollectorAction(action, options);
+  }
+
+  private async ensureCurrentPickupIsNextStop(): Promise<boolean> {
+    const currentPickup = this.pickup();
+    if (!currentPickup || !this.isCollectorDetail() || !this.isAssignedToCurrentCollector() || !this.isActivePickupStatus(currentPickup.status)) {
+      return true;
+    }
+
+    const location = this.collectorLocation() ?? await this.requestCollectorLocation();
+    if (!location) {
+      return true;
+    }
+
+    let nextStop: CollectorPickupRequest | null = null;
+    try {
+      const response = await firstValueFrom(this.collectorPickups.listPickups({
+        location,
+        scope: 'my',
+      }));
+      nextStop = response.pickupRequests
+        .filter((pickup) =>
+          this.isActivePickupStatus(pickup.status) &&
+          Boolean(pickup.latitude && pickup.longitude),
+        )
+        .sort((a, b) => this.nextStopSortValue(a) - this.nextStopSortValue(b))[0] ?? null;
+    } catch {
+      return true;
+    }
+
+    if (!nextStop || nextStop.id === currentPickup.id) {
+      return true;
+    }
+
+    this.dialogService.create({
+      zTitle: 'Follow route order',
+      zDescription: `Next stop is #${this.shortId(nextStop.id)} at ${nextStop.addressText}. Complete that stop before working on this one.`,
+      zOkText: 'Go to Next Stop',
+      zCancelText: 'Stay Here',
+      zWidth: 'max-w-md',
+      zOnOk: () => this.router.navigate(['/collector/my-pickups', nextStop.id]),
+    });
+    return false;
+  }
+
+  private async runCollectorAction(
+    action: () => ReturnType<CollectorPickupService['acceptPickup']>,
+    options: { showNextStopPrompt?: boolean } = {},
+  ): Promise<void> {
     if (!this.pickupId()) {
       return;
     }
 
+    const currentPickupId = this.pickupId();
     this.isCollectorActionRunning.set(true);
     this.collectorActionError.set('');
 
     try {
       const response = await firstValueFrom(action());
       this.setPickup(response.pickupRequest);
+      if (options.showNextStopPrompt) {
+        await this.showNextStopPrompt(currentPickupId);
+      }
     } catch {
       this.collectorActionError.set('Unable to update pickup. Please try again.');
     } finally {
       this.isCollectorActionRunning.set(false);
     }
+  }
+
+  private async showNextStopPrompt(completedPickupId: string): Promise<void> {
+    const location = this.collectorLocation() ?? await this.requestCollectorLocation();
+    let nextStop: CollectorPickupRequest | null = null;
+
+    try {
+      const response = await firstValueFrom(this.collectorPickups.listPickups({
+        location,
+        scope: 'my',
+      }));
+      nextStop = response.pickupRequests
+        .filter((pickup) =>
+          pickup.id !== completedPickupId &&
+          this.isActivePickupStatus(pickup.status),
+        )
+        .sort((a, b) => this.nextStopSortValue(a) - this.nextStopSortValue(b))[0] ?? null;
+    } catch {
+      nextStop = null;
+    }
+
+    if (!nextStop) {
+      await this.showDropoffLocationPrompt(location);
+      return;
+    }
+
+    this.dialogService.create({
+      zTitle: 'Pickup completed',
+      zDescription: `Next stop is #${this.shortId(nextStop.id)} at ${nextStop.addressText}.`,
+      zOkText: 'Go to Next Stop',
+      zCancelText: 'Stay Here',
+      zWidth: 'max-w-md',
+      zOnOk: () => this.router.navigate(['/collector/my-pickups', nextStop.id]),
+    });
+  }
+
+  private nextStopSortValue(pickup: CollectorPickupRequest): number {
+    return pickup.distanceKm === null ? Number.POSITIVE_INFINITY : Number(pickup.distanceKm);
+  }
+
+  private async showDropoffLocationPrompt(origin: CollectorLocation | null): Promise<void> {
+    if (!origin) {
+      this.dialogService.create({
+        zTitle: 'Pickup completed',
+        zDescription: 'No active stops are left. Update your location to choose a drop-off route.',
+        zOkText: 'Back to My Pickups',
+        zCancelText: null,
+        zWidth: 'max-w-sm',
+        zOnOk: () => {
+          void this.router.navigate(['/collector/my-pickups']);
+        },
+      });
+      return;
+    }
+
+    let locations: DropoffLocationOption[] = [];
+    try {
+      const response = await firstValueFrom(this.collectorPickups.listCollectionLocations());
+      locations = response
+        .filter((location) => location.latitude !== null && location.longitude !== null)
+        .map((location) => ({
+          ...location,
+          distanceKm: this.calculateDistanceKm(
+            origin,
+            { latitude: Number(location.latitude), longitude: Number(location.longitude) },
+          ),
+        }))
+        .sort((a, b) => a.distanceKm - b.distanceKm);
+    } catch {
+      locations = [];
+    }
+
+    if (locations.length === 0) {
+      this.dialogService.create({
+        zTitle: 'Pickup completed',
+        zDescription: 'No active stops are left, but no mapped collection locations are available yet.',
+        zOkText: 'Back to My Pickups',
+        zCancelText: null,
+        zWidth: 'max-w-sm',
+        zOnOk: () => {
+          void this.router.navigate(['/collector/my-pickups']);
+        },
+      });
+      return;
+    }
+
+    this.dialogService.create<DropoffLocationDialogComponent, DropoffDialogData>({
+      zTitle: 'Choose drop-off location',
+      zDescription: 'All pickup stops are complete. Select where to drop the collected waste.',
+      zContent: DropoffLocationDialogComponent,
+      zData: {
+        origin,
+        locations,
+      },
+      zOkText: 'Back to My Pickups',
+      zCancelText: 'Stay Here',
+      zWidth: 'min(44rem, calc(100vw - 2rem))',
+      zOnOk: () => {
+        void this.router.navigate(['/collector/my-pickups']);
+      },
+    });
+  }
+
+  private calculateDistanceKm(from: CollectorLocation, to: CollectorLocation): number {
+    const earthRadiusKm = 6371;
+    const latitudeDelta = this.toRadians(to.latitude - from.latitude);
+    const longitudeDelta = this.toRadians(to.longitude - from.longitude);
+    const fromLatitudeRadians = this.toRadians(from.latitude);
+    const toLatitudeRadians = this.toRadians(to.latitude);
+    const haversine =
+      Math.sin(latitudeDelta / 2) ** 2 +
+      Math.cos(fromLatitudeRadians) *
+        Math.cos(toLatitudeRadians) *
+        Math.sin(longitudeDelta / 2) ** 2;
+
+    return 2 * earthRadiusKm * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
+  }
+
+  private toRadians(value: number): number {
+    return (value * Math.PI) / 180;
   }
 
   private setPickup(pickup: PickupDetail): void {
@@ -842,7 +1212,7 @@ export class PickupDetailPage {
     return Number(Number(value ?? 0).toFixed(2));
   }
 
-  private routeOrigin(_pickup: PickupDetail): CollectorLocation | null {
+  private routeOrigin(): CollectorLocation | null {
     if (this.context === 'collector') {
       return this.collectorLocation();
     }

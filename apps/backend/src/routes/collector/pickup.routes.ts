@@ -1,6 +1,7 @@
 import { Router, type NextFunction, type Request, type Response } from "express";
 import type {
   ApiErrorResponse,
+  CollectionLocation,
   CollectorPickupRequest,
   GetCollectorPickupRequestResponse,
   ListCollectorPickupRequestsResponse,
@@ -49,6 +50,34 @@ const pickupRequestInclude = {
   images: true,
 } satisfies Prisma.PickupRequestInclude;
 
+function toCollectionLocationResponse(location: {
+  id: string;
+  name: string;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  postalCode: string | null;
+  latitude: { toNumber?(): number } | number | string | null;
+  longitude: { toNumber?(): number } | number | string | null;
+  googlePlaceId: string | null;
+  createdAt: Date;
+  createdBy: string | null;
+}): CollectionLocation {
+  return {
+    id: location.id,
+    name: location.name,
+    address: location.address,
+    city: location.city,
+    state: location.state,
+    postalCode: location.postalCode,
+    latitude: location.latitude === null ? null : Number(location.latitude),
+    longitude: location.longitude === null ? null : Number(location.longitude),
+    googlePlaceId: location.googlePlaceId,
+    createdAt: location.createdAt.toISOString(),
+    createdBy: location.createdBy,
+  };
+}
+
 async function requireCollector(req: Request, res: Response, next: NextFunction) {
   const user = await getCurrentUserFromRequest(req);
   if (!user || user.role !== "COLLECTOR") {
@@ -93,6 +122,23 @@ pickupRouter.get("/", requireCollector, async (req: Request, res: Response) => {
     res.json(payload);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unable to fetch pickup requests.";
+    res.status(500).json({ error: message } as ApiErrorResponse);
+  }
+});
+
+pickupRouter.get("/collection-locations", requireCollector, async (_req: Request, res: Response) => {
+  try {
+    const locations = await prisma.location.findMany({
+      where: {
+        latitude: { not: null },
+        longitude: { not: null },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    res.json(locations.map(toCollectionLocationResponse));
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unable to fetch collection locations.";
     res.status(500).json({ error: message } as ApiErrorResponse);
   }
 });

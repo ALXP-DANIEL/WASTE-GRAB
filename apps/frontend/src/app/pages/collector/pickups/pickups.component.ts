@@ -17,7 +17,7 @@ import {
   lucideTruck,
   lucideXCircle,
 } from '@ng-icons/lucide';
-import { ImageType, PickupStatus, type CollectorPickupRequest } from '@wastegrab/shared';
+import { ImageType, PickupStatus, type CollectionLocation, type CollectorPickupRequest } from '@wastegrab/shared';
 import { firstValueFrom } from 'rxjs';
 
 import { CollectorPickupService, type CollectorLocation, type CollectorPickupScope } from '@/services/collector-pickup.service';
@@ -81,6 +81,7 @@ export class CollectorPickupsPage {
   protected readonly collectorLocation = signal<CollectorLocation | null>(null);
   protected readonly locationStatus = signal<LocationStatus>('idle');
   protected readonly collectorLocationAccuracy = signal<number | null>(null);
+  protected readonly collectionLocations = signal<CollectionLocation[]>([]);
   protected readonly PickupStatus = PickupStatus;
 
   protected readonly filters = computed<Array<{ value: PickupFilter; label: string }>>(() => {
@@ -88,7 +89,6 @@ export class CollectorPickupsPage {
       return [
         { value: 'all', label: 'All' },
         { value: 'assigned', label: 'Active' },
-        { value: 'completed', label: 'Completed' },
         { value: 'cancelled', label: 'Cancelled' },
       ];
     }
@@ -134,16 +134,22 @@ export class CollectorPickupsPage {
 
     return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}${waypointParam}&travelmode=driving`;
   });
+  protected readonly isRouteMapLoading = computed(() =>
+    this.pickupScope === 'my' &&
+    (
+      this.isLoading() ||
+      this.locationStatus() === 'requesting'
+    ),
+  );
 
   protected readonly filteredPickups = computed(() => {
     const filter = this.activeFilter();
     const pickups = this.pickupScope === 'available'
       ? this.routeSortedAvailablePickups(this.pickups())
-      : this.pickups();
+      : this.pickups().filter((pickup) => pickup.status !== PickupStatus.COMPLETED);
 
     if (filter === 'available') return pickups.filter((pickup) => pickup.collectorId === null && this.isActiveStatus(pickup.status));
     if (filter === 'assigned') return pickups.filter((pickup) => pickup.collectorId !== null && this.isActiveStatus(pickup.status));
-    if (filter === 'completed') return pickups.filter((pickup) => pickup.status === PickupStatus.COMPLETED);
     if (filter === 'cancelled') return pickups.filter((pickup) => pickup.status === PickupStatus.CANCELLED);
     return pickups;
   });
@@ -287,6 +293,19 @@ export class CollectorPickupsPage {
     }));
   }
 
+  protected collectionPointMarkers(): RouteMapStop[] {
+    return this.collectionLocations()
+      .filter((location) => location.latitude !== null && location.longitude !== null)
+      .map((location) => ({
+        label: 'D',
+        title: location.name,
+        subtitle: this.locationLabel(location),
+        latitude: Number(location.latitude),
+        longitude: Number(location.longitude),
+        kind: 'collection',
+      }));
+  }
+
   private async loadPickups(requestLocation = true): Promise<void> {
     this.isLoading.set(true);
     this.loadError.set('');
@@ -300,12 +319,21 @@ export class CollectorPickupsPage {
       }));
       this.pickups.set(response.pickupRequests);
       await this.loadRouteAnchors(location, response.pickupRequests);
+      await this.loadCollectionLocations();
     } catch {
       this.loadError.set('Unable to load pickup requests.');
       this.pickups.set([]);
       this.routeAnchorPickups.set([]);
     } finally {
       this.isLoading.set(false);
+    }
+  }
+
+  private async loadCollectionLocations(): Promise<void> {
+    try {
+      this.collectionLocations.set(await firstValueFrom(this.pickupService.listCollectionLocations()));
+    } catch {
+      this.collectionLocations.set([]);
     }
   }
 
@@ -465,6 +493,15 @@ export class CollectorPickupsPage {
         Math.sin(longitudeDelta / 2) ** 2;
 
     return 2 * earthRadiusKm * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
+  }
+
+  private locationLabel(location: CollectionLocation): string {
+    return [
+      location.address,
+      location.city,
+      location.state,
+      location.postalCode,
+    ].filter(Boolean).join(', ') || 'Collection location';
   }
 
   private toRadians(value: number): number {

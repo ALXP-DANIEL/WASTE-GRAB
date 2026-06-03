@@ -65,6 +65,13 @@ const seedIds = {
   pickupEarnedLedger: "66666666-6666-4666-8666-666666666666",
   voucherRedeemedLedger: "77777777-7777-4777-8777-777777777777",
   adminAdjustmentLedger: "88888888-8888-4888-8888-888888888888",
+  klangValleyCollection: "aaaa1111-1111-4aaa-8aaa-111111111111",
+  klangCollection: "bbbb2222-2222-4bbb-8bbb-222222222222",
+  penangCollection: "cccc3333-3333-4ccc-8ccc-333333333333",
+  johorCollection: "dddd4444-4444-4ddd-8ddd-444444444444",
+  eastCoastCollection: "eeee5555-5555-4eee-8eee-555555555555",
+  sarawakCollection: "ffff6666-6666-4fff-8fff-666666666666",
+  sabahCollection: "99998888-7777-4999-8999-666655554444",
 };
 
 const seedPickupRequestIds = [
@@ -162,6 +169,7 @@ const seedWasteCategories = [
 export async function seedLocalData() {
   await seedLocalUsers();
   await seedLocalCustomerAddress();
+  await seedLocalCollectionLocations();
   await seedLocalWasteCategories();
   await seedLocalVouchersAndRewards();
 }
@@ -249,6 +257,113 @@ export async function seedLocalCustomerAddress() {
   }
 
   console.log("Seeded customer address for customer@test.com.");
+}
+
+export async function seedLocalCollectionLocations() {
+  const { prisma } = await import("../src/prisma.js");
+
+  const admin = await prisma.user.findUnique({
+    where: {
+      email: "admin@test.com",
+    },
+  });
+
+  const locations = [
+    {
+      id: seedIds.klangValleyCollection,
+      name: "WasteGrab Klang Valley Hub",
+      address: "Persiaran Kewajipan, USJ 1",
+      city: "Subang Jaya",
+      state: "Selangor",
+      postalCode: "47600",
+      latitude: "3.0611000",
+      longitude: "101.5922000",
+    },
+    {
+      id: seedIds.klangCollection,
+      name: "WasteGrab Klang Drop-Off",
+      address: "Jalan Batu Nilam 3, Bandar Bukit Tinggi",
+      city: "Klang",
+      state: "Selangor",
+      postalCode: "41200",
+      latitude: "3.0079000",
+      longitude: "101.4454000",
+    },
+    {
+      id: seedIds.penangCollection,
+      name: "WasteGrab Penang Recovery Point",
+      address: "Lebuh Pantai",
+      city: "George Town",
+      state: "Pulau Pinang",
+      postalCode: "10300",
+      latitude: "5.4177000",
+      longitude: "100.3406000",
+    },
+    {
+      id: seedIds.johorCollection,
+      name: "WasteGrab Johor Collection Hub",
+      address: "Jalan Austin Heights 8/7",
+      city: "Johor Bahru",
+      state: "Johor",
+      postalCode: "81100",
+      latitude: "1.5649000",
+      longitude: "103.7775000",
+    },
+    {
+      id: seedIds.eastCoastCollection,
+      name: "WasteGrab East Coast Depot",
+      address: "Jalan Teluk Cempedak",
+      city: "Kuantan",
+      state: "Pahang",
+      postalCode: "25050",
+      latitude: "3.8170000",
+      longitude: "103.3419000",
+    },
+    {
+      id: seedIds.sarawakCollection,
+      name: "WasteGrab Kuching Collection Point",
+      address: "Jalan Padungan",
+      city: "Kuching",
+      state: "Sarawak",
+      postalCode: "93100",
+      latitude: "1.5533000",
+      longitude: "110.3592000",
+    },
+    {
+      id: seedIds.sabahCollection,
+      name: "WasteGrab Kota Kinabalu Drop-Off",
+      address: "Jalan Coastal",
+      city: "Kota Kinabalu",
+      state: "Sabah",
+      postalCode: "88000",
+      latitude: "5.9703000",
+      longitude: "116.0662000",
+    },
+  ];
+
+  for (const location of locations) {
+    await prisma.location.upsert({
+      where: {
+        id: location.id,
+      },
+      update: {
+        name: location.name,
+        address: location.address,
+        city: location.city,
+        state: location.state,
+        postalCode: location.postalCode,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        createdBy: admin?.id ?? null,
+      },
+      create: {
+        ...location,
+        createdBy: admin?.id ?? null,
+      },
+    });
+  }
+
+  console.log("Seeded collection locations.");
 }
 
 export async function seedLocalWasteCategories() {
