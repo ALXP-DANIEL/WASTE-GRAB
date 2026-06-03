@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideMapPin, lucideNavigation, lucidePencil, lucidePlus, lucideTrash2 } from '@ng-icons/lucide';
+import { lucideExternalLink, lucideImage, lucideMapPin, lucidePencil, lucidePlus, lucideTrash2 } from '@ng-icons/lucide';
 
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { ZardTableImports } from '@/ui/zard/table';
@@ -22,6 +23,7 @@ type LocationModalMode = 'add' | 'edit' | null;
   templateUrl: './collection-location.html',
   imports: [
     ReactiveFormsModule,
+    RouterLink,
     AppHeaderComponent,
     ...ZardTableImports,
     ZardButtonComponent,
@@ -38,7 +40,8 @@ type LocationModalMode = 'add' | 'edit' | null;
   viewProviders: [
     provideIcons({
       lucideMapPin,
-      lucideNavigation,
+      lucideExternalLink,
+      lucideImage,
       lucidePencil,
       lucidePlus,
       lucideTrash2,
@@ -46,7 +49,7 @@ type LocationModalMode = 'add' | 'edit' | null;
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminCollectionLocationPage implements OnInit {
+export class AdminCollectionLocationPage implements OnInit, OnDestroy {
   private readonly locationService = inject(LocationService);
   private readonly dialogService = inject(ZardDialogService);
 
@@ -55,12 +58,14 @@ export class AdminCollectionLocationPage implements OnInit {
   protected readonly loadError = signal('');
   protected readonly modalMode = signal<LocationModalMode>(null);
   protected readonly editingLocationId = signal<string | null>(null);
-  protected readonly mappedCount = computed(() => this.locations().filter((location) => (
-    location.latitude !== null && location.longitude !== null
-  )).length);
+  protected readonly imageCount = computed(() => this.locations().filter((location) => location.imageUrl).length);
   protected readonly cityCount = computed(() => new Set(this.locations()
     .map((location) => location.city)
     .filter(Boolean)).size);
+  protected readonly placeImagePreview = signal<string | null>(null);
+  private placeImageFile: File | null = null;
+  private placeImageObjectUrl: string | null = null;
+  private placeImageCleared = false;
 
   protected readonly createForm = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
@@ -76,6 +81,10 @@ export class AdminCollectionLocationPage implements OnInit {
   ngOnInit(): void {
     this.disableGoogleLocationFields();
     this.loadLocations();
+  }
+
+  ngOnDestroy(): void {
+    this.clearPlaceImageObjectUrl();
   }
 
   protected refresh(): void {
@@ -98,6 +107,7 @@ export class AdminCollectionLocationPage implements OnInit {
   protected openAdd(): void {
     this.editingLocationId.set(null);
     this.createForm.reset({ name: '', address: '', city: '', state: '', postalCode: '', googlePlaceId: '', latitude: null, longitude: null });
+    this.resetPlaceImage(null);
     this.modalMode.set('add');
     this.disableGoogleLocationFields();
   }
@@ -114,6 +124,7 @@ export class AdminCollectionLocationPage implements OnInit {
       latitude: location.latitude ?? null,
       longitude: location.longitude ?? null,
     });
+    this.resetPlaceImage(location.imageUrl);
     this.modalMode.set('edit');
     this.disableGoogleLocationFields();
   }
@@ -121,6 +132,7 @@ export class AdminCollectionLocationPage implements OnInit {
   protected closeModal(): void {
     this.modalMode.set(null);
     this.editingLocationId.set(null);
+    this.resetPlaceImage(null);
     this.disableGoogleLocationFields();
   }
 
@@ -150,17 +162,7 @@ export class AdminCollectionLocationPage implements OnInit {
       return;
     }
 
-    const v = this.createForm.getRawValue();
-    this.locationService.createLocation({
-      name: v.name,
-      address: v.address || undefined,
-      city: v.city || undefined,
-      state: v.state || undefined,
-      postalCode: v.postalCode || undefined,
-      googlePlaceId: v.googlePlaceId || undefined,
-      latitude: v.latitude,
-      longitude: v.longitude,
-    }).subscribe({
+    this.locationService.createLocation(this.buildLocationPayload()).subscribe({
       next: (created) => {
         this.locations.update((list) => [created, ...list]);
         this.closeModal();
@@ -177,17 +179,7 @@ export class AdminCollectionLocationPage implements OnInit {
     const id = this.editingLocationId();
     if (!id) return;
 
-    const v = this.createForm.getRawValue();
-    this.locationService.updateLocation(id, {
-      name: v.name,
-      address: v.address || undefined,
-      city: v.city || undefined,
-      state: v.state || undefined,
-      postalCode: v.postalCode || undefined,
-      googlePlaceId: v.googlePlaceId || undefined,
-      latitude: v.latitude,
-      longitude: v.longitude,
-    }).subscribe({
+    this.locationService.updateLocation(id, this.buildLocationPayload()).subscribe({
       next: (updated) => {
         this.locations.update((list) => list.map(l => (l.id === updated.id ? updated : l)));
         this.closeModal();
@@ -209,8 +201,88 @@ export class AdminCollectionLocationPage implements OnInit {
     });
   }
 
-  protected shortCoordinate(value: number | null): string {
-    return value === null ? '-' : value.toFixed(4);
+  protected locationSlug(location: LocationRecord): string {
+    const slug = location.name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'location';
+
+    return `${slug}--${location.id}`;
+  }
+
+  protected onPlaceImageSelected(ev: Event): void {
+    const input = ev.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    input.value = '';
+
+    if (!file) {
+      return;
+    }
+
+    this.clearPlaceImageObjectUrl();
+    this.placeImageFile = file;
+    this.placeImageCleared = false;
+    this.placeImageObjectUrl = URL.createObjectURL(file);
+    this.placeImagePreview.set(this.placeImageObjectUrl);
+  }
+
+  protected clearPlaceImage(): void {
+    this.resetPlaceImage(null);
+  }
+
+  private buildLocationPayload(): FormData | {
+    name: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    postalCode?: string;
+    googlePlaceId?: string;
+    latitude: number | null;
+    longitude: number | null;
+    imageUrl?: string | null;
+  } {
+    const v = this.createForm.getRawValue();
+
+    if (!this.placeImageFile) {
+      return {
+        name: v.name,
+        address: v.address || undefined,
+        city: v.city || undefined,
+        state: v.state || undefined,
+        postalCode: v.postalCode || undefined,
+        googlePlaceId: v.googlePlaceId || undefined,
+        latitude: v.latitude,
+        longitude: v.longitude,
+        ...(this.placeImageCleared ? { imageUrl: null } : {}),
+      };
+    }
+
+    const payload = new FormData();
+    payload.append('name', v.name);
+    if (v.address) payload.append('address', v.address);
+    if (v.city) payload.append('city', v.city);
+    if (v.state) payload.append('state', v.state);
+    if (v.postalCode) payload.append('postalCode', v.postalCode);
+    if (v.googlePlaceId) payload.append('googlePlaceId', v.googlePlaceId);
+    if (v.latitude !== null) payload.append('latitude', String(v.latitude));
+    if (v.longitude !== null) payload.append('longitude', String(v.longitude));
+    payload.append('image', this.placeImageFile);
+    return payload;
+  }
+
+  private resetPlaceImage(previewUrl: string | null): void {
+    this.clearPlaceImageObjectUrl();
+    this.placeImageFile = null;
+    this.placeImageCleared = previewUrl === null;
+    this.placeImagePreview.set(previewUrl);
+  }
+
+  private clearPlaceImageObjectUrl(): void {
+    if (this.placeImageObjectUrl) {
+      URL.revokeObjectURL(this.placeImageObjectUrl);
+      this.placeImageObjectUrl = null;
+    }
   }
 
 }

@@ -32,6 +32,8 @@ const pages = {
     import('./pages/collector/earnings/earnings.component').then((m) => m.CollectorEarningsPage),
   collectorPickups: () =>
     import('./pages/collector/pickups/pickups.component').then((m) => m.CollectorPickupsPage),
+  collectorLocationDetail: () =>
+    import('./pages/collector/location-detail/location-detail.component').then((m) => m.CollectorLocationDetailPage),
   pickupDetail: () => import('./pages/pickup-detail/pickup-detail.component').then((m) => m.PickupDetailPage),
 } satisfies Record<string, LazyPage>;
 
@@ -142,6 +144,14 @@ const ROUTE_CONFIG = [
         loadComponent: pages.adminCollectors,
       },
       {
+        path: `${ROUTE_PATHS.admin.collectors}/:locationSlug`,
+        title: 'Collection Location',
+        loadComponent: pages.collectorLocationDetail,
+        data: {
+          locationContext: 'admin',
+        },
+      },
+      {
         path: ROUTE_PATHS.admin.pickups,
         title: 'Manage Pickups',
         loadComponent: pages.adminPickups,
@@ -216,6 +226,11 @@ const ROUTE_CONFIG = [
         data: {
           pickupScope: 'my',
         },
+      },
+      {
+        path: `${ROUTE_PATHS.collector.locations}/${ROUTE_PATHS.collector.locationDetail}`,
+        title: 'Collection Location',
+        loadComponent: pages.collectorLocationDetail,
       },
       {
         path: `${ROUTE_PATHS.collector.myPickups}/${ROUTE_PATHS.collector.pickupDetail}`,

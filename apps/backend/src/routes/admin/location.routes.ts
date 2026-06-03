@@ -1,13 +1,32 @@
+import { randomUUID } from "node:crypto";
 import { Router, type Request, type Response, type NextFunction } from "express";
+import multer from "multer";
+import sharp from "sharp";
 import type { ApiErrorResponse, CollectionLocation } from "@wastegrab/shared";
 import { getBody } from "../../utils/request.js";
 import { parseCreateCollectionLocationInput, parseUpdateCollectionLocationInput } from "../../utils/location-payload.js";
 import { getCurrentUserFromRequest } from "../../services/auth.service.js";
 import { prisma } from "../../prisma.js";
+import { uploadPublicImage } from "../../services/supabase-storage.service.js";
 
 const locationRouter = Router();
+const locationImageUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 3 * 1024 * 1024,
+    files: 1,
+  },
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype.startsWith("image/") && file.mimetype !== "image/svg+xml") {
+      cb(null, true);
+      return;
+    }
 
-function toLocationResponse(location: { id: string; name: string; address: string | null; city: string | null; state: string | null; postalCode: string | null; latitude: { toNumber?(): number } | number | string | null; longitude: { toNumber?(): number } | number | string | null; googlePlaceId: string | null; createdAt: Date; createdBy: string | null }): CollectionLocation {
+    cb(new Error("Only raster image uploads are supported."));
+  },
+});
+
+function toLocationResponse(location: { id: string; name: string; address: string | null; city: string | null; state: string | null; postalCode: string | null; latitude: { toNumber?(): number } | number | string | null; longitude: { toNumber?(): number } | number | string | null; googlePlaceId: string | null; imageUrl: string | null; createdAt: Date; createdBy: string | null }): CollectionLocation {
   return {
     id: location.id,
     name: location.name,
@@ -18,9 +37,25 @@ function toLocationResponse(location: { id: string; name: string; address: strin
     googlePlaceId: location.googlePlaceId,
     latitude: location.latitude === null ? null : Number(location.latitude),
     longitude: location.longitude === null ? null : Number(location.longitude),
+    imageUrl: location.imageUrl,
     createdAt: location.createdAt.toISOString(),
     createdBy: location.createdBy,
   };
+}
+
+async function uploadLocationImage(locationId: string, file: Express.Multer.File): Promise<string> {
+  const image = await sharp(file.buffer)
+    .rotate()
+    .resize({
+      width: 1600,
+      height: 1000,
+      fit: "cover",
+      withoutEnlargement: true,
+    })
+    .jpeg({ quality: 88 })
+    .toBuffer();
+
+  return uploadPublicImage(`collection-locations/${locationId}/${randomUUID()}.jpg`, image);
 }
 
 // Middleware to check if user is admin
@@ -65,7 +100,7 @@ locationRouter.get("/:id", requireAdmin, async (req: Request, res: Response) => 
 });
 
 // POST /api/admin/locations - create a location
-locationRouter.post("/", requireAdmin, async (req: Request, res: Response) => {
+locationRouter.post("/", requireAdmin, locationImageUpload.single("image"), async (req: Request, res: Response) => {
   const input = parseCreateCollectionLocationInput(getBody(req.body));
 
   if (!input.name) {
@@ -75,9 +110,12 @@ locationRouter.post("/", requireAdmin, async (req: Request, res: Response) => {
 
   try {
     const currentUser = await getCurrentUserFromRequest(req);
+    const locationId = randomUUID();
+    const imageUrl = req.file ? await uploadLocationImage(locationId, req.file) : input.imageUrl ?? null;
 
     const location = await prisma.location.create({
       data: {
+        id: locationId,
         name: input.name,
         address: input.address ?? null,
         city: input.city ?? null,
@@ -86,6 +124,7 @@ locationRouter.post("/", requireAdmin, async (req: Request, res: Response) => {
         latitude: input.latitude ?? undefined,
         longitude: input.longitude ?? undefined,
         googlePlaceId: input.googlePlaceId ?? null,
+        imageUrl,
         createdBy: currentUser?.id ?? null,
       },
     });
@@ -98,7 +137,7 @@ locationRouter.post("/", requireAdmin, async (req: Request, res: Response) => {
 });
 
 // PATCH /api/admin/locations/:id - update location
-locationRouter.patch("/:id", requireAdmin, async (req: Request, res: Response) => {
+locationRouter.patch("/:id", requireAdmin, locationImageUpload.single("image"), async (req: Request, res: Response) => {
   const updateData = parseUpdateCollectionLocationInput(getBody(req.body));
 
   try {
@@ -106,6 +145,10 @@ locationRouter.patch("/:id", requireAdmin, async (req: Request, res: Response) =
     if (!existing) {
       res.status(404).json({ error: 'Location not found.' } as ApiErrorResponse);
       return;
+    }
+
+    if (req.file) {
+      updateData.imageUrl = await uploadLocationImage(existing.id, req.file);
     }
 
     const updated = await prisma.location.update({

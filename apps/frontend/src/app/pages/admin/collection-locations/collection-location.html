@@ -28,12 +28,12 @@
       <span
         class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
       >
-        <ng-icon name="lucideNavigation" class="size-5!" />
+        <ng-icon name="lucideImage" class="size-5!" />
       </span>
       <span>
-        <span class="block font-semibold">Mapped</span>
+        <span class="block font-semibold">Photos</span>
         <span class="block text-sm text-muted-foreground"
-          >{{ mappedCount() }} with coordinates</span
+          >{{ imageCount() }} with place images</span
         >
       </span>
     </article>
@@ -72,11 +72,20 @@
       <div class="grid gap-3 lg:hidden">
         @for (loc of locations(); track loc.id) {
         <article class="rounded-lg border border-border p-3">
-          <div class="min-w-0">
-            <p class="truncate font-semibold">{{ loc.name }}</p>
-            <p class="mt-1 text-sm text-muted-foreground">
-              {{ loc.address || 'No address provided' }}
-            </p>
+          <div class="flex gap-3">
+            <div class="grid size-16 shrink-0 place-items-center overflow-hidden rounded-lg border border-border bg-muted text-muted-foreground">
+              @if (loc.imageUrl) {
+              <img [src]="loc.imageUrl" [alt]="loc.name" class="size-full object-cover" />
+              } @else {
+              <ng-icon name="lucideImage" class="size-5!" />
+              }
+            </div>
+            <div class="min-w-0">
+              <p class="truncate font-semibold">{{ loc.name }}</p>
+              <p class="mt-1 text-sm text-muted-foreground">
+                {{ loc.address || 'No address provided' }}
+              </p>
+            </div>
           </div>
 
           <dl class="mt-3 grid grid-cols-2 gap-3 text-sm">
@@ -94,7 +103,16 @@
             </div>
           </dl>
 
-          <div class="mt-4 grid grid-cols-2 gap-2">
+          <div class="mt-4 grid grid-cols-3 gap-2">
+            <a
+              z-button
+              zType="outline"
+              zSize="sm"
+              [routerLink]="['/admin', 'locations', locationSlug(loc)]"
+            >
+              <ng-icon name="lucideExternalLink" class="size-4!" />
+              View
+            </a>
             <button
               z-button
               zType="outline"
@@ -146,8 +164,7 @@
             <tr z-table-row>
               <th z-table-head>Location</th>
               <th z-table-head>Area</th>
-              <th z-table-head>Coordinates</th>
-              <th z-table-head class="w-44 !text-right">Actions</th>
+              <th z-table-head class="w-64 !text-right">Actions</th>
             </tr>
           </thead>
 
@@ -168,17 +185,7 @@
                 </p>
               </td>
 
-              <td z-table-cell>
-                <span
-                  class="inline-flex items-center gap-1 font-semibold text-primary"
-                >
-                  <ng-icon name="lucideNavigation" class="size-4!" />
-                  {{ shortCoordinate(loc.latitude) }}, {{
-                  shortCoordinate(loc.longitude) }}
-                </span>
-              </td>
-
-              <td z-table-cell class="w-44 !text-right">
+              <td z-table-cell class="w-64 !text-right">
                 <div class="flex justify-end gap-2">
                   <button
                     z-button
@@ -190,6 +197,15 @@
                     <ng-icon name="lucidePencil" class="size-4!" />
                     Edit
                   </button>
+                  <a
+                    z-button
+                    zType="outline"
+                    zSize="sm"
+                    [routerLink]="['/admin', 'locations', locationSlug(loc)]"
+                  >
+                    <ng-icon name="lucideExternalLink" class="size-4!" />
+                    View
+                  </a>
                   <button
                     z-button
                     zType="destructive"
@@ -205,7 +221,7 @@
             </tr>
             } @empty {
             <tr z-table-row>
-              <td z-table-cell colspan="4" class="py-10 text-center">
+              <td z-table-cell colspan="3" class="py-10 text-center">
                 <p class="font-semibold">No locations found.</p>
                 <p class="mt-1 text-sm text-muted-foreground">
                   Create a collection location to start receiving waste.
@@ -261,6 +277,42 @@
             placeholder="Central Market"
             class="w-full"
           />
+        </z-form-control>
+      </z-form-field>
+
+      <z-form-field class="sm:col-span-2">
+        <z-form-label>Place Image</z-form-label>
+        <z-form-control>
+          <div class="grid gap-3 rounded-lg border border-border bg-background p-3 sm:grid-cols-[7rem_minmax(0,1fr)]">
+            <div class="grid aspect-[4/3] w-full place-items-center overflow-hidden rounded-lg bg-muted text-muted-foreground">
+              @if (placeImagePreview()) {
+              <img [src]="placeImagePreview()!" alt="Place preview" class="size-full object-cover" />
+              } @else {
+              <ng-icon name="lucideImage" class="size-6!" />
+              }
+            </div>
+            <div class="flex min-w-0 flex-col justify-center gap-2">
+              <input
+                #placeImageInput
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/heic,image/heif"
+                class="hidden"
+                (change)="onPlaceImageSelected($event)"
+              />
+              <div class="flex flex-wrap gap-2">
+                <button z-button zType="outline" type="button" class="gap-2" (click)="placeImageInput.click()">
+                  <ng-icon name="lucideImage" class="size-4!" />
+                  Upload Image
+                </button>
+                @if (placeImagePreview()) {
+                <button z-button zType="outline" type="button" (click)="clearPlaceImage()">
+                  Clear
+                </button>
+                }
+              </div>
+              <p class="text-xs text-muted-foreground">JPG, PNG, WEBP, HEIC, or HEIF up to 3 MB.</p>
+            </div>
+          </div>
         </z-form-control>
       </z-form-field>
 

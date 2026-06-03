@@ -28,6 +28,8 @@ export const ROUTE_PATHS = {
     pickups: 'pickups',
     myPickups: 'my-pickups',
     pickupDetail: ':pickupId',
+    locations: 'locations',
+    locationDetail: ':locationSlug',
   },
 } as const;
 

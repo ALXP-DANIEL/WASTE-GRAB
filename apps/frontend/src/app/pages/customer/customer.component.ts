@@ -7,10 +7,14 @@ import { firstValueFrom } from 'rxjs';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import {
   lucideAlertTriangle,
+  lucideArrowRight,
+  lucideCalendarCheck,
   lucideChevronRight,
+  lucideCheckCircle2,
   lucideClock3,
   lucideGift,
   lucideImage,
+  lucideMapPin,
   lucidePackage,
   lucidePlus,
   lucideRecycle,
@@ -40,6 +44,13 @@ type DashboardStat = {
   accentClass: string;
 };
 
+type QuickAction = {
+  label: string;
+  description: string;
+  route: string[];
+  icon: string;
+};
+
 @Component({
   selector: 'app-customer-page',
   templateUrl: './customer.html',
@@ -48,10 +59,14 @@ type DashboardStat = {
   viewProviders: [
     provideIcons({
       lucideAlertTriangle,
+      lucideArrowRight,
+      lucideCalendarCheck,
       lucideChevronRight,
+      lucideCheckCircle2,
       lucideClock3,
       lucideGift,
       lucideImage,
+      lucideMapPin,
       lucidePackage,
       lucidePlus,
       lucideRecycle,
@@ -79,10 +94,33 @@ export class CustomerPage {
   protected readonly activeRequest = computed(
     () => this.requests().find((request) => this.isActiveStatus(request.status)) ?? null,
   );
+  protected readonly activeRequests = computed(() => this.requests().filter((request) => this.isActiveStatus(request.status)));
+  protected readonly completedRequests = computed(() => this.requests().filter((request) => request.status === PickupStatus.COMPLETED));
+  protected readonly recentRequests = computed(() => this.requests().slice(0, 4));
   protected readonly activeVouchers = computed(() => (
     this.voucherRedemptions().filter((redemption) => this.isActiveVoucher(redemption))
   ));
   protected readonly latestActiveVoucher = computed(() => this.activeVouchers()[0] ?? null);
+  protected readonly quickActions = computed<QuickAction[]>(() => [
+    {
+      label: 'Book pickup',
+      description: 'Submit sorted recyclables for collection.',
+      route: this.newPickupPath,
+      icon: 'lucidePlus',
+    },
+    {
+      label: 'Track requests',
+      description: `${this.activeRequests().length} active request${this.activeRequests().length === 1 ? '' : 's'}.`,
+      route: this.pickupsPath,
+      icon: 'lucideTruck',
+    },
+    {
+      label: 'Use rewards',
+      description: `${this.rewardSummary()?.pointsBalance ?? 0} points ready to spend.`,
+      route: this.vouchersPath,
+      icon: 'lucideTicket',
+    },
+  ]);
 
   protected readonly dashboardStats = computed<DashboardStat[]>(() => [
     {
@@ -92,22 +130,22 @@ export class CustomerPage {
       accentClass: 'bg-primary/10 text-primary',
     },
     {
-      label: 'Active Request',
-      value: this.activeRequest() ? '1' : '0',
+      label: 'Active Requests',
+      value: String(this.activeRequests().length),
       icon: 'lucideTruck',
-      accentClass: 'bg-primary/10 text-primary',
+      accentClass: 'bg-sky-500/10 text-sky-700 dark:text-sky-300',
     },
     {
       label: 'Completed Weight',
       value: `${Number(this.rewardSummary()?.completedWeightKg ?? 0).toFixed(1)} kg`,
       icon: 'lucideScale',
-      accentClass: 'bg-primary/10 text-primary',
+      accentClass: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
     },
     {
       label: 'Points Balance',
       value: String(this.rewardSummary()?.pointsBalance ?? 0),
       icon: 'lucideGift',
-      accentClass: 'bg-primary/10 text-primary',
+      accentClass: 'bg-amber-500/10 text-amber-700 dark:text-amber-300',
     },
     {
       label: 'Active Vouchers',
@@ -149,6 +187,32 @@ export class CustomerPage {
 
   protected voucherExpiryLabel(redemption: CustomerVoucherRedemption): string {
     return redemption.voucher.expiresAt ? `Expires ${new Date(redemption.voucher.expiresAt).toLocaleDateString()}` : 'No expiry';
+  }
+
+  protected statusLabel(status: PickupStatus): string {
+    return status.toLowerCase().replace(/_/g, ' ');
+  }
+
+  protected statusClass(status: PickupStatus): string {
+    switch (status) {
+      case PickupStatus.PENDING:
+        return 'bg-amber-500/10 text-amber-700 dark:text-amber-300';
+      case PickupStatus.ACCEPTED:
+      case PickupStatus.ARRIVED:
+      case PickupStatus.VERIFIED:
+        return 'bg-sky-500/10 text-sky-700 dark:text-sky-300';
+      case PickupStatus.COMPLETED:
+        return 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300';
+      default:
+        return 'bg-muted text-muted-foreground';
+    }
+  }
+
+  protected dateLabel(value: string): string {
+    return new Date(value).toLocaleDateString(undefined, {
+      month: 'short',
+      day: 'numeric',
+    });
   }
 
   private async loadPickupRequests(): Promise<void> {

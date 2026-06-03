@@ -40,13 +40,16 @@ export function readNullableTrimmedString(payload: Payload, key: string): string
 
 export function readFiniteNumber(payload: Payload, key: string): number | undefined {
   const value = payload[key];
-  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value !== "string" || !value.trim()) return undefined;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
 }
 
 export function readNullableFiniteNumber(payload: Payload, key: string): number | null | undefined {
   const value = payload[key];
-  if (value === null) return null;
-  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+  if (value === null || value === "") return null;
+  return readFiniteNumber(payload, key);
 }
 
 export function parseGooglePlaceCreateFields(payload: Payload, includeFormattedAddress = true): GooglePlaceCreateFields {
@@ -121,6 +124,7 @@ export function parseCreateCollectionLocationInput(payload: Payload): CreateColl
     city: readOptionalTrimmedString(payload, "city"),
     state: readOptionalTrimmedString(payload, "state"),
     postalCode: readOptionalTrimmedString(payload, "postalCode"),
+    imageUrl: readOptionalTrimmedString(payload, "imageUrl") ?? null,
     ...parseGooglePlaceCreateFields(payload, false),
   };
 }
@@ -139,6 +143,9 @@ export function parseUpdateCollectionLocationInput(payload: Payload): UpdateColl
   if (placeFields.googlePlaceId !== undefined) updates.googlePlaceId = placeFields.googlePlaceId;
   if (placeFields.latitude !== undefined) updates.latitude = placeFields.latitude;
   if (placeFields.longitude !== undefined) updates.longitude = placeFields.longitude;
+  if (typeof payload["imageUrl"] === "string" || payload["imageUrl"] === null) {
+    updates.imageUrl = readNullableTrimmedString(payload, "imageUrl");
+  }
 
   return updates;
 }

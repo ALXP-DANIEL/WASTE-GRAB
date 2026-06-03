@@ -8,6 +8,7 @@ export type CollectionLocation = {
   latitude: number | null;
   longitude: number | null;
   googlePlaceId: string | null;
+  imageUrl: string | null;
   createdAt: string;
   createdBy: string | null;
 };
@@ -21,6 +22,7 @@ export type CreateCollectionLocationInput = {
   googlePlaceId?: string;
   latitude?: number | null;
   longitude?: number | null;
+  imageUrl?: string | null;
 };
 
 export type UpdateCollectionLocationInput = Partial<{
@@ -32,4 +34,5 @@ export type UpdateCollectionLocationInput = Partial<{
   googlePlaceId: string | null;
   latitude: number | null;
   longitude: number | null;
+  imageUrl: string | null;
 }>;

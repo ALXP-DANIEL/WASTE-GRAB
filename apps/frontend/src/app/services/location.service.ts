@@ -24,11 +24,11 @@ export class LocationService {
     return this.http.get<LocationRecord>(`${this.apiUrl}/${id}`, this.opts);
   }
 
-  createLocation(payload: CreateCollectionLocationInput) {
+  createLocation(payload: CreateCollectionLocationInput | FormData) {
     return this.http.post<LocationRecord>(this.apiUrl, payload, this.opts);
   }
 
-  updateLocation(id: string, payload: UpdateCollectionLocationInput) {
+  updateLocation(id: string, payload: UpdateCollectionLocationInput | FormData) {
     return this.http.patch<LocationRecord>(`${this.apiUrl}/${id}`, payload, this.opts);
   }
 

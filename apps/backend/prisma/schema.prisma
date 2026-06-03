@@ -299,6 +299,7 @@ model Location {
   latitude      Decimal? @db.Decimal(10, 7)
   longitude     Decimal? @db.Decimal(10, 7)
   googlePlaceId String?  @map("google_place_id") @db.VarChar(255)
+  imageUrl      String?  @map("image_url") @db.Text
   createdAt     DateTime @default(now()) @map("created_at")
   createdBy     String?  @map("created_by")
 

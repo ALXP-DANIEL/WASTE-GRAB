@@ -60,6 +60,7 @@ function toCollectionLocationResponse(location: {
   latitude: { toNumber?(): number } | number | string | null;
   longitude: { toNumber?(): number } | number | string | null;
   googlePlaceId: string | null;
+  imageUrl: string | null;
   createdAt: Date;
   createdBy: string | null;
 }): CollectionLocation {
@@ -73,6 +74,7 @@ function toCollectionLocationResponse(location: {
     latitude: location.latitude === null ? null : Number(location.latitude),
     longitude: location.longitude === null ? null : Number(location.longitude),
     googlePlaceId: location.googlePlaceId,
+    imageUrl: location.imageUrl,
     createdAt: location.createdAt.toISOString(),
     createdBy: location.createdBy,
   };
