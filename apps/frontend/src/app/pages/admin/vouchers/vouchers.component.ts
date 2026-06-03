@@ -132,6 +132,7 @@ export class AdminVouchersPage implements OnInit {
   protected readonly form = new FormGroup({
     title: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     description: new FormControl('', { nonNullable: true }),
+    imageUrl: new FormControl('', { nonNullable: true }),
     pointsCost: new FormControl(0, { nonNullable: true, validators: [Validators.required, Validators.min(0)] }),
     code: new FormControl('', { nonNullable: true }),
     stock: new FormControl<number | null>(null),
@@ -169,6 +170,7 @@ export class AdminVouchersPage implements OnInit {
     this.form.reset({
       title: '',
       description: '',
+      imageUrl: '',
       pointsCost: 0,
       code: '',
       stock: null,
@@ -184,6 +186,7 @@ export class AdminVouchersPage implements OnInit {
     this.form.reset({
       title: voucher.title,
       description: voucher.description ?? '',
+      imageUrl: voucher.imageUrl ?? '',
       pointsCost: voucher.pointsCost,
       code: voucher.code ?? '',
       stock: voucher.stock,
@@ -292,6 +295,7 @@ export class AdminVouchersPage implements OnInit {
     return {
       title: value.title,
       description: value.description || null,
+      imageUrl: value.imageUrl || null,
       pointsCost: Number(value.pointsCost),
       code: value.code || null,
       stock: value.stock === null || value.stock === undefined || String(value.stock) === ''

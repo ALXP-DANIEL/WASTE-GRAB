@@ -6,6 +6,7 @@ const voucher = {
   id: 'voucher-id',
   title: 'Coffee Voucher',
   description: 'Free coffee reward',
+  imageUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=',
   pointsCost: 100,
   code: 'COFFEE100',
   stock: 5,
@@ -28,6 +29,7 @@ test('customer can redeem a reward voucher and view it in My Vouchers', async ({
 
   await expect(page.getByText('Points Balance')).toBeVisible();
   await expect(page.getByText('Coffee Voucher')).toBeVisible();
+  await expect(page.locator('article').filter({ hasText: 'Coffee Voucher' }).locator('img')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Redeem Voucher' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Redeem Voucher' }).click();

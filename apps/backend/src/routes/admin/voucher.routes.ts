@@ -133,6 +133,7 @@ voucherRouter.post("/", requireAdmin, async (req: Request, res: Response) => {
       data: {
         title,
         description: normalizeOptionalString(input.description),
+        imageUrl: normalizeOptionalString(input.imageUrl),
         pointsCost,
         code: normalizeOptionalString(input.code),
         stock: normalizeNullableNonNegativeInteger(input.stock),
@@ -167,6 +168,7 @@ voucherRouter.patch("/:id", requireAdmin, async (req: Request, res: Response) =>
       description?: string | null;
       pointsCost?: number;
       code?: string | null;
+      imageUrl?: string | null;
       stock?: number | null;
       status?: PrismaVoucherStatus;
       startsAt?: Date | null;
@@ -192,6 +194,7 @@ voucherRouter.patch("/:id", requireAdmin, async (req: Request, res: Response) =>
     }
 
     if (input.description !== undefined) data.description = normalizeOptionalString(input.description);
+    if (input.imageUrl !== undefined) data.imageUrl = normalizeOptionalString(input.imageUrl);
     if (input.code !== undefined) data.code = normalizeOptionalString(input.code);
     if (input.stock !== undefined) data.stock = normalizeNullableNonNegativeInteger(input.stock);
 
@@ -312,6 +315,7 @@ function toVoucherResponse(voucher: {
   id: string;
   title: string;
   description: string | null;
+  imageUrl: string | null;
   pointsCost: number;
   code: string | null;
   stock: number | null;
@@ -324,6 +328,7 @@ function toVoucherResponse(voucher: {
     id: voucher.id,
     title: voucher.title,
     description: voucher.description,
+    imageUrl: voucher.imageUrl,
     pointsCost: voucher.pointsCost,
     code: voucher.code,
     stock: voucher.stock,

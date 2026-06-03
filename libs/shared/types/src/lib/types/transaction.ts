@@ -44,6 +44,7 @@ export type Voucher = {
   id: string;
   title: string;
   description: string | null;
+  imageUrl: string | null;
   pointsCost: number;
   code: string | null;
   stock: number | null;
@@ -56,6 +57,7 @@ export type Voucher = {
 export type CreateVoucherInput = {
   title: string;
   description?: string | null;
+  imageUrl?: string | null;
   pointsCost: number;
   code?: string | null;
   stock?: number | null;

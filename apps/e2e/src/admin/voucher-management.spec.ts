@@ -6,6 +6,7 @@ type Voucher = {
   id: string;
   title: string;
   description: string | null;
+  imageUrl: string | null;
   pointsCost: number;
   code: string | null;
   stock: number | null;
@@ -20,6 +21,7 @@ const existingVoucher: Voucher = {
   id: 'voucher-id',
   title: 'Coffee Voucher',
   description: 'Free coffee reward',
+  imageUrl: 'https://example.com/coffee-voucher.jpg',
   pointsCost: 100,
   code: 'COFFEE100',
   stock: 5,
@@ -43,6 +45,7 @@ test('admin can create a voucher and review voucher operations', async ({ page }
   await expect(page.getByRole('heading', { name: 'Create Voucher' })).toBeVisible();
 
   await page.getByPlaceholder('Coffee Voucher').fill('Transit Voucher');
+  await page.locator('input[formcontrolname="imageUrl"]').fill('https://example.com/transit-voucher.jpg');
   await page.locator('input[formcontrolname="pointsCost"]').fill('80');
   await page.getByPlaceholder('Optional code').fill('TRANSIT80');
   await page.getByRole('button', { name: 'Create Voucher' }).click();
@@ -115,6 +118,7 @@ async function mockAdminVoucherApi(page: Page, vouchers: Voucher[]): Promise<voi
         id: 'transit-voucher-id',
         title: payload.title ?? 'Transit Voucher',
         description: payload.description ?? null,
+        imageUrl: payload.imageUrl ?? null,
         code: payload.code ?? null,
         stock: payload.stock ?? null,
         status: payload.status ?? 'ACTIVE',

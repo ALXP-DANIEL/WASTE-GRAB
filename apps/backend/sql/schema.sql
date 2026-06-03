@@ -114,6 +114,7 @@ CREATE TABLE password_reset_tokens (
 --   id CHAR(36) PRIMARY KEY,
 --   title VARCHAR(255) NOT NULL,
 --   description LONGTEXT,
+--   image_url LONGTEXT,
 --   points_cost INT NOT NULL,
 --   code VARCHAR(100),
 --   stock INT,

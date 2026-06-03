@@ -282,6 +282,7 @@ function toVoucherResponse(voucher: {
   id: string;
   title: string;
   description: string | null;
+  imageUrl: string | null;
   pointsCost: number;
   code: string | null;
   stock: number | null;
@@ -294,6 +295,7 @@ function toVoucherResponse(voucher: {
     id: voucher.id,
     title: voucher.title,
     description: voucher.description,
+    imageUrl: voucher.imageUrl,
     pointsCost: voucher.pointsCost,
     code: voucher.code,
     stock: voucher.stock,
@@ -317,6 +319,7 @@ function toCustomerRedemptionResponse(redemption: {
     id: string;
     title: string;
     description: string | null;
+    imageUrl: string | null;
     pointsCost: number;
     code: string | null;
     stock: number | null;

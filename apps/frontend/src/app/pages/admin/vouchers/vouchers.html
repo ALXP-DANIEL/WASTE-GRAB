@@ -99,6 +99,15 @@
       <div class="grid gap-3 lg:hidden">
         @for (voucher of filteredVouchers(); track voucher.id) {
         <article class="rounded-lg border border-border p-3">
+          <div class="mb-3 overflow-hidden rounded-lg border border-border bg-gradient-to-r from-primary/20 via-accent/20 to-emerald-500/20">
+            @if (voucher.imageUrl) {
+            <img [src]="voucher.imageUrl" [alt]="voucher.title" class="aspect-[16/7] w-full object-cover" />
+            } @else {
+            <div class="grid aspect-[16/7] place-items-center text-primary">
+              <ng-icon name="lucideGift" class="size-8!" />
+            </div>
+            }
+          </div>
           <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
               <p class="font-semibold">{{ voucher.title }}</p>
@@ -191,13 +200,24 @@
             @for (voucher of filteredVouchers(); track voucher.id) {
             <tr z-table-row>
               <td z-table-cell>
-                <p class="font-semibold">{{ voucher.title }}</p>
-                <p class="max-w-md truncate text-xs text-muted-foreground">
-                  {{ voucher.description || 'No description' }}
-                </p>
-                <p class="mt-1 text-xs text-muted-foreground">
-                  Code: {{ voucher.code || '-' }}
-                </p>
+                <div class="flex items-center gap-3">
+                  <div class="grid size-14 shrink-0 overflow-hidden rounded-lg border border-border bg-gradient-to-r from-primary/20 via-accent/20 to-emerald-500/20">
+                    @if (voucher.imageUrl) {
+                    <img [src]="voucher.imageUrl" [alt]="voucher.title" class="size-full object-cover" />
+                    } @else {
+                    <ng-icon name="lucideGift" class="m-auto size-5! text-primary" />
+                    }
+                  </div>
+                  <div class="min-w-0">
+                    <p class="font-semibold">{{ voucher.title }}</p>
+                    <p class="max-w-md truncate text-xs text-muted-foreground">
+                      {{ voucher.description || 'No description' }}
+                    </p>
+                    <p class="mt-1 text-xs text-muted-foreground">
+                      Code: {{ voucher.code || '-' }}
+                    </p>
+                  </div>
+                </div>
               </td>
               <td z-table-cell>
                 <span
@@ -465,6 +485,19 @@
             min="0"
             step="1"
             formControlName="pointsCost"
+            class="w-full"
+          />
+        </z-form-control>
+      </z-form-field>
+
+      <z-form-field>
+        <z-form-label>Image URL</z-form-label>
+        <z-form-control>
+          <input
+            z-input
+            type="url"
+            formControlName="imageUrl"
+            placeholder="https://example.com/reward.jpg"
             class="w-full"
           />
         </z-form-control>

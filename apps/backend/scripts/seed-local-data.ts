@@ -424,6 +424,7 @@ export async function seedLocalVouchersAndRewards() {
     update: {
       title: "Cafe Drink Voucher",
       description: "Redeem for one selected drink at participating cafes.",
+      imageUrl: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80",
       pointsCost: 40,
       code: "CAFE40",
       stock: 25,
@@ -435,6 +436,7 @@ export async function seedLocalVouchersAndRewards() {
       id: seedIds.cafeVoucher,
       title: "Cafe Drink Voucher",
       description: "Redeem for one selected drink at participating cafes.",
+      imageUrl: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80",
       pointsCost: 40,
       code: "CAFE40",
       stock: 25,
@@ -448,6 +450,7 @@ export async function seedLocalVouchersAndRewards() {
     update: {
       title: "Grocery Discount",
       description: "Small grocery rebate for consistent recycling activity.",
+      imageUrl: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=900&q=80",
       pointsCost: 200,
       code: "GROCERY200",
       stock: 9,
@@ -459,6 +462,7 @@ export async function seedLocalVouchersAndRewards() {
       id: seedIds.groceryVoucher,
       title: "Grocery Discount",
       description: "Small grocery rebate for consistent recycling activity.",
+      imageUrl: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=900&q=80",
       pointsCost: 200,
       code: "GROCERY200",
       stock: 9,
@@ -472,6 +476,7 @@ export async function seedLocalVouchersAndRewards() {
     update: {
       title: "Transit Credit",
       description: "Inactive sample reward kept for admin status testing.",
+      imageUrl: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=900&q=80",
       pointsCost: 300,
       code: null,
       stock: null,
@@ -483,6 +488,7 @@ export async function seedLocalVouchersAndRewards() {
       id: seedIds.inactiveVoucher,
       title: "Transit Credit",
       description: "Inactive sample reward kept for admin status testing.",
+      imageUrl: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=900&q=80",
       pointsCost: 300,
       status: VoucherStatus.INACTIVE,
     },
