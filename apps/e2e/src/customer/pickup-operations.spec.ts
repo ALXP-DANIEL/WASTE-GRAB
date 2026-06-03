@@ -14,6 +14,10 @@ test('customer pickup list supports active, completed, and cancelled filters', a
         status: 'COMPLETED',
         aiClassificationLabel: 'Paper',
         completedAt: '2026-01-02T00:00:00.000Z',
+        items: pickupRequest.items.map((item) => ({
+          ...item,
+          actualWeight: item.categoryId === 'plastic-id' ? '4' : '2',
+        })),
       },
       {
         ...pickupRequest,
@@ -30,6 +34,8 @@ test('customer pickup list supports active, completed, and cancelled filters', a
   await expect(page.getByRole('link', { name: /#PICKUP-R/ })).toBeVisible();
   await expect(page.getByRole('link', { name: /#COMPLET/ })).toBeVisible();
   await expect(page.getByRole('link', { name: /#CANCEL/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /#COMPLET/ })).toContainText('10 awarded pts');
+  await expect(page.getByRole('link').filter({ hasText: /^#/ })).toHaveText([/#PICKUP-R/, /#CANCEL/, /#COMPLET/]);
 
   await page.getByRole('button', { name: 'Active' }).click();
   await expect(page.getByRole('link', { name: /#PICKUP-R/ })).toBeVisible();

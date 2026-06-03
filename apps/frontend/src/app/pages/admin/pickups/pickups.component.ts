@@ -73,7 +73,7 @@ export class AdminPickupsPage {
 
   protected readonly filteredPickups = computed(() => {
     const filter = this.activeFilter();
-    const pickups = this.pickups();
+    const pickups = this.sortedPickups(this.pickups());
 
     if (filter === 'active') return pickups.filter((pickup) => this.isActiveStatus(pickup.status));
     if (filter === 'completed') return pickups.filter((pickup) => pickup.status === PickupStatus.COMPLETED);
@@ -133,6 +133,10 @@ export class AdminPickupsPage {
     }, 0);
   }
 
+  protected pointsLabel(pickup: AdminPickupRequest): string {
+    return pickup.status === PickupStatus.COMPLETED ? 'Awarded' : 'Potential';
+  }
+
   protected categoryLabel(pickup: AdminPickupRequest): string {
     return pickup.aiClassificationLabel || `${pickup.items.length} waste item${pickup.items.length === 1 ? '' : 's'}`;
   }
@@ -158,6 +162,19 @@ export class AdminPickupsPage {
 
   private isActiveStatus(status: PickupStatus): boolean {
     return ![PickupStatus.COMPLETED, PickupStatus.CANCELLED].includes(status);
+  }
+
+  private sortedPickups(pickups: AdminPickupRequest[]): AdminPickupRequest[] {
+    return [...pickups].sort((a, b) => {
+      const aCompleted = a.status === PickupStatus.COMPLETED ? 1 : 0;
+      const bCompleted = b.status === PickupStatus.COMPLETED ? 1 : 0;
+
+      if (aCompleted !== bCompleted) {
+        return aCompleted - bCompleted;
+      }
+
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
   }
 
   private statusMeta(status: PickupStatus): { label: string; className: string; icon: string } {

@@ -64,6 +64,7 @@ export class CustomerPickupsPage {
   protected readonly isLoading = signal(true);
   protected readonly loadError = signal('');
   protected readonly activeFilter = signal<RequestFilter>('all');
+  protected readonly PickupStatus = PickupStatus;
 
   protected readonly filters: FilterOption[] = [
     { value: 'all', label: 'All' },
@@ -74,7 +75,7 @@ export class CustomerPickupsPage {
 
   protected readonly filteredRequests = computed(() => {
     const filter = this.activeFilter();
-    const requests = this.requests();
+    const requests = this.sortedRequests(this.requests());
 
     if (filter === 'all') {
       return requests;
@@ -161,6 +162,10 @@ export class CustomerPickupsPage {
     }, 0);
   }
 
+  protected pointsLabel(request: PickupRequestWithDetails): string {
+    return request.status === PickupStatus.COMPLETED ? 'Awarded' : 'Potential';
+  }
+
   protected categoryLabel(request: PickupRequestWithDetails): string {
     return request.aiClassificationLabel || `${request.items.length} waste item${request.items.length === 1 ? '' : 's'}`;
   }
@@ -191,6 +196,19 @@ export class CustomerPickupsPage {
       PickupStatus.ARRIVED,
       PickupStatus.VERIFIED,
     ].includes(status);
+  }
+
+  private sortedRequests(requests: PickupRequestWithDetails[]): PickupRequestWithDetails[] {
+    return [...requests].sort((a, b) => {
+      const aCompleted = a.status === PickupStatus.COMPLETED ? 1 : 0;
+      const bCompleted = b.status === PickupStatus.COMPLETED ? 1 : 0;
+
+      if (aCompleted !== bCompleted) {
+        return aCompleted - bCompleted;
+      }
+
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
   }
 
   private statusMeta(status: PickupStatus): { label: string; className: string; icon: string } {

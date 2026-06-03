@@ -204,7 +204,7 @@ export class AcceptPickupDialogComponent {
 
 @Component({
   selector: 'app-dropoff-location-dialog',
-  imports: [CommonModule, NgIcon, RouteMapComponent],
+  imports: [CommonModule, NgIcon, RouterLink, RouteMapComponent],
   template: `
     <div class="grid gap-4">
       @if (selectedLocation(); as selected) {
@@ -242,15 +242,13 @@ export class AcceptPickupDialogComponent {
 
       @if (selectedLocation(); as selected) {
       <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <p class="text-sm text-muted-foreground">Open the route when you are ready to drop the collected waste.</p>
+        <p class="text-sm text-muted-foreground">Open the location when you are ready to drop the collected waste.</p>
         <a
-          [href]="routeUrl(selected)"
-          target="_blank"
-          rel="noreferrer"
+          [routerLink]="['/collector', 'locations', locationSlug(selected)]"
           class="inline-flex h-9 items-center justify-center gap-2 rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
         >
           <ng-icon name="lucideNavigation" class="size-4!" />
-          Open drop-off route
+          Open drop-off location
         </a>
       </div>
       }
@@ -291,12 +289,6 @@ export class DropoffLocationDialogComponent {
       }));
   }
 
-  protected routeUrl(location: DropoffLocationOption): string {
-    const origin = `${this.data.origin.latitude},${this.data.origin.longitude}`;
-    const destination = `${location.latitude},${location.longitude}`;
-    return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&travelmode=driving`;
-  }
-
   protected locationLabel(location: CollectionLocation): string {
     return [
       location.address,
@@ -304,6 +296,16 @@ export class DropoffLocationDialogComponent {
       location.state,
       location.postalCode,
     ].filter(Boolean).join(', ') || 'Collection location';
+  }
+
+  protected locationSlug(location: CollectionLocation): string {
+    const slug = location.name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'location';
+
+    return `${slug}--${location.id}`;
   }
 }
 
@@ -389,6 +391,9 @@ export class PickupDetailPage {
     const pickup = this.pickup();
     return pickup ? this.potentialPoints(pickup) : 0;
   });
+  protected readonly pointsSummaryLabel = computed(() =>
+    this.pickup()?.status === PickupStatus.COMPLETED ? 'Awarded points' : 'Potential points',
+  );
   protected readonly timelineSteps = computed<TimelineStep[]>(() => {
     const pickup = this.pickup();
     if (!pickup) {

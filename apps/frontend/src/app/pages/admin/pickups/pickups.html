@@ -68,7 +68,7 @@
         <ng-icon name="lucideCoins" class="size-5!" />
       </span>
       <span>
-        <span class="block font-semibold">Potential Points</span>
+        <span class="block font-semibold">Pickup Points</span>
         <span class="block text-sm text-muted-foreground"
           >{{ totalPotentialPoints() }} pts</span
         >
@@ -152,7 +152,7 @@
               </dd>
             </div>
             <div>
-              <dt class="text-xs text-muted-foreground">Points</dt>
+              <dt class="text-xs text-muted-foreground">{{ pointsLabel(pickup) }}</dt>
               <dd class="font-semibold text-primary">
                 {{ potentialPoints(pickup) }} pts
               </dd>
@@ -250,7 +250,7 @@
                   class="inline-flex items-center gap-1 font-semibold text-primary"
                 >
                   <ng-icon name="lucideCoins" class="size-4!" />
-                  {{ potentialPoints(pickup) }} pts
+                  {{ pointsLabel(pickup) }}: {{ potentialPoints(pickup) }} pts
                 </span>
               </td>
               <td z-table-cell>{{ formatDate(pickup.createdAt) }}</td>
