@@ -71,6 +71,7 @@ export default defineConfig({
       name: 'chromium',
       testMatch: [
         /admin\/(?!api-).*\.spec\.ts/,
+        /collector\/.*\.spec\.ts/,
         /customer\/(?!api-)(?!.*-api).*\.spec\.ts/,
       ],
       use: {

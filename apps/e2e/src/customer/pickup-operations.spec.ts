@@ -70,6 +70,32 @@ test('customer can view and cancel a pickup request', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Cancel Request' })).toHaveCount(0);
 });
 
+test('customer cannot cancel after collector has arrived', async ({ page }) => {
+  await mockPickupApi(page, {
+    pickupRequests: [{ ...pickupRequest, status: 'ARRIVED', collectorId: 'collector-id' }],
+    getPickupRequest: () => ({ ...pickupRequest, status: 'ARRIVED', collectorId: 'collector-id' }),
+  });
+
+  await page.goto('/customer/pickups/pickup-request-id');
+
+  await expect(page.getByText('Arrived', { exact: true }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Cancel Request' })).toHaveCount(0);
+});
+
+test('pickup detail shows status timeline and AI estimate labels', async ({ page }) => {
+  await mockPickupApi(page, {
+    pickupRequests: [pickupRequest],
+    getPickupRequest: () => pickupRequest,
+  });
+
+  await page.goto('/customer/pickups/pickup-request-id');
+
+  await expect(page.getByRole('heading', { name: 'Status Timeline' })).toBeVisible();
+  await expect(page.getByText('Pickup request submitted.')).toBeVisible();
+  await expect(page.getByText('AI estimate').first()).toBeVisible();
+  await expect(page.getByText('Customer / AI estimate')).toHaveCount(0);
+});
+
 test('new pickup page blocks creation while an active request exists', async ({
   page,
 }) => {

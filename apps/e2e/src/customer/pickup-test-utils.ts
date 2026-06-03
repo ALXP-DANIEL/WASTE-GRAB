@@ -6,6 +6,8 @@ type TestPickupRequest = {
   userId: string;
   collectorId: string | null;
   addressText: string;
+  latitude?: string | null;
+  longitude?: string | null;
   status: string;
   notes: string | null;
   aiClassificationLabel: string | null;
@@ -92,6 +94,8 @@ export const pickupRequest: TestPickupRequest = {
   userId: customer.id,
   collectorId: null,
   addressText: addresses[0].formattedAddress,
+  latitude: '3.1543000',
+  longitude: '101.7042000',
   status: 'PENDING',
   notes: 'Place bags near the guardhouse',
   aiClassificationLabel: 'Plastic, Paper',
