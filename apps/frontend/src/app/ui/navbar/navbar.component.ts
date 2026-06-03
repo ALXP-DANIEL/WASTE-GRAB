@@ -8,6 +8,7 @@ import {
   lucideHistory,
   lucideGift,
   lucideLayoutDashboard,
+  lucideTrophy,
   lucidePackage,
   lucidePlus,
   lucideLogOut,
@@ -59,6 +60,18 @@ const ROLE_NAV = {
       icon: 'lucideGift',
       showOnMobile: true,
     },
+    {
+      label: 'Achievements',
+      route: routePath(ROUTE_PATHS.customer.base, ROUTE_PATHS.customer.achievements),
+      icon: 'lucideTrophy',
+      showOnMobile: false,
+    },
+    {
+      label: 'Ranks',
+      route: routePath(ROUTE_PATHS.customer.base, ROUTE_PATHS.customer.leaderboard),
+      icon: 'lucideTrophy',
+      showOnMobile: false,
+    },
   ],
   [UserRole.ADMIN]: [
     {
@@ -101,6 +114,12 @@ const ROLE_NAV = {
       label: 'Notifications',
       route: routePath(ROUTE_PATHS.admin.base, ROUTE_PATHS.admin.notifications),
       icon: 'lucideBell',
+      showOnMobile: false,
+    },
+    {
+      label: 'Achievements',
+      route: routePath(ROUTE_PATHS.admin.base, ROUTE_PATHS.admin.achievements),
+      icon: 'lucideTrophy',
       showOnMobile: false,
     },
   ],
@@ -151,6 +170,7 @@ function getInitials(name?: string | null): string {
     provideIcons({
       lucideRecycle,
       lucideBell,
+      lucideTrophy,
       lucideGift,
       lucideLayoutDashboard,
       lucidePlus,

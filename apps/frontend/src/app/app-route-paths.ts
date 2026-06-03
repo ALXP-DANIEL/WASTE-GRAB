@@ -9,8 +9,10 @@ export const ROUTE_PATHS = {
     pickups: 'pickups',
     pickupDetail: ':pickupId',
     vouchers: 'vouchers',
+    leaderboard: 'leaderboard',
     myRequests: 'my-requests',
     rewards: 'rewards',
+    achievements: 'achievements',
   },
   admin: {
     base: 'admin',
@@ -21,6 +23,7 @@ export const ROUTE_PATHS = {
     wasteCategories: 'waste-categories',
     vouchers: 'vouchers',
     notifications: 'notifications',
+    achievements: 'achievements',
   },
   collector: {
     base: 'collector',

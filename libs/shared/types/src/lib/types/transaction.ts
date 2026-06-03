@@ -1,5 +1,6 @@
 export enum PointLedgerType {
   PICKUP_EARNED = "PICKUP_EARNED",
+  ACHIEVEMENT_EARNED = "ACHIEVEMENT_EARNED",
   VOUCHER_REDEEMED = "VOUCHER_REDEEMED",
   ADMIN_ADJUSTMENT = "ADMIN_ADJUSTMENT",
   EXPIRED = "EXPIRED",
@@ -25,11 +26,17 @@ export enum VoucherRedemptionStatus {
   EXPIRED = "EXPIRED",
 }
 
+export enum AchievementMetric {
+  TOTAL_WEIGHT_KG = "TOTAL_WEIGHT_KG",
+  COMPLETED_PICKUPS = "COMPLETED_PICKUPS",
+}
+
 export type PointLedger = {
   id: string;
   userId: string;
   pickupRequestId: string | null;
   voucherId: string | null;
+  achievementId: string | null;
   redemptionId: string | null;
   type: PointLedgerType;
   status: PointLedgerStatus;
@@ -38,6 +45,42 @@ export type PointLedger = {
   description: string | null;
   metadata: unknown;
   createdAt: string;
+};
+
+export type Achievement = {
+  id: string;
+  title: string;
+  description: string | null;
+  metric: AchievementMetric;
+  threshold: string;
+  rewardPoints: number;
+  isActive: boolean;
+  createdAt: string;
+};
+
+export type CreateAchievementInput = {
+  title: string;
+  description?: string | null;
+  metric: AchievementMetric;
+  threshold: number | string;
+  rewardPoints: number;
+  isActive?: boolean;
+};
+
+export type UpdateAchievementInput = Partial<CreateAchievementInput>;
+
+export type UserAchievement = {
+  id: string;
+  userId: string;
+  achievementId: string;
+  metricValue: string;
+  pointsAwarded: number;
+  achievedAt: string;
+  achievement: Achievement;
+};
+
+export type CustomerAchievementsResponse = {
+  achievements: UserAchievement[];
 };
 
 export type Voucher = {
@@ -122,4 +165,19 @@ export type RewardSummary = {
 
 export type RewardSummaryResponse = {
   summary: RewardSummary;
+};
+
+export type LeaderboardEntry = {
+  rank: number;
+  userId: string;
+  name: string;
+  avatarUrl: string | null;
+  completedPickups: number;
+  totalWeightKg: string;
+  isCurrentUser: boolean;
+};
+
+export type LeaderboardResponse = {
+  leaderboard: LeaderboardEntry[];
+  currentUser: LeaderboardEntry | null;
 };

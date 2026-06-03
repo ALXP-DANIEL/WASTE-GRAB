@@ -61,6 +61,8 @@ const seedIds = {
   cafeVoucher: "22222222-2222-4222-8222-222222222222",
   groceryVoucher: "33333333-3333-4333-8333-333333333333",
   inactiveVoucher: "44444444-4444-4444-8444-444444444444",
+  weightAchievement: "abababab-abab-4aba-8aba-abababababab",
+  pickupAchievement: "bcbcbcbc-bcbc-4bcb-8bcb-bcbcbcbcbcbc",
   groceryRedemption: "55555555-5555-4555-8555-555555555555",
   pickupEarnedLedger: "66666666-6666-4666-8666-666666666666",
   voucherRedeemedLedger: "77777777-7777-4777-8777-777777777777",
@@ -403,6 +405,7 @@ export async function seedLocalVouchersAndRewards() {
     PickupStatus,
     PointLedgerStatus,
     PointLedgerType,
+    AchievementMetric,
     VoucherRedemptionStatus,
     VoucherStatus,
   } = await import("../src/generated/prisma/enums.js");
@@ -442,6 +445,48 @@ export async function seedLocalVouchersAndRewards() {
       stock: 25,
       status: VoucherStatus.ACTIVE,
       expiresAt: new Date("2026-12-31T15:59:59.000Z"),
+    },
+  });
+
+  await prisma.achievement.upsert({
+    where: { id: seedIds.weightAchievement },
+    update: {
+      title: "10 kg Contributor",
+      description: "Unlocked after contributing 10 kg of verified recyclable waste.",
+      metric: AchievementMetric.TOTAL_WEIGHT_KG,
+      threshold: 10,
+      rewardPoints: 75,
+      isActive: true,
+    },
+    create: {
+      id: seedIds.weightAchievement,
+      title: "10 kg Contributor",
+      description: "Unlocked after contributing 10 kg of verified recyclable waste.",
+      metric: AchievementMetric.TOTAL_WEIGHT_KG,
+      threshold: 10,
+      rewardPoints: 75,
+      isActive: true,
+    },
+  });
+
+  await prisma.achievement.upsert({
+    where: { id: seedIds.pickupAchievement },
+    update: {
+      title: "5 Pickup Streak",
+      description: "Unlocked after completing 5 verified pickup requests.",
+      metric: AchievementMetric.COMPLETED_PICKUPS,
+      threshold: 5,
+      rewardPoints: 100,
+      isActive: true,
+    },
+    create: {
+      id: seedIds.pickupAchievement,
+      title: "5 Pickup Streak",
+      description: "Unlocked after completing 5 verified pickup requests.",
+      metric: AchievementMetric.COMPLETED_PICKUPS,
+      threshold: 5,
+      rewardPoints: 100,
+      isActive: true,
     },
   });
 

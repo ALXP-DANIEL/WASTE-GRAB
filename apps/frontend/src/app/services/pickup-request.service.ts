@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import type {
   CreatePickupRequestResponse,
   GetPickupRequestResponse,
+  LeaderboardResponse,
   ListPickupRequestsResponse,
   RewardSummaryResponse,
 } from '@wastegrab/shared';
@@ -24,6 +25,10 @@ export class PickupRequestService {
 
   getRewardSummary() {
     return this.http.get<RewardSummaryResponse>(`${this.apiUrl}/rewards/summary`, this.opts);
+  }
+
+  getLeaderboard() {
+    return this.http.get<LeaderboardResponse>(`${this.apiUrl}/leaderboard`, this.opts);
   }
 
   getPickupRequest(id: string) {

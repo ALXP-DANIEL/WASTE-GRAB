@@ -1,0 +1,171 @@
+<section class="grid gap-5 p-4 md:p-6 lg:p-8">
+  <app-header mode="route">
+    <button z-button zType="default" type="button" rightSide class="gap-2" (click)="openAdd()">
+      <ng-icon name="lucidePlus" class="size-4!" />
+      Add Achievement
+    </button>
+  </app-header>
+
+  <app-fetch-state [isLoading]="isLoading()" [loadError]="loadError()" loadingText="Loading achievements...">
+    <div class="grid gap-5">
+      <section class="grid gap-4 md:grid-cols-3">
+        <div class="rounded-lg border border-border bg-card p-4 shadow-sm">
+          <p class="text-sm text-muted-foreground">Achievement rules</p>
+          <p class="mt-1 text-2xl font-bold">{{ achievements().length }}</p>
+        </div>
+        <div class="rounded-lg border border-border bg-card p-4 shadow-sm">
+          <p class="text-sm text-muted-foreground">Active rules</p>
+          <p class="mt-1 text-2xl font-bold">{{ activeCount() }}</p>
+        </div>
+        <div class="rounded-lg border border-border bg-card p-4 shadow-sm">
+          <p class="text-sm text-muted-foreground">Configured reward points</p>
+          <p class="mt-1 text-2xl font-bold">{{ rewardTotal() }}</p>
+        </div>
+      </section>
+
+      <section class="rounded-lg border border-border bg-card p-5 shadow-sm">
+        <app-table-header
+          title="Achievement Rules"
+          description="Create milestone rewards for pickup weight and completed pickup counts."
+        >
+          <div class="flex flex-wrap gap-2">
+            @for (filter of filters; track filter.value) {
+              <button
+                type="button"
+                class="rounded-md border px-3 py-1.5 text-sm font-semibold transition-colors"
+                [class.border-primary]="activeFilter() === filter.value"
+                [class.bg-primary]="activeFilter() === filter.value"
+                [class.text-primary-foreground]="activeFilter() === filter.value"
+                [class.border-border]="activeFilter() !== filter.value"
+                [class.bg-background]="activeFilter() !== filter.value"
+                (click)="setFilter(filter.value)"
+              >
+                {{ filter.label }}
+              </button>
+            }
+          </div>
+        </app-table-header>
+
+        <div class="mt-4 overflow-hidden rounded-lg border border-border">
+          <table z-table>
+            <thead z-thead>
+              <tr z-tr>
+                <th z-th>Rule</th>
+                <th z-th>Metric</th>
+                <th z-th>Threshold</th>
+                <th z-th>Reward</th>
+                <th z-th>Status</th>
+                <th z-th class="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody z-tbody>
+              @for (achievement of filteredAchievements(); track achievement.id) {
+                <tr z-tr>
+                  <td z-td>
+                    <div class="min-w-0">
+                      <p class="font-semibold">{{ achievement.title }}</p>
+                      <p class="mt-1 line-clamp-1 text-xs text-muted-foreground">{{ achievement.description || 'No description' }}</p>
+                    </div>
+                  </td>
+                  <td z-td>{{ metricLabel(achievement.metric) }}</td>
+                  <td z-td>{{ thresholdLabel(achievement) }}</td>
+                  <td z-td>{{ achievement.rewardPoints }} pts</td>
+                  <td z-td>
+                    <span
+                      class="rounded-md px-2.5 py-1 text-xs font-bold"
+                      [class.bg-emerald-500/10]="achievement.isActive"
+                      [class.text-emerald-700]="achievement.isActive"
+                      [class.bg-muted]="!achievement.isActive"
+                      [class.text-muted-foreground]="!achievement.isActive"
+                    >
+                      {{ achievement.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                  </td>
+                  <td z-td>
+                    <div class="flex justify-end gap-2">
+                      <button z-button zType="outline" zSize="sm" type="button" class="gap-2" (click)="openEdit(achievement)">
+                        <ng-icon name="lucidePencil" class="size-4!" />
+                        Edit
+                      </button>
+                      <button z-button zType="destructive" zSize="sm" type="button" class="gap-2" (click)="deleteAchievement(achievement)">
+                        <ng-icon name="lucideTrash2" class="size-4!" />
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              } @empty {
+                <tr z-tr>
+                  <td z-td colspan="6" class="py-8 text-center text-sm text-muted-foreground">
+                    No achievements match this filter.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </app-fetch-state>
+
+  @if (modalMode() === 'add' || modalMode() === 'edit') {
+  <z-modal
+    [isOpen]="true"
+    [title]="modalMode() === 'edit' ? 'Edit Achievement' : 'Add Achievement'"
+    description="Configure a milestone and the points awarded when customers unlock it."
+    [okText]="modalMode() === 'edit' ? 'Save Changes' : 'Create Achievement'"
+    cancelText="Cancel"
+    size="lg"
+    (ok)="modalMode() === 'edit' ? saveEdit() : saveCreate()"
+    (cancel)="closeModal()"
+  >
+    <form class="grid gap-4" [formGroup]="form">
+      <z-form-field>
+        <z-form-label>Title</z-form-label>
+        <z-form-control>
+          <input z-input formControlName="title" />
+        </z-form-control>
+      </z-form-field>
+
+      <z-form-field>
+        <z-form-label>Description</z-form-label>
+        <z-form-control>
+          <input z-input formControlName="description" />
+        </z-form-control>
+      </z-form-field>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <z-form-field>
+          <z-form-label>Metric</z-form-label>
+          <z-select formControlName="metric">
+            @for (option of metricOptions; track option.value) {
+              <z-select-item [zValue]="option.value">{{ option.label }}</z-select-item>
+            }
+          </z-select>
+        </z-form-field>
+
+        <z-form-field>
+          <z-form-label>Threshold</z-form-label>
+          <z-form-control>
+            <input z-input type="number" min="0.01" step="0.01" formControlName="threshold" />
+          </z-form-control>
+        </z-form-field>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <z-form-field>
+          <z-form-label>Reward points</z-form-label>
+          <z-form-control>
+            <input z-input type="number" min="0" step="1" formControlName="rewardPoints" />
+          </z-form-control>
+        </z-form-field>
+
+        <label class="flex items-center gap-3 rounded-lg border border-border bg-background px-3 py-2 text-sm font-semibold">
+          <input type="checkbox" formControlName="isActive" />
+          Active
+        </label>
+      </div>
+    </form>
+  </z-modal>
+  }
+</section>

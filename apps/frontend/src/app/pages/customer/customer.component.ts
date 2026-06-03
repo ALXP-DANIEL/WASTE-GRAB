@@ -20,6 +20,7 @@ import {
   lucideRecycle,
   lucideScale,
   lucideTicket,
+  lucideTrophy,
   lucideTruck,
 } from '@ng-icons/lucide';
 
@@ -72,6 +73,7 @@ type QuickAction = {
       lucideRecycle,
       lucideScale,
       lucideTicket,
+      lucideTrophy,
       lucideTruck,
     }),
   ],
@@ -84,6 +86,7 @@ export class CustomerPage {
   readonly newPickupPath = ['/', ROUTE_PATHS.customer.base, ROUTE_PATHS.customer.newPickup];
   readonly pickupsPath = ['/', ROUTE_PATHS.customer.base, ROUTE_PATHS.customer.pickups];
   readonly vouchersPath = ['/', ROUTE_PATHS.customer.base, ROUTE_PATHS.customer.vouchers];
+  readonly leaderboardPath = ['/', ROUTE_PATHS.customer.base, ROUTE_PATHS.customer.leaderboard];
 
   protected readonly requests = signal<PickupRequestWithDetails[]>([]);
   protected readonly rewardSummary = signal<RewardSummary | null>(null);
@@ -120,6 +123,12 @@ export class CustomerPage {
       route: this.vouchersPath,
       icon: 'lucideTicket',
     },
+    {
+      label: 'View ranks',
+      description: 'See top contributors by verified weight.',
+      route: this.leaderboardPath,
+      icon: 'lucideTrophy',
+    },
   ]);
 
   protected readonly dashboardStats = computed<DashboardStat[]>(() => [
@@ -136,7 +145,7 @@ export class CustomerPage {
       accentClass: 'bg-sky-500/10 text-sky-700 dark:text-sky-300',
     },
     {
-      label: 'Completed Weight',
+      label: 'Contributed Weight',
       value: `${Number(this.rewardSummary()?.completedWeightKg ?? 0).toFixed(1)} kg`,
       icon: 'lucideScale',
       accentClass: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',

@@ -7,6 +7,7 @@ import type {
   ApiErrorResponse,
   CreatePickupRequestResponse,
   GetPickupRequestResponse,
+  LeaderboardResponse,
   ListPickupRequestsResponse,
   PickupImage,
   PickupItem,
@@ -150,6 +151,98 @@ pickupRouter.get(
         completedWeightKg: completedWeightKg.toFixed(2),
         pointsBalance: latestLedger?.balanceAfter ?? 0,
       },
+    };
+
+    res.json(payload);
+  }) as RequestHandler,
+);
+
+pickupRouter.get(
+  "/leaderboard",
+  (async (req, res) => {
+    const user = await getCurrentUserFromRequest(req);
+
+    if (!user) {
+      res.status(401).json({ error: "Not authenticated." } as ApiErrorResponse);
+      return;
+    }
+
+    const completedPickups = await prisma.pickupRequest.findMany({
+      where: {
+        status: PrismaPickupStatus.COMPLETED,
+      },
+      select: {
+        id: true,
+        userId: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            avatarUrl: true,
+          },
+        },
+        items: {
+          select: {
+            estimatedWeight: true,
+            actualWeight: true,
+          },
+        },
+      },
+    });
+
+    const leaderboardByUser = new Map<
+      string,
+      {
+        userId: string;
+        name: string;
+        avatarUrl: string | null;
+        completedPickupIds: Set<string>;
+        totalWeightKg: number;
+      }
+    >();
+
+    completedPickups.forEach((pickup) => {
+      const entry = leaderboardByUser.get(pickup.userId) ?? {
+        userId: pickup.user.id,
+        name: pickup.user.name,
+        avatarUrl: pickup.user.avatarUrl,
+        completedPickupIds: new Set<string>(),
+        totalWeightKg: 0,
+      };
+
+      entry.completedPickupIds.add(pickup.id);
+      entry.totalWeightKg += pickup.items.reduce((total, item) => {
+        return total + Number(item.actualWeight ?? item.estimatedWeight ?? 0);
+      }, 0);
+
+      leaderboardByUser.set(pickup.userId, entry);
+    });
+
+    const rankedLeaderboard = [...leaderboardByUser.values()]
+      .sort((a, b) => {
+        if (b.totalWeightKg !== a.totalWeightKg) {
+          return b.totalWeightKg - a.totalWeightKg;
+        }
+
+        if (b.completedPickupIds.size !== a.completedPickupIds.size) {
+          return b.completedPickupIds.size - a.completedPickupIds.size;
+        }
+
+        return a.name.localeCompare(b.name);
+      })
+      .map((entry, index) => ({
+        rank: index + 1,
+        userId: entry.userId,
+        name: entry.name,
+        avatarUrl: entry.avatarUrl,
+        completedPickups: entry.completedPickupIds.size,
+        totalWeightKg: entry.totalWeightKg.toFixed(2),
+        isCurrentUser: entry.userId === user.id,
+      }));
+
+    const payload: LeaderboardResponse = {
+      leaderboard: rankedLeaderboard.slice(0, 20),
+      currentUser: rankedLeaderboard.find((entry) => entry.userId === user.id) ?? null,
     };
 
     res.json(payload);

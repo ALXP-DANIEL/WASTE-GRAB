@@ -149,6 +149,7 @@ CREATE TABLE password_reset_tokens (
 --   user_id CHAR(36) NOT NULL,
 --   pickup_request_id CHAR(36),
 --   voucher_id CHAR(36),
+--   achievement_id CHAR(36),
 --   redemption_id CHAR(36),
 --   type ENUM('PICKUP_EARNED', 'VOUCHER_REDEEMED', 'ADMIN_ADJUSTMENT', 'EXPIRED', 'REVERSAL') NOT NULL,
 --   status ENUM('PENDING', 'POSTED', 'REVERSED') NOT NULL DEFAULT 'POSTED',
@@ -160,11 +161,39 @@ CREATE TABLE password_reset_tokens (
 --   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT,
 --   FOREIGN KEY (pickup_request_id) REFERENCES pickup_requests(id) ON DELETE RESTRICT,
 --   FOREIGN KEY (voucher_id) REFERENCES vouchers(id) ON DELETE RESTRICT,
+--   FOREIGN KEY (achievement_id) REFERENCES achievements(id) ON DELETE RESTRICT,
 --   FOREIGN KEY (redemption_id) REFERENCES voucher_redemptions(id) ON DELETE RESTRICT,
 --   INDEX idx_user_created_at (user_id, created_at),
 --   INDEX idx_pickup_request_id (pickup_request_id),
 --   INDEX idx_voucher_id (voucher_id),
+--   INDEX idx_achievement_id (achievement_id),
 --   INDEX idx_redemption_id (redemption_id)
+-- );
+--
+-- CREATE TABLE achievements (
+--   id CHAR(36) PRIMARY KEY,
+--   title VARCHAR(255) NOT NULL,
+--   description LONGTEXT,
+--   metric ENUM('TOTAL_WEIGHT_KG', 'COMPLETED_PICKUPS') NOT NULL,
+--   threshold DECIMAL(10, 2) NOT NULL,
+--   reward_points INT NOT NULL,
+--   is_active BOOLEAN NOT NULL DEFAULT TRUE,
+--   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+--   INDEX idx_metric_active (metric, is_active)
+-- );
+--
+-- CREATE TABLE user_achievements (
+--   id CHAR(36) PRIMARY KEY,
+--   user_id CHAR(36) NOT NULL,
+--   achievement_id CHAR(36) NOT NULL,
+--   metric_value DECIMAL(10, 2) NOT NULL,
+--   points_awarded INT NOT NULL,
+--   achieved_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+--   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+--   FOREIGN KEY (achievement_id) REFERENCES achievements(id) ON DELETE RESTRICT,
+--   UNIQUE KEY uniq_user_achievement (user_id, achievement_id),
+--   INDEX idx_user_achieved_at (user_id, achieved_at),
+--   INDEX idx_achievement_id (achievement_id)
 -- );
 
 -- -- Sample data for waste categories

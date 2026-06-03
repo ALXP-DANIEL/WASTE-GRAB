@@ -18,6 +18,9 @@ const pages = {
     import('./pages/customer/new-pickup/new-pickup.component').then((m) => m.CustomerNewPickupPage),
   customerPickups: () => import('./pages/customer/pickups/pickups.component').then((m) => m.CustomerPickupsPage),
   customerVouchers: () => import('./pages/customer/vouchers/vouchers.component').then((m) => m.CustomerVouchersPage),
+  customerAchievements: () => import('./pages/customer/achievements/achievements.component').then((m) => m.CustomerAchievementsPage),
+  customerLeaderboard: () =>
+    import('./pages/customer/leaderboard/leaderboard.component').then((m) => m.CustomerLeaderboardPage),
   adminDashboard: () => import('./pages/admin/admin.component').then((m) => m.AdminPage),
   adminCollectors: () => import('./pages/admin/collection-locations/collection-location.component').then((m) => m.AdminCollectionLocationPage),
   adminPickups: () => import('./pages/admin/pickups/pickups.component').then((m) => m.AdminPickupsPage),
@@ -25,6 +28,7 @@ const pages = {
   adminWasteCategories: () =>
     import('./pages/admin/waste-categories/waste-categories.component').then((m) => m.AdminWasteCategoriesPage),
   adminVouchers: () => import('./pages/admin/vouchers/vouchers.component').then((m) => m.AdminVouchersPage),
+  adminAchievements: () => import('./pages/admin/achievements/achievements.component').then((m) => m.AdminAchievementsPage),
   adminNotifications: () =>
     import('./pages/admin/notifications/notifications.component').then((m) => m.AdminNotificationsPage),
   collectorDashboard: () => import('./pages/collector/collector.component').then((m) => m.CollectorPage),
@@ -106,6 +110,11 @@ const ROUTE_CONFIG = [
         loadComponent: pages.customerVouchers,
       },
       {
+        path: ROUTE_PATHS.customer.leaderboard,
+        title: 'Leaderboard',
+        loadComponent: pages.customerLeaderboard,
+      },
+      {
         path: ROUTE_PATHS.customer.myRequests,
         title: 'My Requests',
         loadComponent: pages.customerPickups,
@@ -114,6 +123,11 @@ const ROUTE_CONFIG = [
         path: ROUTE_PATHS.customer.rewards,
         title: 'Rewards',
         loadComponent: pages.customerVouchers,
+      },
+      {
+        path: ROUTE_PATHS.customer.achievements,
+        title: 'Achievements',
+        loadComponent: pages.customerAchievements,
       },
       {
         path: ROUTE_PATHS.profile,
@@ -183,6 +197,11 @@ const ROUTE_CONFIG = [
         path: ROUTE_PATHS.admin.notifications,
         title: 'Notifications',
         loadComponent: pages.adminNotifications,
+      },
+      {
+        path: ROUTE_PATHS.admin.achievements,
+        title: 'Achievements',
+        loadComponent: pages.adminAchievements,
       },
     ],
   },

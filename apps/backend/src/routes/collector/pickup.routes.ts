@@ -18,6 +18,7 @@ import {
 import type { Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../../prisma.js";
 import { getCurrentUserFromRequest } from "../../services/auth.service.js";
+import { awardEligibleAchievements } from "../../services/achievement.service.js";
 
 const pickupRouter = Router();
 
@@ -391,6 +392,8 @@ pickupRouter.patch("/:pickupRequestId/complete", requireCollector, async (req: R
 
       return completed;
     });
+
+    await awardEligibleAchievements(existing.userId);
 
     res.json({ pickupRequest: toCollectorPickupRequest(updated, null) } satisfies GetCollectorPickupRequestResponse);
   } catch (err) {

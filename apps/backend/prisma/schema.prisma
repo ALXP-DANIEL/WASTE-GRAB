@@ -31,6 +31,7 @@ enum ImageType {
 
 enum PointLedgerType {
   PICKUP_EARNED
+  ACHIEVEMENT_EARNED
   VOUCHER_REDEEMED
   ADMIN_ADJUSTMENT
   EXPIRED
@@ -63,6 +64,11 @@ enum NotificationTargetRole {
   ADMIN
 }
 
+enum AchievementMetric {
+  TOTAL_WEIGHT_KG
+  COMPLETED_PICKUPS
+}
+
 model User {
   id           String    @id @default(uuid())
   name         String    @db.VarChar(255)
@@ -79,6 +85,7 @@ model User {
   pickupRequestsAsCollector PickupRequest[] @relation("CollectorRequests")
   pointLedger               PointLedger[]
   voucherRedemptions        VoucherRedemption[]
+  achievements              UserAchievement[]
   notifications             Notification[]
   pushSubscriptions         PushSubscription[]
   passwordResetTokens       PasswordResetToken[]
@@ -193,6 +200,7 @@ model PointLedger {
   userId          String            @map("user_id")
   pickupRequestId String?           @map("pickup_request_id")
   voucherId       String?           @map("voucher_id")
+  achievementId   String?           @map("achievement_id")
   redemptionId    String?           @map("redemption_id")
   type            PointLedgerType
   status          PointLedgerStatus @default(POSTED)
@@ -205,13 +213,49 @@ model PointLedger {
   user          User               @relation(fields: [userId], references: [id])
   pickupRequest PickupRequest?     @relation(fields: [pickupRequestId], references: [id])
   voucher       Voucher?           @relation(fields: [voucherId], references: [id])
+  achievement   Achievement?       @relation(fields: [achievementId], references: [id])
   redemption    VoucherRedemption? @relation(fields: [redemptionId], references: [id])
 
   @@index([userId, createdAt])
   @@index([pickupRequestId])
   @@index([voucherId])
+  @@index([achievementId])
   @@index([redemptionId])
   @@map("point_ledger")
+}
+
+model Achievement {
+  id           String            @id @default(uuid())
+  title        String            @db.VarChar(255)
+  description  String?           @db.Text
+  metric       AchievementMetric
+  threshold    Decimal           @db.Decimal(10, 2)
+  rewardPoints Int               @map("reward_points")
+  isActive     Boolean           @default(true) @map("is_active")
+  createdAt    DateTime          @default(now()) @map("created_at")
+
+  userAchievements UserAchievement[]
+  pointLedger      PointLedger[]
+
+  @@index([metric, isActive])
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  achievementId String   @map("achievement_id")
+  metricValue   Decimal  @map("metric_value") @db.Decimal(10, 2)
+  pointsAwarded Int      @map("points_awarded")
+  achievedAt    DateTime @default(now()) @map("achieved_at")
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id])
+
+  @@unique([userId, achievementId])
+  @@index([userId, achievedAt])
+  @@index([achievementId])
+  @@map("user_achievements")
 }
 
 model Voucher {

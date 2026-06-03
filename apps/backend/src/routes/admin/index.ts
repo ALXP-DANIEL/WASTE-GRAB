@@ -4,3 +4,4 @@ export { default as adminNotificationRouter } from './notification.routes.js';
 export { default as adminPickupRouter } from './pickup.routes.js';
 export { default as adminWasteCategoryRouter } from './waste-category.routes.js';
 export { default as adminVoucherRouter } from './voucher.routes.js';
+export { default as adminAchievementRouter } from './achievement.routes.js';

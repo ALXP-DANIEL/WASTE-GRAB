@@ -10,6 +10,7 @@ import {
   lucidePackageCheck,
   lucideRecycle,
   lucideUsers,
+  lucideTrophy,
 } from '@ng-icons/lucide';
 
 @Component({
@@ -29,6 +30,7 @@ import {
       lucidePackageCheck,
       lucideRecycle,
       lucideUsers,
+      lucideTrophy,
     }),
   ],
 })
@@ -45,6 +47,12 @@ export class AdminPage {
       description: 'Create redeemable rewards and audit customer point activity.',
       route: routePath(ROUTE_PATHS.admin.base, ROUTE_PATHS.admin.vouchers),
       icon: 'lucideGift',
+    },
+    {
+      label: 'Achievements',
+      description: 'Create milestone rewards for pickup count and contributed weight.',
+      route: routePath(ROUTE_PATHS.admin.base, ROUTE_PATHS.admin.achievements),
+      icon: 'lucideTrophy',
     },
     {
       label: 'Locations',

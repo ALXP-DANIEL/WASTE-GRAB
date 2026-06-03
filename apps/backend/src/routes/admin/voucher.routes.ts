@@ -89,6 +89,11 @@ voucherRouter.get("/point-ledger", requireAdmin, async (_req: Request, res: Resp
             title: true,
           },
         },
+        achievement: {
+          select: {
+            title: true,
+          },
+        },
       },
       take: 150,
     });
@@ -376,6 +381,7 @@ function toPointLedgerLogResponse(row: {
   userId: string;
   pickupRequestId: string | null;
   voucherId: string | null;
+  achievementId: string | null;
   redemptionId: string | null;
   type: string;
   status: string;
@@ -391,12 +397,16 @@ function toPointLedgerLogResponse(row: {
   voucher: {
     title: string;
   } | null;
+  achievement: {
+    title: string;
+  } | null;
 }): AdminPointLedgerLog {
   return {
     id: row.id,
     userId: row.userId,
     pickupRequestId: row.pickupRequestId,
     voucherId: row.voucherId,
+    achievementId: row.achievementId,
     redemptionId: row.redemptionId,
     type: row.type as AdminPointLedgerLog["type"],
     status: row.status as AdminPointLedgerLog["status"],
@@ -407,7 +417,7 @@ function toPointLedgerLogResponse(row: {
     createdAt: row.createdAt.toISOString(),
     userName: row.user.name,
     userEmail: row.user.email,
-    voucherTitle: row.voucher?.title ?? null,
+    voucherTitle: row.voucher?.title ?? row.achievement?.title ?? null,
   };
 }
 
