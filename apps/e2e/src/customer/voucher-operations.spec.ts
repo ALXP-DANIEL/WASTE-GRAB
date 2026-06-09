@@ -33,7 +33,7 @@ test('customer can redeem a reward voucher and view it in My Vouchers', async ({
   await expect(page.getByRole('button', { name: 'Redeem Voucher' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Redeem Voucher' }).click();
-  await page.getByRole('button', { name: 'Redeem' }).last().click();
+  await page.getByTestId('z-ok-button').click();
 
   await expect(page.getByRole('heading', { name: 'Voucher Redeemed' })).toBeVisible();
   await expect(page.getByText('Your code is COFFEE100.')).toBeVisible();
