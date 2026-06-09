@@ -231,7 +231,7 @@ function getInitials(name?: string | null): string {
   template: `
     <!-- Desktop Sidebar -->
     <aside
-      class="hidden lg:flex lg:flex-col lg:fixed lg:left-0 lg:top-0 lg:h-dvh lg:w-64 lg:bg-primary/10 lg:border-r lg:border-primary/20 z-40 lg:rounded-tr-2xl lg:rounded-br-2xl overflow-y-auto"
+      class="hidden lg:flex lg:flex-col lg:fixed lg:left-0 lg:top-0 lg:h-dvh lg:w-64 lg:bg-background lg:border-r lg:border-primary/20 z-40 lg:rounded-tr-2xl lg:rounded-br-2xl overflow-y-auto"
     >
       <div class="flex flex-col h-full">
         <!-- Brand -->
