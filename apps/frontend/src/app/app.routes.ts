@@ -29,6 +29,7 @@ const pages = {
     import('./pages/admin/waste-categories/waste-categories.component').then((m) => m.AdminWasteCategoriesPage),
   adminVouchers: () => import('./pages/admin/vouchers/vouchers.component').then((m) => m.AdminVouchersPage),
   adminAchievements: () => import('./pages/admin/achievements/achievements.component').then((m) => m.AdminAchievementsPage),
+  adminAuthSlides: () => import('./pages/admin/auth-slides/auth-slides.component').then((m) => m.AdminAuthSlidesPage),
   adminNotifications: () =>
     import('./pages/admin/notifications/notifications.component').then((m) => m.AdminNotificationsPage),
   collectorDashboard: () => import('./pages/collector/collector.component').then((m) => m.CollectorPage),
@@ -202,6 +203,11 @@ const ROUTE_CONFIG = [
         path: ROUTE_PATHS.admin.achievements,
         title: 'Achievements',
         loadComponent: pages.adminAchievements,
+      },
+      {
+        path: ROUTE_PATHS.admin.authSlides,
+        title: 'Auth Slides',
+        loadComponent: pages.adminAuthSlides,
       },
     ],
   },

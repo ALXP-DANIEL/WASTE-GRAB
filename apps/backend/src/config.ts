@@ -29,6 +29,8 @@ const supabasePickupImagesBucket =
   process.env.SUPABASE_PICKUP_IMAGES_BUCKET?.trim() || "pickup-images";
 const supabaseUserAvatarsBucket =
   process.env.SUPABASE_USER_AVATARS_BUCKET?.trim() || "user-avatars";
+const supabaseAuthSlidesBucket =
+  process.env.SUPABASE_AUTH_SLIDES_BUCKET?.trim() || "auth-slides";
 const webPushPublicKey = process.env.WEB_PUSH_PUBLIC_KEY?.trim() || "";
 const webPushPrivateKey = process.env.WEB_PUSH_PRIVATE_KEY?.trim() || "";
 const webPushSubject = process.env.WEB_PUSH_SUBJECT?.trim() || "mailto:admin@wastegrab.local";
@@ -58,6 +60,7 @@ export const config = {
   supabaseServiceRoleKey,
   supabasePickupImagesBucket,
   supabaseUserAvatarsBucket,
+  supabaseAuthSlidesBucket,
   webPushPublicKey,
   webPushPrivateKey,
   webPushSubject,

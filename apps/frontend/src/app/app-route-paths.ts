@@ -24,6 +24,7 @@ export const ROUTE_PATHS = {
     vouchers: 'vouchers',
     notifications: 'notifications',
     achievements: 'achievements',
+    authSlides: 'auth-slides',
   },
   collector: {
     base: 'collector',

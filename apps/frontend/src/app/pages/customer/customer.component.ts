@@ -186,8 +186,12 @@ export class CustomerPage {
       tone: 'brand',
     },
     {
-      label: 'Active',
-      value: String(this.activeRequests().length),
+      label: 'Completed',
+      value: String(
+        this.requests().filter(
+          (request) => request.status === PickupStatus.COMPLETED,
+        ).length,
+      ),
       icon: 'lucideActivity',
       tone: 'info',
     },

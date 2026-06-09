@@ -67,6 +67,9 @@ const seedIds = {
   pickupEarnedLedger: "66666666-6666-4666-8666-666666666666",
   voucherRedeemedLedger: "77777777-7777-4777-8777-777777777777",
   adminAdjustmentLedger: "88888888-8888-4888-8888-888888888888",
+  authSlideReduce: "10101010-1010-4101-8101-101010101010",
+  authSlideRewards: "20202020-2020-4202-8202-101010101010",
+  authSlideCommunity: "30303030-3030-4303-8303-101010101010",
   klangValleyCollection: "aaaa1111-1111-4aaa-8aaa-111111111111",
   klangCollection: "bbbb2222-2222-4bbb-8bbb-222222222222",
   penangCollection: "cccc3333-3333-4ccc-8ccc-333333333333",
@@ -445,6 +448,75 @@ export async function seedLocalVouchersAndRewards() {
       stock: 25,
       status: VoucherStatus.ACTIVE,
       expiresAt: new Date("2026-12-31T15:59:59.000Z"),
+    },
+  });
+
+  await prisma.authSlide.upsert({
+    where: { id: seedIds.authSlideReduce },
+    update: {
+      title: "Reduce Waste",
+      quote: "Help reduce environmental impact by properly managing and recycling waste responsibly.",
+      author: "Eco Warrior",
+      imageUrl: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1600&q=85",
+      imageAlt: "Sorted recyclable containers ready for collection",
+      sortOrder: 10,
+      isActive: true,
+    },
+    create: {
+      id: seedIds.authSlideReduce,
+      title: "Reduce Waste",
+      quote: "Help reduce environmental impact by properly managing and recycling waste responsibly.",
+      author: "Eco Warrior",
+      imageUrl: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1600&q=85",
+      imageAlt: "Sorted recyclable containers ready for collection",
+      sortOrder: 10,
+      isActive: true,
+    },
+  });
+
+  await prisma.authSlide.upsert({
+    where: { id: seedIds.authSlideRewards },
+    update: {
+      title: "Earn Rewards",
+      quote: "Get rewarded for your contribution to a cleaner planet and sustainable future.",
+      author: "Sustainability Lead",
+      imageUrl: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1600&q=85",
+      imageAlt: "Hands holding a small green plant outdoors",
+      sortOrder: 20,
+      isActive: true,
+    },
+    create: {
+      id: seedIds.authSlideRewards,
+      title: "Earn Rewards",
+      quote: "Get rewarded for your contribution to a cleaner planet and sustainable future.",
+      author: "Sustainability Lead",
+      imageUrl: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1600&q=85",
+      imageAlt: "Hands holding a small green plant outdoors",
+      sortOrder: 20,
+      isActive: true,
+    },
+  });
+
+  await prisma.authSlide.upsert({
+    where: { id: seedIds.authSlideCommunity },
+    update: {
+      title: "Build Community",
+      quote: "Connect with others who care about sustainability and environmental change.",
+      author: "Community Manager",
+      imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1600&q=85",
+      imageAlt: "People collecting waste in a community cleanup",
+      sortOrder: 30,
+      isActive: true,
+    },
+    create: {
+      id: seedIds.authSlideCommunity,
+      title: "Build Community",
+      quote: "Connect with others who care about sustainability and environmental change.",
+      author: "Community Manager",
+      imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1600&q=85",
+      imageAlt: "People collecting waste in a community cleanup",
+      sortOrder: 30,
+      isActive: true,
     },
   });
 

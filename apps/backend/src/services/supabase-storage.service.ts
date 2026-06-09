@@ -11,6 +11,10 @@ export function getUserAvatarsBucket(): string {
   return config.supabaseUserAvatarsBucket;
 }
 
+export function getAuthSlidesBucket(): string {
+  return config.supabaseAuthSlidesBucket;
+}
+
 export function getSupabaseClient(): SupabaseClient {
   if (!config.supabaseUrl || !config.supabaseServiceRoleKey) {
     throw new Error("Supabase storage is not configured.");
@@ -38,6 +42,13 @@ export async function uploadPublicAvatar(
   body: Buffer,
 ): Promise<string> {
   return uploadPublicImageToBucket(getUserAvatarsBucket(), path, body, true);
+}
+
+export async function uploadPublicAuthSlide(
+  path: string,
+  body: Buffer,
+): Promise<string> {
+  return uploadPublicImageToBucket(getAuthSlidesBucket(), path, body, true);
 }
 
 async function uploadPublicImageToBucket(
