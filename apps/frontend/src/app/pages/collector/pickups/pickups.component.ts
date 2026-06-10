@@ -25,6 +25,7 @@ import { AppHeaderComponent } from '@/ui/header/header.component';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { RouteMapComponent, type RouteMapStop } from '@/ui/route-map/route-map.component';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
+import { StatCardComponent } from '@/ui/stat-card/stat-card.component';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { ZardTableImports } from '@/ui/zard/table';
 
@@ -48,7 +49,7 @@ const ROUTE_FIT_THRESHOLD_KM = 15;
 @Component({
   selector: 'app-collector-pickups-page',
   templateUrl: './pickups.html',
-  imports: [CommonModule, RouterLink, AppHeaderComponent, FetchStateComponent, ZardButtonComponent, TableHeaderComponent, NgIcon, RouteMapComponent, ...ZardTableImports],
+  imports: [CommonModule, RouterLink, AppHeaderComponent, FetchStateComponent, ZardButtonComponent, TableHeaderComponent, StatCardComponent, NgIcon, RouteMapComponent, ...ZardTableImports],
   viewProviders: [
     provideIcons({
       lucideArrowUpRight,

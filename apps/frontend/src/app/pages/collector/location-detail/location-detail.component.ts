@@ -28,13 +28,13 @@ import { ZardButtonComponent } from '@/ui/zard/button/button.component';
       <app-fetch-state [isLoading]="isLoading()" [loadError]="loadError()" loadingText="Loading location...">
         @if (location(); as loc) {
         <div class="grid gap-4">
-          <section class="rounded-xl border border-border bg-card p-4 shadow-sm lg:p-6">
+          <section class="rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6">
             <div class="grid gap-5 lg:grid-cols-[18rem_minmax(0,1fr)] lg:items-start">
               <div class="overflow-hidden rounded-lg bg-muted">
                 @if (loc.imageUrl) {
-                <img [src]="loc.imageUrl" [alt]="loc.name" class="aspect-[4/3] w-full object-cover" />
+                <img [src]="loc.imageUrl" [alt]="loc.name" class="aspect-4/3 w-full object-cover" />
                 } @else {
-                <div class="grid aspect-[4/3] place-items-center text-muted-foreground">
+                <div class="grid aspect-4/3 place-items-center text-muted-foreground">
                   <ng-icon name="lucideImage" class="size-8!" />
                 </div>
                 }
@@ -43,7 +43,7 @@ import { ZardButtonComponent } from '@/ui/zard/button/button.component';
               <div class="grid gap-4">
                 <div>
                   <p class="text-sm font-semibold text-primary">Collection Location</p>
-                  <h1 class="mt-1 text-2xl font-semibold tracking-normal">{{ loc.name }}</h1>
+                  <h1 class="mt-1 text-2xl font-bold tracking-tight">{{ loc.name }}</h1>
                   <p class="mt-2 text-sm text-muted-foreground">{{ locationLabel(loc) }}</p>
                 </div>
 
@@ -63,7 +63,7 @@ import { ZardButtonComponent } from '@/ui/zard/button/button.component';
                   [href]="url"
                   target="_blank"
                   rel="noreferrer"
-                  class="inline-flex h-10 w-fit items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+                  class="inline-flex h-11 w-fit items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
                 >
                   <ng-icon name="lucideNavigation" class="size-4!" />
                   Open in Maps
@@ -73,11 +73,11 @@ import { ZardButtonComponent } from '@/ui/zard/button/button.component';
             </div>
           </section>
 
-          <section class="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+          <section class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
             @if (hasCoordinates(loc)) {
-            <app-route-map class="block h-[28rem] min-h-[28rem]" [collectionPoints]="mapMarkers()" />
+            <app-route-map class="block h-112 min-h-112" [collectionPoints]="mapMarkers()" />
             } @else {
-            <div class="grid h-[28rem] place-items-center p-6 text-center">
+            <div class="grid h-112 place-items-center p-6 text-center">
               <div>
                 <ng-icon name="lucideMapPin" class="mx-auto size-8! text-muted-foreground" />
                 <p class="mt-3 font-semibold">Map unavailable</p>

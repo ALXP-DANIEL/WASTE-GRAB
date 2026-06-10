@@ -12,6 +12,7 @@ import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponen
 import { ZardInputDirective } from '@/ui/zard/input';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
+import { StatCardComponent } from '@/ui/stat-card/stat-card.component';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { LocationService, type LocationRecord } from '@/services/location.service';
 import { GooglePlaceInputComponent, type GooglePlaceSelection } from '@/ui/google-place-input/google-place-input.component';
@@ -28,6 +29,7 @@ type LocationModalMode = 'add' | 'edit' | null;
     ...ZardTableImports,
     ZardButtonComponent,
     FetchStateComponent,
+    StatCardComponent,
     TableHeaderComponent,
     ZardModalComponent,
     ZardFormFieldComponent,

@@ -32,7 +32,7 @@ const pickupSteps: Array<{ status: PickupStatus; label: string; icon: string }> 
     @if (pickup(); as current) {
       <a
         [routerLink]="current.detailRoute"
-        class="block rounded-xl border border-primary/30 bg-card p-4 shadow-sm transition-colors hover:border-primary/60"
+        class="card-lift block rounded-2xl border border-primary/30 bg-card p-4 transition-colors hover:border-primary/60 lg:p-5"
       >
         <div class="flex items-center justify-between gap-3">
           <div class="flex min-w-0 items-center gap-2">
@@ -40,7 +40,7 @@ const pickupSteps: Array<{ status: PickupStatus; label: string; icon: string }> 
               >#{{ current.shortId }}</span
             >
             <span
-              class="rounded-md px-2.5 py-1 text-xs font-bold capitalize"
+              class="rounded-full px-2.5 py-1 text-xs font-bold capitalize"
               [class]="current.statusClass"
             >
               {{ current.statusLabel }}
@@ -86,25 +86,25 @@ const pickupSteps: Array<{ status: PickupStatus; label: string; icon: string }> 
           <div class="min-w-0">
             <h2 class="truncate text-xl font-semibold">{{ current.title }}</h2>
             <p
-              class="mt-1 line-clamp-2 text-sm leading-6 text-muted-foreground"
+              class="mt-1 line-clamp-2 text-sm/6  text-muted-foreground"
             >
               {{ current.address }}
             </p>
 
             <div class="mt-3 grid grid-cols-3 gap-2 text-center">
-              <div class="rounded-lg bg-muted/60 px-2 py-2">
+              <div class="rounded-lg bg-muted/60 p-2 ">
                 <p class="text-xs text-muted-foreground">Weight</p>
                 <p class="truncate text-sm font-semibold">
                   {{ current.weightKg | number: '1.1-1' }} kg
                 </p>
               </div>
-              <div class="rounded-lg bg-muted/60 px-2 py-2">
+              <div class="rounded-lg bg-muted/60 p-2 ">
                 <p class="text-xs text-muted-foreground">Potential Points</p>
                 <p class="truncate text-sm font-semibold">
                   {{ current.points }}
                 </p>
               </div>
-              <div class="rounded-lg bg-muted/60 px-2 py-2">
+              <div class="rounded-lg bg-muted/60 p-2 ">
                 <p class="text-xs text-muted-foreground">Items</p>
                 <p class="truncate text-sm font-semibold">
                   {{ current.itemCount }}
@@ -114,7 +114,7 @@ const pickupSteps: Array<{ status: PickupStatus; label: string; icon: string }> 
           </div>
         </div>
 
-        <div class="mt-4 rounded-lg border border-border bg-card p-3">
+        <div class="mt-4 rounded-xl border border-border bg-card p-3">
           <ol class="flex items-center">
             @for (step of steps; track step.status) {
               <li class="flex flex-1 items-center last:flex-none">
@@ -153,13 +153,13 @@ const pickupSteps: Array<{ status: PickupStatus; label: string; icon: string }> 
         </div>
       </a>
     } @else {
-      <section class="rounded-xl border border-border bg-card p-4 shadow-sm">
+      <section class="card-lift rounded-2xl border border-border/60 bg-card p-4 lg:p-5">
         <div
           class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
         >
           <div class="flex items-start gap-3">
             <span
-              class="grid size-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary"
+              class="grid size-10 shrink-0 place-items-center rounded-full bg-primary/10 text-primary"
             >
               <ng-icon name="lucideCalendarCheck" class="size-5!" />
             </span>
@@ -172,7 +172,7 @@ const pickupSteps: Array<{ status: PickupStatus; label: string; icon: string }> 
           </div>
           <a
             [routerLink]="newPickupRoute()"
-            class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+            class="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
           >
             <ng-icon name="lucidePlus" class="size-4!" />
             Request pickup

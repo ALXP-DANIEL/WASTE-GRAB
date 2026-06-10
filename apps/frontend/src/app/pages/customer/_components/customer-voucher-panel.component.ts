@@ -18,8 +18,8 @@ import type { CustomerVoucherSummary } from './customer-dashboard.models';
 
       <div class="space-y-2">
         @for (voucher of vouchers(); track voucher.title + voucher.detail) {
-          <a [routerLink]="voucher.route" class="flex items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-sm transition-colors hover:bg-muted/40">
-            <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+          <a [routerLink]="voucher.route" class="card-lift flex items-center gap-3 rounded-2xl border border-border/60 bg-card p-3 transition-colors hover:bg-muted/40">
+            <span class="grid size-9 shrink-0 place-items-center rounded-full bg-accent text-accent-foreground">
               <ng-icon name="lucideGift" class="size-4!" />
             </span>
             <span class="min-w-0 flex-1">
@@ -31,7 +31,7 @@ import type { CustomerVoucherSummary } from './customer-dashboard.models';
             </span>
           </a>
         } @empty {
-          <a [routerLink]="vouchersRoute()" class="flex items-center justify-between gap-3 rounded-xl border border-dashed border-border bg-card p-3 text-sm text-muted-foreground shadow-sm transition-colors hover:bg-muted/40">
+          <a [routerLink]="vouchersRoute()" class="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-border bg-card p-3 text-sm text-muted-foreground shadow-sm transition-colors hover:bg-muted/40">
             Browse reward vouchers
             <ng-icon name="lucideArrowRight" class="size-4!" />
           </a>

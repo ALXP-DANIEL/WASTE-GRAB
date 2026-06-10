@@ -27,6 +27,7 @@ import { AuthService } from '@/services/auth.service';
 import { PickupRequestService } from '@/services/pickup-request.service';
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
+import { StatCardComponent } from '@/ui/stat-card/stat-card.component';
 import { RouteMapComponent, type RouteMapPoint, type RouteMapStop } from '@/ui/route-map/route-map.component';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
 import { Z_MODAL_DATA } from '@/ui/zard/dialog/dialog.service';
@@ -232,7 +233,7 @@ export class AcceptPickupDialogComponent {
               <span class="block truncate text-sm font-semibold">{{ location.name }}</span>
               <span class="block truncate text-xs text-muted-foreground">{{ locationLabel(location) }}</span>
             </span>
-            <span class="shrink-0 rounded-md bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
+            <span class="shrink-0 rounded-full bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
               {{ location.distanceKm | number:'1.1-1' }} km
             </span>
           </span>
@@ -312,7 +313,7 @@ export class DropoffLocationDialogComponent {
 @Component({
   selector: 'app-pickup-detail-page',
   templateUrl: './pickup-detail.html',
-  imports: [CommonModule, FormsModule, AppHeaderComponent, FetchStateComponent, RouterLink, NgIcon, RouteMapComponent],
+  imports: [CommonModule, FormsModule, AppHeaderComponent, FetchStateComponent, RouterLink, NgIcon, RouteMapComponent, StatCardComponent],
   viewProviders: [
     provideIcons({
       lucideArrowLeft,

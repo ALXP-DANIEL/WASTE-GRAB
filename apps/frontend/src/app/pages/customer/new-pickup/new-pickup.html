@@ -11,7 +11,7 @@
     <section class="grid gap-5">
       @if (hasActivePickupRequest()) {
       <div
-        class="rounded-xl border border-primary/30 bg-primary/10 p-4 text-sm text-primary"
+        class="rounded-2xl border border-primary/30 bg-primary/10 p-4 text-sm text-primary"
       >
         <div class="flex items-start gap-3">
           <ng-icon name="lucideCircleAlert" class="mt-0.5 size-5! shrink-0" />
@@ -28,7 +28,7 @@
       }
 
       <nav
-        class="grid grid-cols-4 gap-2 rounded-xl border border-border bg-card p-2 shadow-sm"
+        class="grid grid-cols-4 gap-2 rounded-2xl border border-border bg-card p-2 shadow-sm"
         aria-label="Pickup request steps"
         data-tour="pickup-steps"
       >
@@ -45,7 +45,7 @@
           (click)="goToStep(step.id)"
         >
           <span
-            class="flex size-7 items-center justify-center rounded-lg bg-background/70"
+            class="flex size-7 items-center justify-center rounded-full bg-background/70"
           >
             <ng-icon [name]="step.icon" class="size-4!" />
           </span>
@@ -56,7 +56,7 @@
 
       @if (isStepActive('images')) {
       <section
-        class="rounded-xl border border-border bg-card shadow-sm"
+        class="rounded-2xl border border-border bg-card shadow-sm"
         data-tour="pickup-images"
       >
         <div
@@ -64,7 +64,7 @@
         >
           <div class="flex items-center gap-2">
             <span
-              class="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary"
+              class="flex size-9 items-center justify-center rounded-full bg-primary/10 text-primary"
             >
               <ng-icon name="lucideImage" class="size-5!" />
             </span>
@@ -107,7 +107,7 @@
             data-tour="pickup-upload"
           >
             <span
-              class="flex size-12 items-center justify-center rounded-xl bg-background text-primary shadow-sm"
+              class="flex size-12 items-center justify-center rounded-full bg-background text-primary shadow-sm"
             >
               <ng-icon name="lucideUpload" class="size-6!" />
             </span>
@@ -150,7 +150,7 @@
               } @else {
               <button
                 type="button"
-                class="absolute right-2 top-2 inline-flex size-8 items-center justify-center rounded-lg bg-background/90 text-foreground shadow-sm transition-colors hover:bg-background"
+                class="absolute right-2 top-2 inline-flex size-8 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm transition-colors hover:bg-background"
                 (click)="removeImage(index)"
                 aria-label="Remove image"
               >
@@ -194,7 +194,7 @@
 
             <button
               type="button"
-              class="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 text-sm font-semibold transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+              class="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full border border-border bg-background px-4 text-sm font-semibold transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
               (click)="nextStep()"
               [disabled]="!canGoNext() || !canCreateRequest()"
             >
@@ -206,7 +206,7 @@
       </section>
       } @if (isStepActive('items')) {
       <section
-        class="rounded-xl border border-border bg-card shadow-sm"
+        class="rounded-2xl border border-border bg-card shadow-sm"
         data-tour="pickup-items"
       >
         <div
@@ -223,7 +223,7 @@
             @if (hasAiSuggestions()) {
             <button
               type="button"
-              class="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-primary/30 bg-primary/10 px-3 text-xs font-semibold text-primary transition-colors hover:bg-primary/15 disabled:cursor-not-allowed disabled:opacity-60"
+              class="inline-flex h-9 items-center justify-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 text-xs font-semibold text-primary transition-colors hover:bg-primary/15 disabled:cursor-not-allowed disabled:opacity-60"
               (click)="resetToAiSuggestions()"
               [disabled]="isAnalyzing() || !canCreateRequest()"
             >
@@ -234,7 +234,7 @@
 
             <button
               type="button"
-              class="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-border bg-background px-3 text-xs font-semibold transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+              class="inline-flex h-9 items-center justify-center gap-2 rounded-full border border-border bg-background px-3 text-xs font-semibold transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
               (click)="addPickupItem()"
               [disabled]="isAnalyzing() || !canCreateRequest()"
             >
@@ -250,7 +250,7 @@
             @for (item of pickupItems(); let index = $index; track item) { @if
             (selectedCategory(item)) {
             <span
-              class="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold"
+              class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold"
               [class.bg-primary/10]="isUnmodifiedAiSuggestion(index, item)"
               [class.text-primary]="isUnmodifiedAiSuggestion(index, item)"
               [class.bg-muted]="!isUnmodifiedAiSuggestion(index, item)"
@@ -341,7 +341,7 @@
       </section>
       } @if (isStepActive('pickup')) {
       <section
-        class="rounded-xl border border-border bg-card shadow-sm"
+        class="rounded-2xl border border-border bg-card shadow-sm"
         data-tour="pickup-address"
       >
         <div class="border-b border-border px-4 py-3">
@@ -408,7 +408,7 @@
       </section>
       } @if (isStepActive('confirm')) {
       <section
-        class="rounded-xl border border-border bg-card shadow-sm"
+        class="rounded-2xl border border-border bg-card shadow-sm"
         data-tour="pickup-confirm"
       >
         <div class="border-b border-border px-4 py-3">
@@ -433,7 +433,7 @@
             @for (item of pickupItems(); let index = $index; track item) { @if
             (selectedCategory(item)) {
             <div
-              class="flex items-center justify-between rounded-lg bg-muted/60 px-3 py-3 text-sm"
+              class="flex items-center justify-between rounded-lg bg-muted/60 p-3  text-sm"
             >
               <span class="font-medium"
                 >{{ selectedCategory(item)?.name }}</span
@@ -459,7 +459,7 @@
       <div class="flex items-center justify-between gap-3">
         <button
           type="button"
-          class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 text-sm font-semibold transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+          class="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-border bg-background px-4 text-sm font-semibold transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
           (click)="previousStep()"
           [disabled]="!canGoBack() || !canCreateRequest()"
         >
@@ -470,7 +470,7 @@
         @if (!isStepActive('confirm')) {
         <button
           type="button"
-          class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+          class="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
           (click)="nextStep()"
           [disabled]="!canGoNext() || !canCreateRequest()"
         >
@@ -483,7 +483,7 @@
 
     <aside class="grid content-start gap-5 xl:sticky xl:top-6">
       @if (!isStepActive('images') && images().length) {
-      <section class="rounded-xl border border-border bg-card shadow-sm">
+      <section class="rounded-2xl border border-border bg-card shadow-sm">
         <div
           class="flex items-center justify-between border-b border-border px-4 py-3"
         >
@@ -532,7 +532,7 @@
       }
 
       <section
-        class="rounded-xl border border-border bg-card shadow-sm"
+        class="rounded-2xl border border-border bg-card shadow-sm"
         data-tour="pickup-estimate"
       >
         <div class="border-b border-border px-4 py-3">
@@ -544,7 +544,7 @@
 
         <div class="grid gap-3 p-4">
           <div
-            class="flex items-center justify-between rounded-lg bg-muted/60 px-3 py-3"
+            class="flex items-center justify-between rounded-lg bg-muted/60 p-3 "
           >
             <span class="flex items-center gap-2 text-sm text-muted-foreground">
               <ng-icon name="lucidePackage" class="size-4!" />
@@ -554,7 +554,7 @@
           </div>
 
           <div
-            class="flex items-center justify-between rounded-lg bg-muted/60 px-3 py-3"
+            class="flex items-center justify-between rounded-lg bg-muted/60 p-3 "
           >
             <span class="flex items-center gap-2 text-sm text-muted-foreground">
               <ng-icon name="lucideScale" class="size-4!" />
@@ -566,7 +566,7 @@
           </div>
 
           <div
-            class="flex items-center justify-between rounded-lg bg-primary/10 px-3 py-3 text-primary"
+            class="flex items-center justify-between rounded-lg bg-primary/10 p-3  text-primary"
           >
             <span class="flex items-center gap-2 text-sm font-medium">
               <ng-icon name="lucideCheckCircle2" class="size-4!" />
@@ -579,7 +579,7 @@
 
       @if (submitError()) {
       <div
-        class="rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+        class="rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
       >
         <div class="flex gap-2">
           <ng-icon name="lucideCircleAlert" class="mt-0.5 size-4! shrink-0" />
@@ -588,7 +588,7 @@
       </div>
       } @if (submitSuccess()) {
       <div
-        class="rounded-xl border border-primary/30 bg-primary/10 p-3 text-sm text-primary"
+        class="rounded-2xl border border-primary/30 bg-primary/10 p-3 text-sm text-primary"
       >
         <div class="flex gap-2">
           <ng-icon name="lucideCheckCircle2" class="mt-0.5 size-4! shrink-0" />
@@ -599,7 +599,7 @@
 
       <button
         type="submit"
-        class="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+        class="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
         [disabled]="isSubmitting() || isAnalyzing() || !isStepActive('confirm') || !canCreateRequest()"
         data-tour="pickup-submit"
       >

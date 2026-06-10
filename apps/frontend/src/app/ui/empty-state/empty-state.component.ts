@@ -11,10 +11,10 @@ import { NgIcon } from '@ng-icons/core';
   imports: [NgIcon],
   template: `
     <div
-      class="grid min-h-64 place-items-center rounded-xl border border-dashed border-border bg-card/50 p-6 text-center"
+      class="grid min-h-64 place-items-center rounded-2xl border border-dashed border-border bg-card/50 p-6 text-center"
     >
       <div class="grid justify-items-center">
-        <span class="grid size-12 place-items-center rounded-xl bg-primary/10 text-primary">
+        <span class="grid size-14 place-items-center rounded-full bg-primary/10 text-primary">
           <ng-icon [name]="icon()" class="size-6!" />
         </span>
         <h3 class="mt-3 text-base font-semibold">{{ title() }}</h3>

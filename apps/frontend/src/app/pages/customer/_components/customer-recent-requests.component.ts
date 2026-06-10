@@ -18,7 +18,7 @@ import type { CustomerPickupSummary } from './customer-dashboard.models';
 
       <div class="space-y-2">
         @for (request of requests(); track request.id) {
-          <a [routerLink]="request.detailRoute" class="flex items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-sm transition-colors hover:bg-muted/40">
+          <a [routerLink]="request.detailRoute" class="card-lift flex items-center gap-3 rounded-2xl border border-border/60 bg-card p-3 transition-colors hover:bg-muted/40">
             <span class="size-11 shrink-0 overflow-hidden rounded-lg border border-border bg-muted">
               @if (request.imageUrl) {
                 <img [src]="request.imageUrl" alt="Pickup image" class="size-full object-cover" />
@@ -32,7 +32,7 @@ import type { CustomerPickupSummary } from './customer-dashboard.models';
             <span class="min-w-0 flex-1">
               <span class="flex min-w-0 items-center gap-2">
                 <span class="truncate font-mono text-xs font-semibold">#{{ request.shortId }}</span>
-                <span class="rounded-md px-2 py-0.5 text-[10px] font-bold capitalize" [class]="request.statusClass">
+                <span class="rounded-full px-2 py-0.5 text-[10px] font-bold capitalize" [class]="request.statusClass">
                   {{ request.statusLabel }}
                 </span>
               </span>
@@ -49,7 +49,7 @@ import type { CustomerPickupSummary } from './customer-dashboard.models';
             <ng-icon name="lucideChevronRight" class="size-4! shrink-0 text-muted-foreground" />
           </a>
         } @empty {
-          <div class="rounded-xl border border-dashed border-border bg-card p-4 text-sm text-muted-foreground">
+          <div class="rounded-2xl border border-dashed border-border bg-card p-4 text-sm text-muted-foreground">
             Pickup requests will appear here after you create one.
           </div>
         }

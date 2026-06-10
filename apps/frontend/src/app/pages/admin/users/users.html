@@ -12,56 +12,30 @@
     </button>
   </app-header>
 
-  <div class="grid gap-3 sm:grid-cols-3">
-    <article
-      class="flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-sm"
-    >
-      <span
-        class="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"
-      >
-        <ng-icon name="lucideUsers" class="size-5!" />
-      </span>
-      <span>
-        <span class="block font-semibold">Customers</span>
-        <span class="block text-sm text-muted-foreground"
-          >{{ customerCount() }} user accounts</span
-        >
-      </span>
-    </article>
-    <article
-      class="flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-sm"
-    >
-      <span
-        class="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"
-      >
-        <ng-icon name="lucideTruck" class="size-5!" />
-      </span>
-      <span>
-        <span class="block font-semibold">Collectors</span>
-        <span class="block text-sm text-muted-foreground"
-          >{{ collectorCount() }} field accounts</span
-        >
-      </span>
-    </article>
-    <article
-      class="flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-sm"
-    >
-      <span
-        class="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"
-      >
-        <ng-icon name="lucideShield" class="size-5!" />
-      </span>
-      <span>
-        <span class="block font-semibold">Admins</span>
-        <span class="block text-sm text-muted-foreground"
-          >{{ adminCount() }} operators</span
-        >
-      </span>
-    </article>
+  <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+    <app-stat-card
+      icon="lucideUsers"
+      label="Customers"
+      [value]="customerCount()"
+      tone="brand"
+    />
+    <app-stat-card
+      icon="lucideTruck"
+      label="Collectors"
+      [value]="collectorCount()"
+      tone="info"
+    />
+    <app-stat-card
+      class="col-span-2 sm:col-span-1"
+      icon="lucideShield"
+      label="Admins"
+      [value]="adminCount()"
+      tone="warning"
+    />
   </div>
 
   <section
-    class="min-w-0 rounded-xl border border-border bg-card p-4 shadow-sm lg:p-6"
+    class="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6"
   >
     <app-table-header
       title="User Management"
@@ -134,7 +108,7 @@
         </article>
         } @empty {
         <div
-          class="rounded-xl border border-dashed border-border bg-card/50 p-8 text-center"
+          class="rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center"
         >
           <p class="font-semibold">No users found.</p>
           <p class="mt-1 text-sm text-muted-foreground">
@@ -155,9 +129,9 @@
       </div>
 
       <div
-        class="hidden max-w-full overflow-x-auto rounded-xl border border-border lg:block"
+        class="hidden max-w-full overflow-x-auto rounded-2xl border border-border lg:block"
       >
-        <table z-table class="min-w-[64rem] bg-card">
+        <table z-table class="min-w-5xl bg-card">
           <caption z-table-caption class="sr-only">
             Users management table
           </caption>
@@ -169,7 +143,7 @@
               <th z-table-head>Role</th>
               <th z-table-head>Phone</th>
               <th z-table-head>Joined</th>
-              <th z-table-head class="w-44 !text-right">Actions</th>
+              <th z-table-head class="w-44 text-right!">Actions</th>
             </tr>
           </thead>
 
@@ -198,7 +172,7 @@
                 <p>{{ user.createdAt | date: 'MMM dd, yyyy' }}</p>
               </td>
 
-              <td z-table-cell class="w-44 !text-right">
+              <td z-table-cell class="w-44 text-right!">
                 <div class="flex justify-end gap-2">
                   <button
                     z-button

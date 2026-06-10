@@ -6,7 +6,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   template: `
     @if (isLoading()) {
       <section
-        class="grid min-h-40 place-items-center rounded-xl border border-dashed border-border bg-card/50 p-8 text-center text-muted-foreground"
+        class="grid min-h-40 place-items-center rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center text-muted-foreground"
       >
         <div class="grid justify-items-center gap-3">
           <span
@@ -18,7 +18,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
       </section>
     } @else if (loadError()) {
       <section
-        class="grid min-h-40 place-items-center rounded-xl border border-destructive/30 bg-destructive/5 p-8 text-center"
+        class="grid min-h-40 place-items-center rounded-2xl border border-destructive/30 bg-destructive/5 p-8 text-center"
       >
         <p class="font-semibold text-destructive">{{ loadError() }}</p>
       </section>

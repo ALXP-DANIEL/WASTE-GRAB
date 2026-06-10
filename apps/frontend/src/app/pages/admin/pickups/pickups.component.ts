@@ -24,6 +24,7 @@ import { AppHeaderComponent } from '@/ui/header/header.component';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
+import { StatCardComponent } from '@/ui/stat-card/stat-card.component';
 import { ZardTableImports } from '@/ui/zard/table';
 
 type PickupFilter = 'all' | 'active' | 'completed' | 'cancelled';
@@ -31,7 +32,7 @@ type PickupFilter = 'all' | 'active' | 'completed' | 'cancelled';
 @Component({
   selector: 'app-admin-pickups-page',
   templateUrl: './pickups.html',
-  imports: [CommonModule, RouterLink, AppHeaderComponent, FetchStateComponent, ZardButtonComponent, TableHeaderComponent, NgIcon, ...ZardTableImports],
+  imports: [CommonModule, RouterLink, AppHeaderComponent, FetchStateComponent, ZardButtonComponent, TableHeaderComponent, StatCardComponent, NgIcon, ...ZardTableImports],
   viewProviders: [
     provideIcons({
       lucideArrowUpRight,

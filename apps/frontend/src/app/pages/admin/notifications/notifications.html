@@ -9,7 +9,7 @@
   <div class="grid gap-3 sm:grid-cols-3">
     <button
       type="button"
-      class="flex items-center gap-3 rounded-xl border p-4 text-left transition-colors"
+      class="flex items-center gap-3 rounded-2xl border p-4 text-left transition-colors"
       [class.border-primary]="activeTab() === 'announcements'"
       [class.bg-primary]="activeTab() === 'announcements'"
       [class.text-primary-foreground]="activeTab() === 'announcements'"
@@ -18,7 +18,7 @@
       (click)="selectTab('announcements')"
     >
       <span
-        class="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"
+        class="grid size-10 place-items-center rounded-full bg-primary/10 text-primary"
       >
         <ng-icon name="lucideBell" class="size-5!" />
       </span>
@@ -32,7 +32,7 @@
 
     <button
       type="button"
-      class="flex items-center gap-3 rounded-xl border p-4 text-left transition-colors"
+      class="flex items-center gap-3 rounded-2xl border p-4 text-left transition-colors"
       [class.border-primary]="activeTab() === 'deliveries'"
       [class.bg-primary]="activeTab() === 'deliveries'"
       [class.text-primary-foreground]="activeTab() === 'deliveries'"
@@ -41,7 +41,7 @@
       (click)="selectTab('deliveries')"
     >
       <span
-        class="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"
+        class="grid size-10 place-items-center rounded-full bg-primary/10 text-primary"
       >
         <ng-icon name="lucideRadio" class="size-5!" />
       </span>
@@ -55,7 +55,7 @@
 
     <button
       type="button"
-      class="flex items-center gap-3 rounded-xl border p-4 text-left transition-colors"
+      class="flex items-center gap-3 rounded-2xl border p-4 text-left transition-colors"
       [class.border-primary]="activeTab() === 'policy'"
       [class.bg-primary]="activeTab() === 'policy'"
       [class.text-primary-foreground]="activeTab() === 'policy'"
@@ -64,7 +64,7 @@
       (click)="selectTab('policy')"
     >
       <span
-        class="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"
+        class="grid size-10 place-items-center rounded-full bg-primary/10 text-primary"
       >
         <ng-icon name="lucidePin" class="size-5!" />
       </span>
@@ -79,7 +79,7 @@
 
   @if (activeTab() === 'announcements') {
   <section
-    class="min-w-0 rounded-xl border border-border bg-card p-4 shadow-sm lg:p-6"
+    class="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6"
   >
     <app-table-header
       title="Announcement Logs"
@@ -158,7 +158,7 @@
         </article>
         } @empty {
         <div
-          class="rounded-xl border border-dashed border-border bg-card/50 p-8 text-center"
+          class="rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center"
         >
           <p class="font-semibold">No announcements yet.</p>
           <p class="mt-1 text-sm text-muted-foreground">
@@ -169,9 +169,9 @@
       </div>
 
       <div
-        class="hidden max-w-full overflow-x-auto rounded-xl border border-border lg:block"
+        class="hidden max-w-full overflow-x-auto rounded-2xl border border-border lg:block"
       >
-        <table z-table class="min-w-[76rem] bg-card">
+        <table z-table class="min-w-304 bg-card">
           <thead z-table-header>
             <tr z-table-row>
               <th z-table-head>Announcement</th>
@@ -254,7 +254,7 @@
   </section>
   } @if (activeTab() === 'deliveries') {
   <section
-    class="min-w-0 rounded-xl border border-border bg-card p-4 shadow-sm lg:p-6"
+    class="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6"
   >
     <app-table-header
       title="Delivery Summary"
@@ -271,8 +271,8 @@
       [loadError]="loadError()"
       loadingText="Loading deliveries..."
     >
-      <div class="max-w-full overflow-x-auto rounded-xl border border-border">
-        <table z-table class="min-w-[56rem] bg-card">
+      <div class="max-w-full overflow-x-auto rounded-2xl border border-border">
+        <table z-table class="min-w-4xl bg-card">
           <thead z-table-header>
             <tr z-table-row>
               <th z-table-head>Announcement</th>
@@ -297,7 +297,7 @@
               </td>
               <td z-table-cell>
                 <span
-                  class="rounded-md bg-muted px-2 py-1 text-xs font-semibold text-muted-foreground"
+                  class="rounded-full bg-muted px-2 py-1 text-xs font-semibold text-muted-foreground"
                 >
                   {{ log.type }}
                 </span>
@@ -341,7 +341,7 @@
   </section>
   } @if (activeTab() === 'policy') {
   <section
-    class="min-w-0 rounded-xl border border-border bg-card p-4 shadow-sm lg:p-6"
+    class="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6"
   >
     <app-table-header
       title="Notification Policy"
@@ -374,9 +374,9 @@
       </div>
 
       <div
-        class="mt-4 max-w-full overflow-x-auto rounded-xl border border-border"
+        class="mt-4 max-w-full overflow-x-auto rounded-2xl border border-border"
       >
-        <table z-table class="min-w-[58rem] bg-card">
+        <table z-table class="min-w-232 bg-card">
           <thead z-table-header>
             <tr z-table-row>
               <th z-table-head>Announcement</th>
@@ -528,7 +528,7 @@
           Preview
         </div>
         <div
-          class="min-h-24 rounded-lg border border-border bg-background p-4 text-sm leading-6 text-foreground [&_code]:rounded [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_em]:italic [&_h1]:text-xl [&_h1]:font-semibold [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:text-base [&_h3]:font-semibold [&_li]:ml-5 [&_li]:list-disc [&_p+p]:mt-2 [&_strong]:font-semibold [&_ul]:mt-2"
+          class="min-h-24 rounded-lg border border-border bg-background p-4 text-sm/6  text-foreground [&_code]:rounded [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_em]:italic [&_h1]:text-xl [&_h1]:font-semibold [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:text-base [&_h3]:font-semibold [&_li]:ml-5 [&_li]:list-disc [&_p+p]:mt-2 [&_strong]:font-semibold [&_ul]:mt-2"
           [innerHTML]="announcementForm.controls.message.value | notificationMarkdown"
         ></div>
       </section>

@@ -19,17 +19,17 @@ const TONE_CLASSES: Record<StatCardTone, string> = {
   selector: 'app-stat-card',
   imports: [NgIcon],
   template: `
-    <article class="rounded-xl border border-border bg-card p-3 shadow-sm lg:p-4">
-      <div class="flex items-center gap-2">
-        <span class="grid size-8 shrink-0 place-items-center rounded-lg" [class]="toneClass()">
-          <ng-icon [name]="icon()" class="size-4!" />
+    <article class="card-lift rounded-2xl border border-border/60 bg-card p-4 lg:p-5">
+      <div class="flex items-center gap-2.5">
+        <span class="grid size-9 shrink-0 place-items-center rounded-full" [class]="toneClass()">
+          <ng-icon [name]="icon()" class="size-4.5!" />
         </span>
-        <p class="min-w-0 truncate text-xs font-medium text-muted-foreground">{{ label() }}</p>
+        <p class="min-w-0 truncate text-xs font-semibold text-muted-foreground">{{ label() }}</p>
       </div>
-      <p class="mt-2 truncate text-2xl font-semibold tracking-tight">
+      <p class="mt-2.5 truncate text-2xl font-bold tracking-tight lg:text-3xl">
         {{ value() }}
         @if (unit()) {
-          <span class="ml-1 text-sm font-medium text-muted-foreground">{{ unit() }}</span>
+          <span class="ml-1 text-sm font-semibold text-muted-foreground">{{ unit() }}</span>
         }
       </p>
     </article>

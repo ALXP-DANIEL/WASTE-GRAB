@@ -6,56 +6,30 @@
     </button>
   </app-header>
 
-  <div class="grid gap-3 sm:grid-cols-3">
-    <article
-      class="flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-sm"
-    >
-      <span
-        class="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"
-      >
-        <ng-icon name="lucideMapPin" class="size-5!" />
-      </span>
-      <span>
-        <span class="block font-semibold">Locations</span>
-        <span class="block text-sm text-muted-foreground"
-          >{{ locations().length }} collection points</span
-        >
-      </span>
-    </article>
-    <article
-      class="flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-sm"
-    >
-      <span
-        class="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"
-      >
-        <ng-icon name="lucideNavigation" class="size-5!" />
-      </span>
-      <span>
-        <span class="block font-semibold">Mapped</span>
-        <span class="block text-sm text-muted-foreground"
-          >{{ mappedCount() }} with coordinates</span
-        >
-      </span>
-    </article>
-    <article
-      class="flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-sm"
-    >
-      <span
-        class="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"
-      >
-        <ng-icon name="lucideMapPin" class="size-5!" />
-      </span>
-      <span>
-        <span class="block font-semibold">Cities</span>
-        <span class="block text-sm text-muted-foreground"
-          >{{ cityCount() }} covered areas</span
-        >
-      </span>
-    </article>
+  <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+    <app-stat-card
+      icon="lucideMapPin"
+      label="Locations"
+      [value]="locations().length"
+      tone="brand"
+    />
+    <app-stat-card
+      icon="lucideNavigation"
+      label="Mapped"
+      [value]="mappedCount()"
+      tone="info"
+    />
+    <app-stat-card
+      class="col-span-2 sm:col-span-1"
+      icon="lucideMapPin"
+      label="Cities"
+      [value]="cityCount()"
+      tone="success"
+    />
   </div>
 
   <section
-    class="min-w-0 rounded-xl border border-border bg-card p-4 shadow-sm lg:p-6"
+    class="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6"
   >
     <app-table-header
       title="Collection Locations"
@@ -122,7 +96,7 @@
         </article>
         } @empty {
         <div
-          class="rounded-xl border border-dashed border-border bg-card/50 p-8 text-center"
+          class="rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center"
         >
           <p class="font-semibold">No locations found.</p>
           <p class="mt-1 text-sm text-muted-foreground">
@@ -138,9 +112,9 @@
       </div>
 
       <div
-        class="hidden max-w-full overflow-x-auto rounded-xl border border-border lg:block"
+        class="hidden max-w-full overflow-x-auto rounded-2xl border border-border lg:block"
       >
-        <table z-table class="min-w-[64rem] bg-card">
+        <table z-table class="min-w-5xl bg-card">
           <caption z-table-caption class="sr-only">
             Collection locations management table
           </caption>
@@ -150,7 +124,7 @@
               <th z-table-head>Location</th>
               <th z-table-head>Area</th>
               <th z-table-head>Coordinates</th>
-              <th z-table-head class="w-44 !text-right">Actions</th>
+              <th z-table-head class="w-44 text-right!">Actions</th>
             </tr>
           </thead>
 
@@ -181,7 +155,7 @@
                 </span>
               </td>
 
-              <td z-table-cell class="w-44 !text-right">
+              <td z-table-cell class="w-44 text-right!">
                 <div class="flex justify-end gap-2">
                   <button
                     z-button

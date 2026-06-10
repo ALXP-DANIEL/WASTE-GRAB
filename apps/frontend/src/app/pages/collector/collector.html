@@ -2,7 +2,7 @@
   <app-header mode="route">
     <a
       [routerLink]="pickupsPath"
-      class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+      class="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
       rightSide
     >
       <ng-icon name="lucideNavigation" class="size-4!" />
@@ -13,26 +13,30 @@
   <app-fetch-state [isLoading]="isLoading()" [loadError]="loadError()" loadingText="Loading collector dashboard...">
     <div class="grid gap-5">
     <section class="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(18rem,0.9fr)]">
-      <div class="rounded-xl border border-border bg-card p-5 shadow-sm">
+      <div class="brand-hero card-lift relative overflow-hidden rounded-3xl p-5 lg:p-6">
+        <div
+          class="pointer-events-none absolute -right-10 -top-14 size-48 rounded-full bg-white/10"
+          aria-hidden="true"
+        ></div>
         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div class="min-w-0">
-            <p class="text-sm font-medium text-primary">Field overview</p>
-            <h1 class="mt-1 text-2xl font-semibold tracking-normal">Collector Dashboard</h1>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+            <p class="text-sm font-medium text-white/80">Field overview</p>
+            <h1 class="mt-1 text-2xl font-bold tracking-tight">Collector Dashboard</h1>
+            <p class="mt-2 max-w-2xl text-sm/6  text-white/80">
               Prioritize active assignments, claim nearby customer requests, and keep drop-off options close.
             </p>
           </div>
           <div class="flex flex-wrap gap-2">
             <a
               [routerLink]="myPickupsPath"
-              class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 text-sm font-semibold shadow-sm transition-colors hover:bg-muted"
+              class="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-white/15 px-4 text-sm font-semibold text-white transition-colors hover:bg-white/25"
             >
               <ng-icon name="lucideTruck" class="size-4!" />
               My Pickups
             </a>
             <a
               [routerLink]="earningsPath"
-              class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 text-sm font-semibold shadow-sm transition-colors hover:bg-muted"
+              class="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-white/15 px-4 text-sm font-semibold text-white transition-colors hover:bg-white/25"
             >
               <ng-icon name="lucidePackageCheck" class="size-4!" />
               Earnings
@@ -42,13 +46,13 @@
 
         <div class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           @for (stat of stats(); track stat.label) {
-            <div class="rounded-lg bg-muted/60 p-4">
+            <div class="rounded-2xl bg-white/10 p-4">
               <div class="flex items-center justify-between gap-3">
                 <div class="min-w-0">
-                  <p class="text-sm text-muted-foreground">{{ stat.label }}</p>
-                  <p class="truncate text-2xl font-semibold tracking-tight">{{ stat.value }}</p>
+                  <p class="text-sm text-white/75">{{ stat.label }}</p>
+                  <p class="truncate text-2xl font-bold tracking-tight">{{ stat.value }}</p>
                 </div>
-                <span class="grid size-10 shrink-0 place-items-center rounded-lg" [class]="stat.accentClass">
+                <span class="grid size-10 shrink-0 place-items-center rounded-full bg-white/15 text-white">
                   <ng-icon [name]="stat.icon" class="size-5!" />
                 </span>
               </div>
@@ -57,9 +61,9 @@
         </div>
       </div>
 
-      <div class="rounded-xl border border-border bg-card p-5 shadow-sm">
+      <div class="rounded-2xl border border-border bg-card p-5 shadow-sm">
         <div class="flex items-center gap-3">
-          <span class="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary">
+          <span class="grid size-10 place-items-center rounded-full bg-primary/10 text-primary">
             <ng-icon name="lucideMapPin" class="size-5!" />
           </span>
           <div>
@@ -75,7 +79,7 @@
               class="rounded-lg border border-border bg-background p-3 transition-colors hover:border-primary/40 hover:bg-muted/40"
             >
               <p class="truncate text-sm font-semibold">{{ location.name }}</p>
-              <p class="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">{{ location.address }}</p>
+              <p class="mt-1 line-clamp-2 text-xs/5  text-muted-foreground">{{ location.address }}</p>
             </a>
           } @empty {
             <div class="rounded-lg border border-dashed border-border bg-card/50 p-4 text-sm text-muted-foreground">
@@ -87,30 +91,30 @@
     </section>
 
     @if (nextPickup(); as pickup) {
-      <section class="rounded-xl border border-primary/30 bg-card p-5 shadow-sm">
+      <section class="rounded-2xl border border-primary/30 bg-card p-5 shadow-sm">
         <div class="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
           <div class="min-w-0">
             <div class="flex flex-wrap items-center gap-2">
-              <span class="rounded-md bg-primary px-2.5 py-1 text-xs font-bold text-primary-foreground">
+              <span class="rounded-full bg-primary px-2.5 py-1 text-xs font-bold text-primary-foreground">
                 {{ pickup.collectorId ? 'Next Assignment' : 'Recommended Request' }}
               </span>
               <span class="text-xs font-semibold text-primary">#{{ shortId(pickup.id) }}</span>
-              <span class="rounded-md px-2.5 py-1 text-xs font-bold capitalize" [class]="statusClass(pickup.status)">
+              <span class="rounded-full px-2.5 py-1 text-xs font-bold capitalize" [class]="statusClass(pickup.status)">
                 {{ statusLabel(pickup.status) }}
               </span>
             </div>
             <h2 class="mt-3 truncate text-xl font-semibold">{{ customerLabel(pickup) }}</h2>
-            <p class="mt-1 line-clamp-2 text-sm leading-6 text-muted-foreground">{{ pickup.addressText }}</p>
+            <p class="mt-1 line-clamp-2 text-sm/6  text-muted-foreground">{{ pickup.addressText }}</p>
             <div class="mt-4 flex flex-wrap gap-2">
-              <span class="inline-flex items-center gap-1 rounded-md bg-muted/60 px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+              <span class="inline-flex items-center gap-1 rounded-full bg-muted/60 px-2.5 py-1 text-xs font-semibold text-muted-foreground">
                 <ng-icon name="lucideRecycle" class="size-3.5!" />
                 {{ categoryLabel(pickup) }}
               </span>
-              <span class="inline-flex items-center gap-1 rounded-md bg-muted/60 px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+              <span class="inline-flex items-center gap-1 rounded-full bg-muted/60 px-2.5 py-1 text-xs font-semibold text-muted-foreground">
                 <ng-icon name="lucideScale" class="size-3.5!" />
                 {{ pickupWeight(pickup) | number:'1.1-2' }} kg
               </span>
-              <span class="inline-flex items-center gap-1 rounded-md bg-muted/60 px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+              <span class="inline-flex items-center gap-1 rounded-full bg-muted/60 px-2.5 py-1 text-xs font-semibold text-muted-foreground">
                 <ng-icon name="lucideNavigation" class="size-3.5!" />
                 {{ distanceLabel(pickup) }}
               </span>
@@ -119,7 +123,7 @@
 
           <a
             [routerLink]="[...(pickup.collectorId ? myPickupsPath : pickupsPath), pickup.id]"
-            class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+            class="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
           >
             Open Pickup
             <ng-icon name="lucideArrowRight" class="size-4!" />
@@ -127,9 +131,9 @@
         </div>
       </section>
     } @else {
-      <section class="rounded-xl border border-border bg-card p-5 shadow-sm">
+      <section class="rounded-2xl border border-border bg-card p-5 shadow-sm">
         <div class="flex items-start gap-3">
-          <span class="grid size-10 shrink-0 place-items-center rounded-lg bg-muted text-muted-foreground">
+          <span class="grid size-10 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground">
             <ng-icon name="lucideClock3" class="size-5!" />
           </span>
           <div>
@@ -141,7 +145,7 @@
     }
 
     <section class="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
-      <div class="rounded-xl border border-border bg-card p-5 shadow-sm">
+      <div class="rounded-2xl border border-border bg-card p-5 shadow-sm">
         <div class="flex items-center justify-between gap-3">
           <div>
             <h2 class="text-base font-semibold">Active Assignments</h2>
@@ -173,7 +177,7 @@
         </div>
       </div>
 
-      <div class="rounded-xl border border-border bg-card p-5 shadow-sm">
+      <div class="rounded-2xl border border-border bg-card p-5 shadow-sm">
         <div class="flex items-center justify-between gap-3">
           <div>
             <h2 class="text-base font-semibold">Nearby Requests</h2>

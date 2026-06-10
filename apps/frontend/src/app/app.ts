@@ -8,7 +8,7 @@ import { environment } from '../environments/environment';
   template: `
     @if (showEnvironmentBanner) {
       <div
-        class="overscroll-none absolute top-0 z-100 w-full bg-red-600 text-white text-xs font-bold leading-4 px-3 py-1 text-center uppercase animate-pulse"
+        class="overscroll-none absolute top-0 z-100 w-full bg-red-600 text-white text-xs/4 font-bold  px-3 py-1 text-center uppercase animate-pulse"
       >
         Running on {{ environmentLabel }}
       </div>

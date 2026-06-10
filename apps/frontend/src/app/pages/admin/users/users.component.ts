@@ -14,6 +14,7 @@ import { ZardInputDirective } from '@/ui/zard/input';
 import { ZardSelectImports } from '@/ui/zard/select/select.imports';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
+import { StatCardComponent } from '@/ui/stat-card/stat-card.component';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { UserService } from '@/services/user.service';
 import { DisplayRolePipe, RoleBadgeTypePipe } from '@/utils/role.pipe';
@@ -35,6 +36,7 @@ type UserFilter = 'all' | 'admin' | 'collector' | 'customer';
     ZardBadgeComponent,
     ZardModalComponent,
     FetchStateComponent,
+    StatCardComponent,
     TableHeaderComponent,
     ZardFormFieldComponent,
     ZardFormLabelComponent,

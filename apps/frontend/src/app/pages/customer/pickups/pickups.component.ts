@@ -218,15 +218,15 @@ export class CustomerPickupsPage {
       case PickupStatus.PENDING:
         return { label: 'Pending', className: 'bg-amber-500/10 text-amber-700 dark:text-amber-300', icon: 'lucideClock3' };
       case PickupStatus.ACCEPTED:
-        return { label: 'Accepted', className: 'bg-sky-100 text-sky-800', icon: 'lucideTruck' };
+        return { label: 'Accepted', className: 'bg-sky-500/10 text-sky-700 dark:text-sky-300', icon: 'lucideTruck' };
       case PickupStatus.ARRIVED:
-        return { label: 'Arrived', className: 'bg-indigo-100 text-indigo-800', icon: 'lucideMapPin' };
+        return { label: 'Arrived', className: 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-300', icon: 'lucideMapPin' };
       case PickupStatus.VERIFIED:
         return { label: 'Verified', className: 'bg-primary/10 text-primary', icon: 'lucideCheckCircle2' };
       case PickupStatus.COMPLETED:
         return { label: 'Completed', className: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300', icon: 'lucideCheckCircle2' };
       case PickupStatus.CANCELLED:
-        return { label: 'Cancelled', className: 'bg-rose-100 text-rose-800', icon: 'lucideAlertCircle' };
+        return { label: 'Cancelled', className: 'bg-rose-500/10 text-rose-700 dark:text-rose-300', icon: 'lucideAlertCircle' };
     }
   }
 }

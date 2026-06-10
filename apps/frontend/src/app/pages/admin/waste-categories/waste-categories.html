@@ -6,56 +6,30 @@
     </button>
   </app-header>
 
-  <div class="grid gap-3 sm:grid-cols-3">
-    <article
-      class="flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-sm"
-    >
-      <span
-        class="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"
-      >
-        <ng-icon name="lucideSparkles" class="size-5!" />
-      </span>
-      <span>
-        <span class="block font-semibold">Active</span>
-        <span class="block text-sm text-muted-foreground"
-          >{{ activeCount() }} usable categories</span
-        >
-      </span>
-    </article>
-    <article
-      class="flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-sm"
-    >
-      <span
-        class="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"
-      >
-        <ng-icon name="lucideBrain" class="size-5!" />
-      </span>
-      <span>
-        <span class="block font-semibold">AI Detectable</span>
-        <span class="block text-sm text-muted-foreground"
-          >{{ aiCount() }} image matches</span
-        >
-      </span>
-    </article>
-    <article
-      class="flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-sm"
-    >
-      <span
-        class="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"
-      >
-        <ng-icon name="lucideCircleSlash" class="size-5!" />
-      </span>
-      <span>
-        <span class="block font-semibold">Restricted</span>
-        <span class="block text-sm text-muted-foreground"
-          >{{ restrictedCount() }} flagged categories</span
-        >
-      </span>
-    </article>
+  <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+    <app-stat-card
+      icon="lucideSparkles"
+      label="Active"
+      [value]="activeCount()"
+      tone="brand"
+    />
+    <app-stat-card
+      icon="lucideBrain"
+      label="AI Detectable"
+      [value]="aiCount()"
+      tone="info"
+    />
+    <app-stat-card
+      class="col-span-2 sm:col-span-1"
+      icon="lucideCircleSlash"
+      label="Restricted"
+      [value]="restrictedCount()"
+      tone="warning"
+    />
   </div>
 
   <section
-    class="min-w-0 rounded-xl border border-border bg-card p-4 shadow-sm lg:p-6"
+    class="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6"
   >
     <app-table-header
       title="Waste Categories"
@@ -83,7 +57,7 @@
               </p>
             </div>
             <span
-              class="shrink-0 rounded-md px-2 py-1 text-xs font-semibold"
+              class="shrink-0 rounded-full px-2 py-1 text-xs font-semibold"
               [class]="category.isAiDetectable ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300' : 'bg-muted text-muted-foreground'"
             >
               {{ category.isAiDetectable ? 'AI' : 'No AI' }}
@@ -107,7 +81,7 @@
               <dt class="text-xs text-muted-foreground">Status</dt>
               <dd class="mt-0.5">
                 <span
-                  class="rounded-md px-2 py-1 text-xs font-semibold"
+                  class="rounded-full px-2 py-1 text-xs font-semibold"
                   [class]="statusClass(category)"
                 >
                   {{ statusLabel(category) }}
@@ -141,7 +115,7 @@
         </article>
         } @empty {
         <div
-          class="rounded-xl border border-dashed border-border bg-card/50 p-8 text-center"
+          class="rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center"
         >
           <p class="font-semibold">No waste categories found.</p>
           <p class="mt-1 text-sm text-muted-foreground">
@@ -157,9 +131,9 @@
       </div>
 
       <div
-        class="hidden max-w-full overflow-x-auto rounded-xl border border-border lg:block"
+        class="hidden max-w-full overflow-x-auto rounded-2xl border border-border lg:block"
       >
-        <table z-table class="min-w-[68rem] bg-card">
+        <table z-table class="min-w-272 bg-card">
           <caption z-table-caption class="sr-only">
             Waste category management table
           </caption>
@@ -170,7 +144,7 @@
               <th z-table-head>Reward</th>
               <th z-table-head>AI</th>
               <th z-table-head>Status</th>
-              <th z-table-head class="w-44 !text-right">Actions</th>
+              <th z-table-head class="w-44 text-right!">Actions</th>
             </tr>
           </thead>
 
@@ -198,7 +172,7 @@
 
               <td z-table-cell>
                 <span
-                  class="rounded-md px-2 py-1 text-xs font-semibold"
+                  class="rounded-full px-2 py-1 text-xs font-semibold"
                   [class]="category.isAiDetectable ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300' : 'bg-muted text-muted-foreground'"
                 >
                   {{ category.isAiDetectable ? 'Detectable' : 'Ignored' }}
@@ -207,14 +181,14 @@
 
               <td z-table-cell>
                 <span
-                  class="rounded-md px-2 py-1 text-xs font-semibold"
+                  class="rounded-full px-2 py-1 text-xs font-semibold"
                   [class]="statusClass(category)"
                 >
                   {{ statusLabel(category) }}
                 </span>
               </td>
 
-              <td z-table-cell class="w-44 !text-right">
+              <td z-table-cell class="w-44 text-right!">
                 <div class="flex justify-end gap-2">
                   <button
                     z-button

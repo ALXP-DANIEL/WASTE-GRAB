@@ -55,25 +55,25 @@ import { NotificationMarkdownPipe } from '@/utils/notification-markdown.pipe';
         @if (mode === 'welcome') {
 
           @if (authService.currentUser(); as user) {
-            <h1 class="text-2xl font-semibold tracking-tight text-foreground">
+            <h1 class="text-2xl font-bold tracking-tight text-foreground">
               Welcome back, {{ user.name }}! 👋
             </h1>
           } @else {
-            <h1 class="text-2xl font-semibold tracking-tight text-foreground">
+            <h1 class="text-2xl font-bold tracking-tight text-foreground">
               Welcome! 👋
             </h1>
           }
 
         } @else {
 
-          <h1 class="text-2xl font-semibold tracking-tight text-foreground">
+          <h1 class="text-2xl font-bold tracking-tight text-foreground">
             {{ activeRouteTitle }}
           </h1>
 
         }
 
         <!-- ✨ ANIMATED QUOTE -->
-        <p class="text-sm text-muted-foreground mt-1 min-h-6 leading-relaxed">
+        <p class="text-sm/relaxed text-muted-foreground mt-1 min-h-6 ">
 
           @for (word of visibleWords(); track $index) {
             <span class="inline-block mr-1 animate-wordFade">
@@ -132,7 +132,7 @@ import { NotificationMarkdownPipe } from '@/utils/notification-markdown.pipe';
 
             <button
               type="button"
-              class="rounded-lg border border-border bg-card px-2.5 py-1 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-muted"
+              class="rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-foreground shadow-sm transition-colors hover:bg-muted"
               (click)="markAllNotificationsRead()"
             >
               Mark read
@@ -141,7 +141,7 @@ import { NotificationMarkdownPipe } from '@/utils/notification-markdown.pipe';
           @if (notificationItems().length > 0) {
             <button
               type="button"
-              class="mt-3 w-full rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2 text-xs font-semibold text-destructive transition-colors hover:bg-destructive/20"
+              class="mt-3 w-full rounded-full border border-destructive/20 bg-destructive/10 px-3 py-2 text-xs font-semibold text-destructive transition-colors hover:bg-destructive/20"
               (click)="clearAllNotifications($event)"
             >
               Clear notifications
@@ -150,7 +150,7 @@ import { NotificationMarkdownPipe } from '@/utils/notification-markdown.pipe';
           @if (notificationService.canEnablePush()) {
             <button
               type="button"
-              class="mt-3 w-full rounded-lg border border-primary/20 bg-primary/10 px-3 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary/15"
+              class="mt-3 w-full rounded-full border border-primary/20 bg-primary/10 px-3 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary/15"
               (click)="enablePushNotifications()"
             >
               Enable device notifications
@@ -168,7 +168,7 @@ import { NotificationMarkdownPipe } from '@/utils/notification-markdown.pipe';
                 (click)="openNotification(item)"
               >
                 <span
-                  class="mt-1 h-2.5 w-2.5 rounded-full"
+                  class="mt-1 size-2.5  rounded-full"
                   [class.bg-primary]="!item.readAt"
                   [class.bg-muted-foreground/30]="item.readAt"
                 ></span>
@@ -176,7 +176,7 @@ import { NotificationMarkdownPipe } from '@/utils/notification-markdown.pipe';
                 <span class="min-w-0 flex-1">
                   <span class="block text-sm font-medium text-foreground">{{ item.title }}</span>
                   <span
-                    class="mt-0.5 block text-xs leading-5 text-muted-foreground [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_em]:italic [&_h1]:text-sm [&_h1]:font-semibold [&_h2]:text-sm [&_h2]:font-semibold [&_h3]:text-xs [&_h3]:font-semibold [&_li]:ml-4 [&_li]:list-disc [&_p+p]:mt-1 [&_strong]:font-semibold [&_ul]:mt-1"
+                    class="mt-0.5 block text-xs/5  text-muted-foreground [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_em]:italic [&_h1]:text-sm [&_h1]:font-semibold [&_h2]:text-sm [&_h2]:font-semibold [&_h3]:text-xs [&_h3]:font-semibold [&_li]:ml-4 [&_li]:list-disc [&_p+p]:mt-1 [&_strong]:font-semibold [&_ul]:mt-1"
                     [innerHTML]="item.message | notificationMarkdown"
                   ></span>
                   <span class="mt-1 block text-[11px] text-muted-foreground/70">{{ notificationTime(item) }}</span>

@@ -7,11 +7,17 @@
     loadingText="Loading dashboard data..."
   >
     <div class="grid w-full gap-5">
-      <header class="min-w-0">
-        <p class="text-sm text-muted-foreground">Good morning,</p>
-        <h1
-          class="mt-1 truncate text-2xl font-semibold tracking-tight lg:text-3xl"
-        >
+      <header class="brand-hero card-lift relative min-w-0 overflow-hidden rounded-3xl p-5 lg:p-7">
+        <div
+          class="pointer-events-none absolute -right-10 -top-12 size-44 rounded-full bg-white/10"
+          aria-hidden="true"
+        ></div>
+        <div
+          class="pointer-events-none absolute -bottom-16 right-16 size-36 rounded-full bg-white/5"
+          aria-hidden="true"
+        ></div>
+        <p class="text-sm font-medium text-white/80">Good morning,</p>
+        <h1 class="mt-1 truncate text-2xl font-bold tracking-tight lg:text-3xl">
           {{ customerName() }}
         </h1>
       </header>

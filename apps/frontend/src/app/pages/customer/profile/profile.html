@@ -2,7 +2,7 @@
   <app-header mode="route" />
 
   @if (authService.currentUser(); as user) {
-  <div class="min-w-0 space-y-6 rounded-xl border border-border bg-card p-4 shadow-sm md:p-6">
+  <div class="min-w-0 space-y-6 rounded-2xl border border-border bg-card p-4 shadow-sm md:p-6">
     <!-- Avatar -->
     <div class="flex items-center gap-4">
       <z-avatar
@@ -86,7 +86,7 @@
   </div>
 
   @if (user.role === 'CUSTOMER') {
-  <div class="min-w-0 space-y-6 rounded-xl border border-border bg-card p-4 shadow-sm md:p-6">
+  <div class="min-w-0 space-y-6 rounded-2xl border border-border bg-card p-4 shadow-sm md:p-6">
     <app-table-header
       title="Address List"
       description="Filter saved addresses and refresh your latest address data."
@@ -99,12 +99,12 @@
 
     @if (isLoadingAddress()) {
     <div
-      class="rounded-xl border border-dashed border-border bg-card/50 p-8 text-center text-muted-foreground"
+      class="rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center text-muted-foreground"
     >
       <p class="font-medium">Loading saved addresses...</p>
     </div>
     } @else if (loadAddressError()) {
-    <div class="rounded-xl border border-destructive/30 bg-destructive/5 p-8 text-center">
+    <div class="rounded-2xl border border-destructive/30 bg-destructive/5 p-8 text-center">
       <p class="font-medium text-destructive">{{ loadAddressError() }}</p>
       <div class="mt-4">
         <button
@@ -180,7 +180,7 @@
         </div>
       </article>
       } @empty {
-      <div class="rounded-xl border border-dashed border-border bg-card/50 p-6 text-center">
+      <div class="rounded-2xl border border-dashed border-border bg-card/50 p-6 text-center">
         <p class="font-medium text-foreground">No saved address yet.</p>
         <p class="mt-1 text-sm text-muted-foreground">
           Add your first pickup location to get started.
@@ -200,9 +200,9 @@
     </div>
 
     <div
-      class="hidden max-w-full overflow-x-auto rounded-xl border border-border md:block"
+      class="hidden max-w-full overflow-x-auto rounded-2xl border border-border md:block"
     >
-      <table z-table class="min-w-[56rem] bg-card">
+      <table z-table class="min-w-4xl bg-card">
         <caption z-table-caption class="sr-only">
           Saved user address
         </caption>
@@ -310,7 +310,7 @@
     </div>
   </div>
   } } @else {
-  <div class="min-w-0 space-y-6 rounded-xl border border-border bg-card p-4 shadow-sm md:p-6">
+  <div class="min-w-0 space-y-6 rounded-2xl border border-border bg-card p-4 shadow-sm md:p-6">
     <p class="text-center text-foreground">Something went wrong.</p>
   </div>
   }

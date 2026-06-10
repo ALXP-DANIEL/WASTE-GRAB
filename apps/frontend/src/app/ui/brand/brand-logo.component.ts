@@ -54,6 +54,6 @@ export class BrandLogoComponent {
   });
 
   protected readonly accentClasses = computed(() =>
-    this.tone() === 'inverse' ? 'text-emerald-300' : 'text-primary',
+    this.tone() === 'inverse' ? 'text-teal-200' : 'text-primary',
   );
 }

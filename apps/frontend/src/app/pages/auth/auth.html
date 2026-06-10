@@ -4,7 +4,7 @@
     <div class="w-full max-w-md space-y-6 sm:space-y-8">
       <!-- Header -->
       <div class="text-center">
-        <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">
+        <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">
           @if (mode() === 'login') { Welcome back } @else { Create account }
         </h1>
         <p class="mt-2 text-sm text-muted-foreground sm:text-base">
@@ -286,14 +286,14 @@
 
   <!-- Right: Slideshow (Desktop Only) -->
   <aside
-    class="hidden flex-1 lg:flex lg:flex-col lg:overflow-hidden relative bg-slate-900 m-2 rounded-2xl"
+    class="brand-hero hidden flex-1 lg:flex lg:flex-col lg:overflow-hidden relative m-2 rounded-3xl"
     (mouseenter)="stopAutoplay()"
     (mouseleave)="startAutoplay()"
   >
     <!-- Slideshow Container -->
     <div class="absolute inset-0 flex items-center justify-center">
       @if (slides().length === 0) {
-      <div class="absolute inset-0 bg-primary"></div>
+      <div class="brand-hero absolute inset-0"></div>
       } @for (slide of slides(); let i = $index; track slide.id) { @if
       (currentSlide() === i) {
       <img
@@ -316,7 +316,7 @@
     <!-- Content -->
     <div class="relative z-10 flex flex-col justify-between h-full p-10">
       <!-- Top: Logo/Branding -->
-      <div class="w-fit rounded-xl bg-white p-2 shadow-sm">
+      <div class="w-fit rounded-2xl bg-white/95 p-2 shadow-sm backdrop-blur">
         <app-brand-logo size="sm" />
       </div>
 
@@ -328,12 +328,12 @@
           <h2 class="text-4xl font-bold text-white mb-3">
             {{ slides()[currentSlide()]?.title }}
           </h2>
-          <div class="bg-primary/70 h-1 w-16 rounded-full"></div>
+          <div class="h-1.5 w-16 rounded-full bg-linear-to-r from-emerald-300 to-teal-300"></div>
         </div>
 
         <!-- Quote -->
         <blockquote class="space-y-3">
-          <p class="text-lg leading-relaxed font-light text-white">
+          <p class="text-lg/relaxed  font-light text-white">
             &ldquo;{{ slides()[currentSlide()]?.quote }}&rdquo;
           </p>
           <footer class="text-sm font-medium text-white/80">
@@ -353,7 +353,7 @@
               [class.w-12]="currentSlide() === i"
               class="h-1 rounded-full transition-all duration-300"
               [ngClass]="
-                  currentSlide() === i ? 'bg-primary w-12' : 'bg-white/40 w-6 hover:bg-white/60'
+                  currentSlide() === i ? 'bg-teal-300 w-12' : 'bg-white/40 w-6 hover:bg-white/60'
                 "
             >
               <span class="sr-only">Show testimonial {{ i + 1 }}</span>

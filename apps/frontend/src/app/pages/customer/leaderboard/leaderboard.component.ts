@@ -71,7 +71,7 @@ export class CustomerLeaderboardPage {
       case 1:
         return 'bg-amber-500/10 text-amber-700 dark:text-amber-300';
       case 2:
-        return 'bg-slate-500/10 text-slate-700 dark:text-slate-300';
+        return 'bg-muted text-muted-foreground';
       case 3:
         return 'bg-orange-500/10 text-orange-700 dark:text-orange-300';
       default:

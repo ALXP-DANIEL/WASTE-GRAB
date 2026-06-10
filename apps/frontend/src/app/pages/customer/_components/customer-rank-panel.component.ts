@@ -14,10 +14,10 @@ import type { CustomerLeaderboardRow } from './customer-dashboard.models';
       <h2 class="text-sm font-semibold text-muted-foreground mb-2">
         Leaderboard
       </h2>
-      <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+      <div class="card-lift rounded-2xl border border-border/60 bg-card p-4">
         <div class="flex items-center justify-between">
           <h2 class="flex items-center gap-2 text-sm font-semibold">
-            <ng-icon name="lucideTrophy" class="size-4! text-amber-600" />
+            <ng-icon name="lucideTrophy" class="size-4! text-amber-600 dark:text-amber-300" />
             Top recyclers
           </h2>
         </div>
@@ -28,7 +28,7 @@ import type { CustomerLeaderboardRow } from './customer-dashboard.models';
               <li>
                 <a
                   [routerLink]="row.route"
-                  class="flex items-center gap-3 rounded-lg px-2 py-1.5 text-sm transition-colors hover:bg-muted/40"
+                  class="flex items-center gap-3 rounded-full px-2.5 py-1.5 text-sm transition-colors hover:bg-muted/40"
                   [ngClass]="
                     row.isCurrentUser
                       ? 'bg-primary/10 text-primary hover:bg-primary/15'

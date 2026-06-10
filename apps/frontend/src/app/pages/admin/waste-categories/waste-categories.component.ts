@@ -12,6 +12,7 @@ import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponen
 import { ZardInputDirective } from '@/ui/zard/input';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
+import { StatCardComponent } from '@/ui/stat-card/stat-card.component';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { WasteCategoryService } from '@/services/waste-category.service';
 import type { WasteCategory } from '@wastegrab/shared';
@@ -28,6 +29,7 @@ type WasteCategoryFilter = 'all' | 'active' | 'hazardous' | 'banned';
     ...ZardTableImports,
     ZardButtonComponent,
     FetchStateComponent,
+    StatCardComponent,
     TableHeaderComponent,
     ZardCheckboxComponent,
     ZardModalComponent,
