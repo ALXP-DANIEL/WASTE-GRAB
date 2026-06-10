@@ -4,9 +4,13 @@
     <div class="w-full max-w-md space-y-6 sm:space-y-8">
       <!-- Header -->
       <div class="text-center">
+<<<<<<< HEAD
         <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">
+=======
+        <h1 class="text-2xl font-bold tracking-tight sm:text-3xl text-primary">
+>>>>>>> 0ee5044 (14-refined auth and navbar, light and dark mode)
           @if (mode() === 'login') { Welcome back } @else { Create account }
-        </h1>
+        </h1> 
         <p class="mt-2 text-sm text-muted-foreground sm:text-base">
           @if (mode() === 'login') { Sign in to your account to continue } @else
           { Sign up to get started with WasteGrab }
@@ -75,7 +79,7 @@
           <button
             type="submit"
             z-button
-            class="w-full"
+            class="w-full text-white"
             [zDisabled]="isSubmitting()"
           >
             @if (isSubmitting()) { Signing in... } @else { Sign in }
@@ -169,7 +173,7 @@
           <button
             type="submit"
             z-button
-            class="w-full"
+            class="w-full text-white"
             [zDisabled]="isSubmitting()"
           >
             @if (isSubmitting()) { Creating account... } @else { Create account
@@ -200,6 +204,7 @@
     title="Reset Password"
     description="Enter your email to reset your password"
     okText="Next"
+    okClass="!text-white"
     [okDestructive]="false"
     cancelText="Cancel"
     [isSubmitting]="forgotPasswordSubmitting()"
@@ -231,6 +236,7 @@
     title="Set New Password"
     [description]="'Email: ' + forgotPasswordEmail()"
     okText="Reset Password"
+    okClass="!text-white"
     [okDestructive]="false"
     cancelText="Back"
     [isSubmitting]="forgotPasswordSubmitting()"
