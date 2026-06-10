@@ -234,30 +234,30 @@ function getInitials(name?: string | null): string {
   ],
   template: `
     <!-- Desktop Sidebar -->
-    <aside
-      class="hidden lg:flex lg:flex-col lg:fixed lg:left-0 lg:top-0 lg:h-dvh lg:w-64 lg:bg-background lg:border-r lg:border-border z-40 overflow-y-auto"
-    >
+    <aside class="hidden lg:flex lg:flex-col lg:fixed lg:left-0 lg:top-0 lg:h-dvh lg:w-64 lg:bg-card lg:border-primary/20 z-40 overflow-y-auto">
       <div class="flex flex-col h-full">
-        <!-- Brand -->
-        <div class="border-b border-border px-6 py-3">
-          <app-brand-logo size="lg" />
+
+        <!-- Brand Icon -->
+        <div class="w-full px-6 py-6 flex flex-col items-center justify-center">
+          <a routerLink="/" class="flex items-center gap-3 text-primary no-underline hover:opacity-80">
+          <div class="flex h-14 w-14 items-center justify-center rounded-full bg-white border-2 border-[#008235]">
+            <ng-icon name="lucideRecycle" class="size-6! text-[#5B5B44]"/>
+          </div>
+          </a>
+          <div class="pt-3 w-48 border-b-2 border-[#008235] mt-4"></div>
         </div>
 
         <!-- Nav -->
-        <nav class="flex-1 px-4 py-6">
+        <nav class="flex-1 px-4 py-4">
           @for (item of navItems(); track item.route) {
             <a
               [routerLink]="item.route"
-              routerLinkActive
-              #rlaDesktop="routerLinkActive"
+              routerLinkActive="bg-background !font-bold"
               [routerLinkActiveOptions]="{ exact: true }"
               ariaCurrentWhenActive="page"
-              class="group mb-1 flex items-center gap-3 rounded-full text-sm font-semibold"
-              [class]="rlaDesktop.isActive ? 'btn-brand text-white shadow-sm' : 'text-muted-foreground'"
+              class="group py-2 mb-1 flex items-center gap-3 rounded-l-2xl -mr-8 text-md font-medium hover:font-bold dark:font-thin dark:hover:font-medium"
             >
-              <span
-                class="flex w-full items-center gap-3 rounded-full px-4 py-2.5 transition-colors group-hover:bg-primary/10"
-              >
+              <span class="flex w-full items-center gap-4 rounded-l-2xl px-4 py-2 transition-colors !text-primary-foreground group-hover:bg-background dark:!text-foreground">
                 <ng-icon [name]="item.icon" class="size-4!" />
                 <span>{{ item.label }}</span>
               </span>
@@ -266,40 +266,33 @@ function getInitials(name?: string | null): string {
         </nav>
 
         <!-- Bottom -->
-        <div class="space-y-3 border-t border-border p-4">
-          <a
-            [routerLink]="profileRoute"
-            class="card-lift block rounded-2xl border border-border/60 bg-card p-3 transition-colors hover:border-primary/40"
-          >
-            <div class="flex items-center gap-3">
+        <div class="space-y-3 border-t border-primary/20 p-4">
+
+          <a [routerLink]="profileRoute" 
+          class="block p-2 rounded-2xl bg-sidebar-primary border border-background 
+          transition-colors text-background hover:text-foreground hover:bg-background"
+          routerLinkActive="!bg-background text-primary-foreground rounded-l-2xl -mr-8 dark:text-foreground">
+            <div class="flex items-center gap-4 pl-1">
               <z-avatar
                 [zSrc]="user()?.avatarUrl || ''"
                 [zFallback]="userInitials()"
                 [zAlt]="avatarAlt()"
                 zSize="md"
-                class="ring-2 ring-primary/20"
+                class="w-10 h-10 text-primary-foreground"
               />
-
-              <div class="min-w-0 flex-1">
-                <p class="truncate text-sm font-semibold text-foreground">
-                  {{ user()?.name }}
-                </p>
-                <p class="truncate text-xs text-muted-foreground">
-                  {{ user()?.role | titlecase }}
-                </p>
+              <div class="flex flex-col width-full">
+                <p class="truncate text-md font-bold">{{ user()?.name }}</p>
+                <p class="truncate text-xs">{{ user()?.role | titlecase }}</p>
               </div>
-
-              <ng-icon
-                name="lucideChevronRight"
-                class="size-4! text-muted-foreground"
-              />
             </div>
           </a>
 
           <div class="flex gap-2">
             <a
               [routerLink]="settingsRoute"
-              class="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-secondary py-2 text-xs font-semibold text-secondary-foreground transition-colors hover:bg-accent"
+              class="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-background py-2 
+              text-xs text-foreground transition-colors border border-background 
+              hover:bg-primary hover:text-background"
             >
               <ng-icon
                 name="lucideSettings"
@@ -312,7 +305,7 @@ function getInitials(name?: string | null): string {
             <button
               type="button"
               (click)="confirmLogout()"
-              class="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-destructive/10 py-2 text-xs font-semibold text-destructive transition-colors hover:bg-destructive/20"
+              class="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-destructive/70 py-2 text-xs text-[#F4F4F0] transition-colors hover:bg-destructive/50 hover:text-white hover:font-bold"
             >
               <ng-icon
                 name="lucideLogOut"
@@ -327,50 +320,34 @@ function getInitials(name?: string | null): string {
     </aside>
 
     <!-- Mobile Bottom Nav -->
-    <nav class="lg:hidden mx-3 mb-2 mt-0 z-40 flex items-center gap-2">
-      <!-- Main pill -->
-      <div
-        class="flex flex-1 items-center gap-1 rounded-full bg-card p-2 shadow-xl ring-1 ring-border/60"
-      >
-        @for (item of mobileNavItems(); track item.route) {
-          <a
-            [routerLink]="item.route"
-            routerLinkActive
-            #rla="routerLinkActive"
-            [routerLinkActiveOptions]="{ exact: true }"
-            ariaCurrentWhenActive="page"
-            class="flex flex-1 items-center justify-center gap-2 transition-all active:scale-95"
-            [class]="
-              rla.isActive ? 'rounded-full btn-brand px-3 py-2' : 'py-2'
-            "
-          >
-            <ng-icon
-              [name]="item.icon"
-              class="size-5! shrink-0"
-              [class]="
-                rla.isActive
-                  ? 'text-white'
-                  : 'text-muted-foreground'
-              "
-            />
-            @if (rla.isActive) {
-              <span
-                class="whitespace-nowrap text-xs font-bold text-white"
-                >{{ item.label }}</span
-              >
-            }
-          </a>
+    <nav
+      class="lg:hidden m-2 mt-0 bg-card/95 backdrop-blur border border-border/60 rounded-[1.75rem] shadow-lg z-40"
+    >
+      <div class="flex h-20 items-stretch gap-2 p-2">
+        @for (item of navItems(); track item.route) {
+          @if (item.showOnMobile) {
+            <a
+              [routerLink]="item.route"
+              routerLinkActive="bg-primary text-primary-foreground shadow-sm"
+              [routerLinkActiveOptions]="{ exact: true }"
+              ariaCurrentWhenActive="page"
+              class="flex-1 flex flex-col items-center justify-center gap-1 rounded-xl text-primary-foreground transition-colors hover:bg-primary/10"
+            >
+              <ng-icon [name]="item.icon" class="size-5!" />
+              <span class="text-xs font-medium">{{ item.label }}</span>
+            </a>
+          }
         }
       </div>
 
       <!-- Primary action bubble -->
       @if (mobilePrimaryItem(); as primary) {
         <a
-          [routerLink]="primary.route"
-          routerLinkActive="ring-2 ring-primary/40 ring-offset-2"
+          [routerLink]="profileRoute"
+          routerLinkActive="bg-primary text-black shadow-sm"
           [routerLinkActiveOptions]="{ exact: true }"
           ariaCurrentWhenActive="page"
-          class="grid size-14 shrink-0 place-items-center rounded-full btn-brand shadow-xl transition-all active:scale-95"
+          class="flex-1 flex flex-col items-center justify-center gap-1 rounded-xl text-primary-foreground transition-colors hover:bg-primary/10"
         >
           <ng-icon [name]="primary.icon" class="size-6!" />
         </a>
