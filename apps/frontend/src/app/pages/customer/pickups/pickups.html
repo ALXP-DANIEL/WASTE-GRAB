@@ -15,55 +15,41 @@
   </app-header>
 
   <div class="mx-auto grid w-full max-w-7xl gap-5">
-    <section class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-      <div class="rounded-lg border border-border bg-card p-4 shadow-sm">
-        <div class="mb-3 flex items-center justify-between">
-          <span class="text-sm font-medium text-muted-foreground"
-            >Total Requests</span
-          >
-          <ng-icon name="lucidePackage" class="size-4! text-primary" />
-        </div>
-        <div class="text-2xl font-bold">{{ requests().length }}</div>
-      </div>
-
-      <div class="rounded-lg border border-border bg-card p-4 shadow-sm">
-        <div class="mb-3 flex items-center justify-between">
-          <span class="text-sm font-medium text-muted-foreground">Active</span>
-          <ng-icon name="lucideTruck" class="size-4! text-primary" />
-        </div>
-        <div class="text-2xl font-bold">{{ activeRequests().length }}</div>
-      </div>
-
-      <div class="rounded-lg border border-border bg-card p-4 shadow-sm">
-        <div class="mb-3 flex items-center justify-between">
-          <span class="text-sm font-medium text-muted-foreground"
-            >Contributed Weight</span
-          >
-          <ng-icon name="lucideScale" class="size-4! text-primary" />
-        </div>
-        <div class="text-2xl font-bold">
-          {{ totalEstimatedWeight() | number:'1.1-2' }} kg
-        </div>
-      </div>
-
-      <div class="rounded-lg border border-border bg-card p-4 shadow-sm">
-        <div class="mb-3 flex items-center justify-between">
-          <span class="text-sm font-medium text-muted-foreground"
-            >Pickup Points</span
-          >
-          <ng-icon name="lucideCoins" class="size-4! text-primary" />
-        </div>
-        <div class="text-2xl font-bold">{{ totalPotentialPoints() }}</div>
-      </div>
+    <section class="grid grid-cols-2 gap-3 xl:grid-cols-4">
+      <app-stat-card
+        icon="lucidePackage"
+        label="Total Requests"
+        [value]="requests().length"
+        tone="brand"
+      />
+      <app-stat-card
+        icon="lucideTruck"
+        label="Active"
+        [value]="activeRequests().length"
+        tone="info"
+      />
+      <app-stat-card
+        icon="lucideScale"
+        label="Contributed Weight"
+        [value]="totalEstimatedWeight() | number:'1.1-2'"
+        unit="kg"
+        tone="success"
+      />
+      <app-stat-card
+        icon="lucideCoins"
+        label="Pickup Points"
+        [value]="totalPotentialPoints()"
+        tone="warning"
+      />
     </section>
 
     @if (latestActiveRequest()) {
     <section
-      class="rounded-lg border border-primary/30 bg-primary/10 shadow-sm"
+      class="rounded-xl border border-primary/30 bg-card shadow-sm"
     >
       <div class="grid gap-4 p-4 md:grid-cols-[7rem_1fr_auto] md:items-center">
         <div
-          class="aspect-square overflow-hidden rounded-lg border border-primary/20 bg-background"
+          class="aspect-square overflow-hidden rounded-lg border border-border bg-muted"
         >
           @if (primaryImage(latestActiveRequest()!)) {
           <img
@@ -100,7 +86,7 @@
 
         <a
           [routerLink]="['/customer/pickups', latestActiveRequest()!.id]"
-          class="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+          class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
         >
           Track
           <ng-icon name="lucideArrowUpRight" class="size-4!" />
@@ -110,7 +96,7 @@
     }
 
     <section
-      class="min-w-0 rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6"
+      class="min-w-0 rounded-xl border border-border bg-card p-4 shadow-sm lg:p-6"
     >
       <app-table-header
         title="My Requests"
@@ -223,25 +209,19 @@
         </div>
 
         @if (!filteredRequests().length) {
-        <div class="grid min-h-72 place-items-center p-6 text-center">
-          <div>
-            <ng-icon
-              name="lucideRecycle"
-              class="mx-auto mb-3 size-10! text-primary"
-            />
-            <h3 class="text-base font-semibold">No requests found</h3>
-            <p class="mt-1 text-sm text-muted-foreground">
-              Create a pickup request to start tracking your recyclables.
-            </p>
-            <a
-              routerLink="/customer/new-pickup"
-              class="mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
-            >
-              <ng-icon name="lucidePlus" class="size-4!" />
-              New Request
-            </a>
-          </div>
-        </div>
+        <app-empty-state
+          icon="lucideRecycle"
+          title="No requests found"
+          description="Create a pickup request to start tracking your recyclables."
+        >
+          <a
+            routerLink="/customer/new-pickup"
+            class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+          >
+            <ng-icon name="lucidePlus" class="size-4!" />
+            New Request
+          </a>
+        </app-empty-state>
         }
       </app-fetch-state>
     </section>

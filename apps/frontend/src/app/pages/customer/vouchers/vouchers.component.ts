@@ -13,6 +13,7 @@ import { firstValueFrom } from 'rxjs';
 
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
+import { EmptyStateComponent } from '@/ui/empty-state/empty-state.component';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
 import { CustomerVoucherService } from '@/services/customer-voucher.service';
@@ -26,7 +27,7 @@ type VoucherTab = 'available' | 'redeemed';
 @Component({
   selector: 'app-customer-vouchers-page',
   templateUrl: './vouchers.html',
-  imports: [CommonModule, AppHeaderComponent, FetchStateComponent, ZardButtonComponent, NgIcon],
+  imports: [CommonModule, AppHeaderComponent, FetchStateComponent, EmptyStateComponent, ZardButtonComponent, NgIcon],
   viewProviders: [
     provideIcons({
       lucideBadgeCheck,

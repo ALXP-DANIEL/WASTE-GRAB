@@ -38,8 +38,8 @@ import { CustomerOnboardingComponent } from '@/onboarding/customer-onboarding.co
         class="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto"
         [ngClass]="
           authService.currentUser()
-            ? 'lg:pb-0 bg-secondary m-2 rounded-2xl border-dashed border-2 border-slate-300 dark:border-slate-700/50'
-            : 'lg:pb-0 bg-slate-50'
+            ? 'lg:pb-0 m-2 rounded-2xl border border-border bg-secondary/50 shadow-sm'
+            : 'lg:pb-0 bg-background'
         "
       >
         <router-outlet />

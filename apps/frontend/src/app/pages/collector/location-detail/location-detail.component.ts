@@ -28,7 +28,7 @@ import { ZardButtonComponent } from '@/ui/zard/button/button.component';
       <app-fetch-state [isLoading]="isLoading()" [loadError]="loadError()" loadingText="Loading location...">
         @if (location(); as loc) {
         <div class="grid gap-4">
-          <section class="rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">
+          <section class="rounded-xl border border-border bg-card p-4 shadow-sm lg:p-6">
             <div class="grid gap-5 lg:grid-cols-[18rem_minmax(0,1fr)] lg:items-start">
               <div class="overflow-hidden rounded-lg bg-muted">
                 @if (loc.imageUrl) {
@@ -48,11 +48,11 @@ import { ZardButtonComponent } from '@/ui/zard/button/button.component';
                 </div>
 
                 <dl class="grid gap-3 text-sm sm:grid-cols-2">
-                  <div class="rounded-lg border border-border bg-background p-3">
+                  <div class="rounded-lg bg-muted/60 p-3">
                     <dt class="text-xs text-muted-foreground">City</dt>
                     <dd class="mt-1 font-semibold">{{ loc.city || '-' }}</dd>
                   </div>
-                  <div class="rounded-lg border border-border bg-background p-3">
+                  <div class="rounded-lg bg-muted/60 p-3">
                     <dt class="text-xs text-muted-foreground">State</dt>
                     <dd class="mt-1 font-semibold">{{ loc.state || '-' }}</dd>
                   </div>
@@ -63,7 +63,7 @@ import { ZardButtonComponent } from '@/ui/zard/button/button.component';
                   [href]="url"
                   target="_blank"
                   rel="noreferrer"
-                  class="inline-flex h-10 w-fit items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                  class="inline-flex h-10 w-fit items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
                 >
                   <ng-icon name="lucideNavigation" class="size-4!" />
                   Open in Maps
@@ -73,7 +73,7 @@ import { ZardButtonComponent } from '@/ui/zard/button/button.component';
             </div>
           </section>
 
-          <section class="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+          <section class="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
             @if (hasCoordinates(loc)) {
             <app-route-map class="block h-[28rem] min-h-[28rem]" [collectionPoints]="mapMarkers()" />
             } @else {

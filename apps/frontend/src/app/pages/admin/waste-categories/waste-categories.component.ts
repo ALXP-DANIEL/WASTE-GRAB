@@ -192,9 +192,9 @@ export class AdminWasteCategoriesPage implements OnInit {
   }
 
   protected statusClass(category: WasteCategory): string {
-    if (category.isBanned) return 'bg-rose-100 text-rose-700';
-    if (category.isHazardous) return 'bg-amber-100 text-amber-700';
-    return 'bg-emerald-100 text-emerald-700';
+    if (category.isBanned) return 'bg-rose-500/10 text-rose-700 dark:text-rose-300';
+    if (category.isHazardous) return 'bg-amber-500/10 text-amber-700 dark:text-amber-300';
+    return 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300';
   }
 
   private loadCategories(): void {

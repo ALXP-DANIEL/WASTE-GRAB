@@ -36,7 +36,7 @@ export const buttonVariants = cva(
         'icon-lg': 'size-9',
       },
       zShape: {
-        default: 'rounded-md',
+        default: 'rounded-lg',
         circle: 'rounded-full',
         square: 'rounded-none',
       },

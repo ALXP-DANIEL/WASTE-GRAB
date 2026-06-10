@@ -7,6 +7,8 @@ import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
+import { EmptyStateComponent } from '@/ui/empty-state/empty-state.component';
+import { StatCardComponent } from '@/ui/stat-card/stat-card.component';
 import {
   lucideAlertCircle,
   lucideArrowUpRight,
@@ -37,7 +39,7 @@ type FilterOption = {
   selector: 'app-customer-pickups-page',
   templateUrl: './pickups.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, AppHeaderComponent, TableHeaderComponent, ZardButtonComponent, FetchStateComponent, NgIcon, RouterLink],
+  imports: [CommonModule, AppHeaderComponent, TableHeaderComponent, ZardButtonComponent, FetchStateComponent, EmptyStateComponent, StatCardComponent, NgIcon, RouterLink],
   viewProviders: [
     provideIcons({
       lucideAlertCircle,
@@ -214,7 +216,7 @@ export class CustomerPickupsPage {
   private statusMeta(status: PickupStatus): { label: string; className: string; icon: string } {
     switch (status) {
       case PickupStatus.PENDING:
-        return { label: 'Pending', className: 'bg-amber-100 text-amber-800', icon: 'lucideClock3' };
+        return { label: 'Pending', className: 'bg-amber-500/10 text-amber-700 dark:text-amber-300', icon: 'lucideClock3' };
       case PickupStatus.ACCEPTED:
         return { label: 'Accepted', className: 'bg-sky-100 text-sky-800', icon: 'lucideTruck' };
       case PickupStatus.ARRIVED:
@@ -222,7 +224,7 @@ export class CustomerPickupsPage {
       case PickupStatus.VERIFIED:
         return { label: 'Verified', className: 'bg-primary/10 text-primary', icon: 'lucideCheckCircle2' };
       case PickupStatus.COMPLETED:
-        return { label: 'Completed', className: 'bg-emerald-100 text-emerald-800', icon: 'lucideCheckCircle2' };
+        return { label: 'Completed', className: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300', icon: 'lucideCheckCircle2' };
       case PickupStatus.CANCELLED:
         return { label: 'Cancelled', className: 'bg-rose-100 text-rose-800', icon: 'lucideAlertCircle' };
     }

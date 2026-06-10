@@ -7,21 +7,21 @@
   </app-header>
 
   <div class="grid gap-3 sm:grid-cols-3">
-    <article class="rounded-lg border border-border bg-card p-4">
+    <article class="rounded-xl border border-border bg-card p-4 shadow-sm">
       <p class="text-sm text-muted-foreground">Slides</p>
       <p class="mt-2 text-3xl font-semibold">{{ slides().length }}</p>
     </article>
-    <article class="rounded-lg border border-border bg-card p-4">
+    <article class="rounded-xl border border-border bg-card p-4 shadow-sm">
       <p class="text-sm text-muted-foreground">Active</p>
       <p class="mt-2 text-3xl font-semibold text-primary">{{ activeCount() }}</p>
     </article>
-    <article class="rounded-lg border border-border bg-card p-4">
+    <article class="rounded-xl border border-border bg-card p-4 shadow-sm">
       <p class="text-sm text-muted-foreground">Login Slider</p>
       <p class="mt-2 text-sm font-medium">Uses active slides by sort order</p>
     </article>
   </div>
 
-  <section class="min-w-0 rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6">
+  <section class="min-w-0 rounded-xl border border-border bg-card p-4 shadow-sm lg:p-6">
     <app-table-header
       title="Auth Slider"
       description="Manage the real image slides shown on the login and registration screen."
@@ -68,14 +68,14 @@
           </div>
         </article>
         } @empty {
-        <div class="rounded-lg border border-dashed border-border p-8 text-center">
+        <div class="rounded-xl border border-dashed border-border bg-card/50 p-8 text-center">
           <p class="font-semibold">No slides yet.</p>
           <p class="mt-1 text-sm text-muted-foreground">Create a slide to override the fallback login images.</p>
         </div>
         }
       </div>
 
-      <div class="hidden max-w-full overflow-x-auto rounded-lg border border-border lg:block">
+      <div class="hidden max-w-full overflow-x-auto rounded-xl border border-border lg:block">
         <table z-table class="min-w-[72rem] bg-card">
           <thead z-table-header>
             <tr z-table-row>
@@ -117,7 +117,7 @@
                 <div class="flex justify-end gap-2">
                   <button
                     type="button"
-                    class="grid size-9 place-items-center rounded-md border border-border text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                    class="grid size-9 place-items-center rounded-lg border border-border text-muted-foreground transition hover:bg-muted hover:text-foreground"
                     aria-label="Edit slide"
                     (click)="openEdit(slide)"
                   >
@@ -125,7 +125,7 @@
                   </button>
                   <button
                     type="button"
-                    class="grid size-9 place-items-center rounded-md border border-red-100 text-red-600 transition hover:bg-red-50"
+                    class="grid size-9 place-items-center rounded-lg border border-destructive/20 text-destructive transition hover:bg-destructive/10"
                     aria-label="Delete slide"
                     (click)="deleteSlide(slide)"
                   >
@@ -197,7 +197,7 @@
           <p class="text-sm text-muted-foreground">Uploads are resized and stored in the Supabase auth-slides bucket.</p>
         </div>
         <label
-          class="inline-flex cursor-pointer items-center justify-center rounded-md border border-border px-4 py-2 text-sm font-medium transition hover:bg-muted"
+          class="inline-flex cursor-pointer items-center justify-center rounded-lg border border-border px-4 py-2 text-sm font-medium transition hover:bg-muted"
           [class.pointer-events-none]="isUploadingImage()"
           [class.opacity-60]="isUploadingImage()"
         >

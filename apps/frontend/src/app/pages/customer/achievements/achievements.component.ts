@@ -6,11 +6,13 @@ import { AchievementMetric, type UserAchievement } from '@wastegrab/shared';
 import { AchievementService } from '@/services/achievement.service';
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
+import { EmptyStateComponent } from '@/ui/empty-state/empty-state.component';
+import { StatCardComponent } from '@/ui/stat-card/stat-card.component';
 
 @Component({
   selector: 'app-customer-achievements-page',
   templateUrl: './achievements.html',
-  imports: [CommonModule, AppHeaderComponent, FetchStateComponent, NgIcon],
+  imports: [CommonModule, AppHeaderComponent, FetchStateComponent, EmptyStateComponent, StatCardComponent, NgIcon],
   viewProviders: [
     provideIcons({ lucideCalendarCheck, lucideCoins, lucideScale, lucideTrophy, lucideTruck }),
   ],

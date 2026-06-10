@@ -55,18 +55,18 @@ import { NotificationMarkdownPipe } from '@/utils/notification-markdown.pipe';
         @if (mode === 'welcome') {
 
           @if (authService.currentUser(); as user) {
-            <h1 class="text-2xl font-bold text-foreground">
+            <h1 class="text-2xl font-semibold tracking-tight text-foreground">
               Welcome back, {{ user.name }}! 👋
             </h1>
           } @else {
-            <h1 class="text-2xl font-bold text-foreground">
+            <h1 class="text-2xl font-semibold tracking-tight text-foreground">
               Welcome! 👋
             </h1>
           }
 
         } @else {
 
-          <h1 class="text-2xl font-bold text-foreground">
+          <h1 class="text-2xl font-semibold tracking-tight text-foreground">
             {{ activeRouteTitle }}
           </h1>
 
@@ -121,7 +121,7 @@ import { NotificationMarkdownPipe } from '@/utils/notification-markdown.pipe';
           <div class="flex items-center justify-between gap-3">
             <div>
               <p class="text-sm font-semibold text-foreground">Notifications</p>
-              <p class="text-xs text-slate-500">
+              <p class="text-xs text-muted-foreground">
                 @if (notificationCount() > 0) {
                   {{ notificationCount() }} updates waiting for you
                 } @else {
@@ -132,7 +132,7 @@ import { NotificationMarkdownPipe } from '@/utils/notification-markdown.pipe';
 
             <button
               type="button"
-              class="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-900"
+              class="rounded-lg border border-border bg-card px-2.5 py-1 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-muted"
               (click)="markAllNotificationsRead()"
             >
               Mark read
@@ -141,7 +141,7 @@ import { NotificationMarkdownPipe } from '@/utils/notification-markdown.pipe';
           @if (notificationItems().length > 0) {
             <button
               type="button"
-              class="mt-3 w-full rounded-md border border-red-100 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700 transition-colors hover:bg-red-100"
+              class="mt-3 w-full rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2 text-xs font-semibold text-destructive transition-colors hover:bg-destructive/20"
               (click)="clearAllNotifications($event)"
             >
               Clear notifications
@@ -150,7 +150,7 @@ import { NotificationMarkdownPipe } from '@/utils/notification-markdown.pipe';
           @if (notificationService.canEnablePush()) {
             <button
               type="button"
-              class="mt-3 w-full rounded-md border border-primary/20 bg-primary/10 px-3 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary/15"
+              class="mt-3 w-full rounded-lg border border-primary/20 bg-primary/10 px-3 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary/15"
               (click)="enablePushNotifications()"
             >
               Enable device notifications
@@ -159,40 +159,40 @@ import { NotificationMarkdownPipe } from '@/utils/notification-markdown.pipe';
         </div>
 
         @if (notificationItems().length > 0) {
-          <div class="max-h-72 divide-y divide-slate-100 overflow-y-auto">
+          <div class="max-h-72 divide-y divide-border overflow-y-auto">
             @for (item of notificationItems(); track item.id) {
               <button
                 z-dropdown-menu-item
                 type="button"
-                class="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-slate-50"
+                class="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/60"
                 (click)="openNotification(item)"
               >
                 <span
                   class="mt-1 h-2.5 w-2.5 rounded-full"
-                  [class.bg-emerald-500]="!item.readAt"
-                  [class.bg-slate-300]="item.readAt"
+                  [class.bg-primary]="!item.readAt"
+                  [class.bg-muted-foreground/30]="item.readAt"
                 ></span>
 
                 <span class="min-w-0 flex-1">
-                  <span class="block text-sm font-medium text-slate-900">{{ item.title }}</span>
+                  <span class="block text-sm font-medium text-foreground">{{ item.title }}</span>
                   <span
-                    class="mt-0.5 block text-xs leading-5 text-slate-500 [&_code]:rounded [&_code]:bg-slate-100 [&_code]:px-1 [&_em]:italic [&_h1]:text-sm [&_h1]:font-semibold [&_h2]:text-sm [&_h2]:font-semibold [&_h3]:text-xs [&_h3]:font-semibold [&_li]:ml-4 [&_li]:list-disc [&_p+p]:mt-1 [&_strong]:font-semibold [&_ul]:mt-1"
+                    class="mt-0.5 block text-xs leading-5 text-muted-foreground [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_em]:italic [&_h1]:text-sm [&_h1]:font-semibold [&_h2]:text-sm [&_h2]:font-semibold [&_h3]:text-xs [&_h3]:font-semibold [&_li]:ml-4 [&_li]:list-disc [&_p+p]:mt-1 [&_strong]:font-semibold [&_ul]:mt-1"
                     [innerHTML]="item.message | notificationMarkdown"
                   ></span>
-                  <span class="mt-1 block text-[11px] text-slate-400">{{ notificationTime(item) }}</span>
+                  <span class="mt-1 block text-[11px] text-muted-foreground/70">{{ notificationTime(item) }}</span>
                 </span>
 
                 @if (item.isClearable) {
                   <button
                     type="button"
-                    class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                    class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                     aria-label="Clear notification"
                     (click)="clearNotification($event, item)"
                   >
                     <ng-icon name="lucideTrash2" class="size-4!" />
                   </button>
                 } @else {
-                  <span class="mt-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                  <span class="mt-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300">
                     Pinned
                   </span>
                 }
@@ -201,8 +201,8 @@ import { NotificationMarkdownPipe } from '@/utils/notification-markdown.pipe';
           </div>
         } @else {
           <div class="px-4 py-8 text-center">
-            <p class="text-sm font-medium text-slate-900">You're all caught up.</p>
-            <p class="mt-1 text-xs text-slate-500">New notifications will appear here.</p>
+            <p class="text-sm font-medium text-foreground">You're all caught up.</p>
+            <p class="mt-1 text-xs text-muted-foreground">New notifications will appear here.</p>
           </div>
         }
       </z-dropdown-menu-content>

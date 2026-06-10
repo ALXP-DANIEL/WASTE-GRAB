@@ -1,5 +1,6 @@
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
+import { EmptyStateComponent } from '@/ui/empty-state/empty-state.component';
 import { PickupRequestService } from '@/services/pickup-request.service';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
@@ -20,7 +21,7 @@ import type { LeaderboardEntry } from '@wastegrab/shared';
 @Component({
   selector: 'app-customer-leaderboard-page',
   templateUrl: './leaderboard.html',
-  imports: [CommonModule, AppHeaderComponent, FetchStateComponent, NgIcon, RouterLink],
+  imports: [CommonModule, AppHeaderComponent, FetchStateComponent, EmptyStateComponent, NgIcon, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   viewProviders: [
     provideIcons({

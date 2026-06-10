@@ -231,11 +231,11 @@ function getInitials(name?: string | null): string {
   template: `
     <!-- Desktop Sidebar -->
     <aside
-      class="hidden lg:flex lg:flex-col lg:fixed lg:left-0 lg:top-0 lg:h-dvh lg:w-64 lg:bg-background lg:border-r lg:border-primary/20 z-40 lg:rounded-tr-2xl lg:rounded-br-2xl overflow-y-auto"
+      class="hidden lg:flex lg:flex-col lg:fixed lg:left-0 lg:top-0 lg:h-dvh lg:w-64 lg:bg-background lg:border-r lg:border-border z-40 overflow-y-auto"
     >
       <div class="flex flex-col h-full">
         <!-- Brand -->
-        <div class="border-b border-primary/20 bg-background px-6 py-2">
+        <div class="border-b border-border px-6 py-3">
           <app-brand-logo size="lg" />
         </div>
 
@@ -244,13 +244,13 @@ function getInitials(name?: string | null): string {
           @for (item of navItems(); track item.route) {
             <a
               [routerLink]="item.route"
-              routerLinkActive="bg-primary text-primary-foreground"
+              routerLinkActive="bg-primary text-primary-foreground shadow-sm"
               [routerLinkActiveOptions]="{ exact: true }"
               ariaCurrentWhenActive="page"
-              class="group mb-2 flex items-center gap-3 rounded-xl text-sm font-medium text-foreground"
+              class="group mb-1 flex items-center gap-3 rounded-lg text-sm font-medium text-muted-foreground"
             >
               <span
-                class="flex w-full items-center gap-3 rounded-xl px-4 py-2 transition-colors group-hover:bg-primary/20"
+                class="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 transition-colors group-hover:bg-primary/10"
               >
                 <ng-icon [name]="item.icon" class="size-4!" />
                 <span>{{ item.label }}</span>
@@ -260,10 +260,10 @@ function getInitials(name?: string | null): string {
         </nav>
 
         <!-- Bottom -->
-        <div class="space-y-3 border-t border-primary/20 p-4">
+        <div class="space-y-3 border-t border-border p-4">
           <a
             [routerLink]="profileRoute"
-            class="block rounded-xl bg-primary/5 p-3 transition-colors hover:bg-primary/15"
+            class="block rounded-xl border border-border bg-card p-3 shadow-sm transition-colors hover:border-primary/40"
           >
             <div class="flex items-center gap-3">
               <z-avatar
@@ -271,7 +271,7 @@ function getInitials(name?: string | null): string {
                 [zFallback]="userInitials()"
                 [zAlt]="avatarAlt()"
                 zSize="md"
-                class="ring-2 ring-primary/30"
+                class="ring-2 ring-primary/20"
               />
 
               <div class="min-w-0 flex-1">
@@ -293,7 +293,7 @@ function getInitials(name?: string | null): string {
           <div class="flex gap-2">
             <a
               [routerLink]="settingsRoute"
-              class="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-primary/10 py-2 text-xs text-foreground transition-colors hover:bg-primary/20"
+              class="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-secondary py-2 text-xs font-medium text-secondary-foreground transition-colors hover:bg-accent"
             >
               <ng-icon
                 name="lucideSettings"
@@ -306,7 +306,7 @@ function getInitials(name?: string | null): string {
             <button
               type="button"
               (click)="confirmLogout()"
-              class="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-destructive/10 py-2 text-xs text-destructive transition-colors hover:bg-destructive/20"
+              class="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-destructive/10 py-2 text-xs font-medium text-destructive transition-colors hover:bg-destructive/20"
             >
               <ng-icon
                 name="lucideLogOut"
@@ -322,17 +322,17 @@ function getInitials(name?: string | null): string {
 
     <!-- Mobile Bottom Nav -->
     <nav
-      class="lg:hidden m-2 mt-0 bg-primary/5 border border-primary/20 rounded-2xl shadow-lg z-40"
+      class="lg:hidden m-2 mt-0 bg-card/95 backdrop-blur border border-border rounded-2xl shadow-lg z-40"
     >
       <div class="flex h-20 items-stretch gap-2 p-2">
         @for (item of navItems(); track item.route) {
           @if (item.showOnMobile) {
             <a
               [routerLink]="item.route"
-              routerLinkActive="bg-primary text-primary-foreground"
+              routerLinkActive="bg-primary text-primary-foreground shadow-sm"
               [routerLinkActiveOptions]="{ exact: true }"
               ariaCurrentWhenActive="page"
-              class="flex-1 flex flex-col items-center justify-center gap-1 rounded-xl text-foreground hover:bg-primary/20"
+              class="flex-1 flex flex-col items-center justify-center gap-1 rounded-xl text-muted-foreground transition-colors hover:bg-primary/10"
             >
               <ng-icon [name]="item.icon" class="size-5!" />
               <span class="text-xs font-medium">{{ item.label }}</span>
@@ -343,17 +343,17 @@ function getInitials(name?: string | null): string {
         <!-- Profile -->
         <a
           [routerLink]="profileRoute"
-          routerLinkActive="bg-primary text-primary-foreground"
+          routerLinkActive="bg-primary text-primary-foreground shadow-sm"
           [routerLinkActiveOptions]="{ exact: true }"
           ariaCurrentWhenActive="page"
-          class="flex-1 flex flex-col items-center justify-center gap-1 rounded-xl text-foreground hover:bg-primary/20"
+          class="flex-1 flex flex-col items-center justify-center gap-1 rounded-xl text-muted-foreground transition-colors hover:bg-primary/10"
         >
           <z-avatar
             [zSrc]="user()?.avatarUrl || ''"
             [zFallback]="userInitials()"
             [zAlt]="avatarAlt()"
             zSize="sm"
-            class="ring-2 ring-primary/30"
+            class="ring-2 ring-primary/20"
           />
           <span class="text-xs font-medium">Profile</span>
         </a>

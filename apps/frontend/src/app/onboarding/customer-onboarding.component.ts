@@ -56,7 +56,7 @@ const CUSTOMER_ONBOARDING_STEPS: { key: CustomerOnboardingStep; label: string; i
   ],
   template: `
     <div class="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-slate-950/55 p-4 backdrop-blur-sm">
-      <section class="my-auto w-full max-w-3xl rounded-lg border border-border bg-background shadow-2xl">
+      <section class="my-auto w-full max-w-3xl rounded-2xl border border-border bg-card shadow-2xl">
         <div class="border-b border-border px-5 py-5 sm:px-6">
           <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div class="flex min-w-0 items-start gap-4">

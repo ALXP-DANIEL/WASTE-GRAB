@@ -8,10 +8,10 @@
 
   <div class="grid gap-3 sm:grid-cols-3">
     <article
-      class="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+      class="flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-sm"
     >
       <span
-        class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
+        class="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"
       >
         <ng-icon name="lucideSparkles" class="size-5!" />
       </span>
@@ -23,10 +23,10 @@
       </span>
     </article>
     <article
-      class="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+      class="flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-sm"
     >
       <span
-        class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
+        class="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"
       >
         <ng-icon name="lucideBrain" class="size-5!" />
       </span>
@@ -38,10 +38,10 @@
       </span>
     </article>
     <article
-      class="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+      class="flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-sm"
     >
       <span
-        class="grid size-10 place-items-center rounded-lg bg-background/80 text-primary"
+        class="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"
       >
         <ng-icon name="lucideCircleSlash" class="size-5!" />
       </span>
@@ -55,7 +55,7 @@
   </div>
 
   <section
-    class="min-w-0 rounded-lg border border-border bg-card p-4 shadow-sm lg:p-6"
+    class="min-w-0 rounded-xl border border-border bg-card p-4 shadow-sm lg:p-6"
   >
     <app-table-header
       title="Waste Categories"
@@ -84,7 +84,7 @@
             </div>
             <span
               class="shrink-0 rounded-md px-2 py-1 text-xs font-semibold"
-              [class]="category.isAiDetectable ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'"
+              [class]="category.isAiDetectable ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300' : 'bg-muted text-muted-foreground'"
             >
               {{ category.isAiDetectable ? 'AI' : 'No AI' }}
             </span>
@@ -141,7 +141,7 @@
         </article>
         } @empty {
         <div
-          class="rounded-lg border border-dashed border-border p-8 text-center"
+          class="rounded-xl border border-dashed border-border bg-card/50 p-8 text-center"
         >
           <p class="font-semibold">No waste categories found.</p>
           <p class="mt-1 text-sm text-muted-foreground">
@@ -157,7 +157,7 @@
       </div>
 
       <div
-        class="hidden max-w-full overflow-x-auto rounded-lg border border-border lg:block"
+        class="hidden max-w-full overflow-x-auto rounded-xl border border-border lg:block"
       >
         <table z-table class="min-w-[68rem] bg-card">
           <caption z-table-caption class="sr-only">
@@ -199,7 +199,7 @@
               <td z-table-cell>
                 <span
                   class="rounded-md px-2 py-1 text-xs font-semibold"
-                  [class]="category.isAiDetectable ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'"
+                  [class]="category.isAiDetectable ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300' : 'bg-muted text-muted-foreground'"
                 >
                   {{ category.isAiDetectable ? 'Detectable' : 'Ignored' }}
                 </span>
@@ -318,19 +318,19 @@
         </z-form-control>
       </z-form-field>
 
-      <div class="grid gap-3 rounded border border-slate-200 p-3 sm:col-span-2">
-        <z-checkbox formControlName="isBanned" class="text-sm text-slate-700">
+      <div class="grid gap-3 rounded-lg border border-border p-3 sm:col-span-2">
+        <z-checkbox formControlName="isBanned" class="text-sm text-foreground">
           Banned category
         </z-checkbox>
         <z-checkbox
           formControlName="isHazardous"
-          class="text-sm text-slate-700"
+          class="text-sm text-foreground"
         >
           Hazardous category
         </z-checkbox>
         <z-checkbox
           formControlName="isAiDetectable"
-          class="text-sm text-slate-700"
+          class="text-sm text-foreground"
         >
           Available for AI image detection
         </z-checkbox>

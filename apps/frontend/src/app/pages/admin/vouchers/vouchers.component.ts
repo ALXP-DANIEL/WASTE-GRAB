@@ -255,9 +255,9 @@ export class AdminVouchersPage implements OnInit {
   }
 
   protected statusClass(status: VoucherStatus): string {
-    if (status === VoucherStatus.ACTIVE) return 'bg-emerald-100 text-emerald-700';
-    if (status === VoucherStatus.EXPIRED) return 'bg-amber-100 text-amber-700';
-    return 'bg-slate-100 text-slate-600';
+    if (status === VoucherStatus.ACTIVE) return 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300';
+    if (status === VoucherStatus.EXPIRED) return 'bg-amber-500/10 text-amber-700 dark:text-amber-300';
+    return 'bg-muted text-muted-foreground';
   }
 
   protected pointsClass(points: number): string {
