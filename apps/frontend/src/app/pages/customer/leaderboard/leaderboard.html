@@ -12,7 +12,7 @@
           <div class="min-w-0">
             <p class="text-sm font-medium text-white/80">Community ranking</p>
             <h1 class="mt-1 text-2xl font-bold tracking-tight">Weight Contribution Leaderboard</h1>
-            <p class="mt-2 max-w-2xl text-sm/6  text-white/80">
+            <p class="mt-2 max-w-2xl text-sm/6 text-white/80">
               Customers are ranked by total completed pickup weight. Verified item weights are used first, then submitted estimates.
             </p>
           </div>
@@ -31,47 +31,63 @@
       </section>
 
       @if (topThree().length > 0) {
-        <section class="grid gap-4 lg:grid-cols-3">
+        <section class="grid gap-3 sm:grid-cols-3 sm:items-end sm:gap-4 sm:pt-4">
           @for (entry of topThree(); track entry.userId) {
             <article
-              class="card-lift rounded-2xl border p-5 transition-colors"
-              [class.border-primary]="entry.isCurrentUser"
-              [class.bg-primary/10]="entry.isCurrentUser"
-              [class.border-border]="!entry.isCurrentUser"
-              [class.bg-card]="!entry.isCurrentUser"
+              class="card-lift relative overflow-hidden rounded-3xl border bg-card p-5 pb-6 text-center transition-transform"
+              [ngClass]="podiumCardClass(entry.rank)"
             >
-              <div class="flex items-start justify-between gap-4">
-                <span class="grid size-12 place-items-center rounded-full" [class]="rankClass(entry.rank)">
-                  <ng-icon [name]="entry.rank === 1 ? 'lucideTrophy' : 'lucideMedal'" class="size-6!" />
-                </span>
-                <span class="rounded-full px-2.5 py-1 text-xs font-bold" [class]="rankClass(entry.rank)">
-                  #{{ entry.rank }}
-                </span>
-              </div>
+              <span
+                class="absolute right-4 top-4 grid size-9 place-items-center rounded-full"
+                [class]="rankClass(entry.rank)"
+              >
+                <ng-icon [name]="medalIcon(entry.rank)" class="size-4.5!" />
+              </span>
 
-              <div class="mt-5 flex items-center gap-3">
-                <div class="grid size-11 shrink-0 place-items-center overflow-hidden rounded-full bg-muted text-sm font-bold text-muted-foreground">
+              <div class="grid justify-items-center">
+                <div
+                  class="grid size-16 place-items-center overflow-hidden rounded-full bg-muted text-lg font-bold text-muted-foreground"
+                  [ngClass]="podiumRingClass(entry.rank)"
+                >
                   @if (entry.avatarUrl) {
                     <img [src]="entry.avatarUrl" [alt]="entry.name" class="size-full object-cover" />
                   } @else {
                     {{ initials(entry.name) }}
                   }
                 </div>
-                <div class="min-w-0">
-                  <h2 class="truncate text-base font-semibold">{{ entry.name }}</h2>
-                  <p class="text-sm text-muted-foreground">{{ entry.completedPickups }} completed pickup{{ entry.completedPickups === 1 ? '' : 's' }}</p>
-                </div>
+
+                <span
+                  class="-mt-2.5 rounded-full px-2.5 py-0.5 text-xs font-bold shadow-sm"
+                  [class]="rankClass(entry.rank)"
+                >
+                  #{{ entry.rank }}
+                </span>
+
+                <h2 class="mt-2 w-full truncate text-base font-bold">
+                  {{ entry.name }}
+                  @if (entry.isCurrentUser) {
+                    <span class="font-semibold text-primary">(You)</span>
+                  }
+                </h2>
+                <p class="text-xs text-muted-foreground">
+                  {{ entry.completedPickups }} completed pickup{{ entry.completedPickups === 1 ? '' : 's' }}
+                </p>
+
+                <p class="mt-3 text-2xl font-bold tracking-tight">{{ weightLabel(entry) }}</p>
+                <p class="text-xs font-semibold text-muted-foreground">
+                  @if (entry.rank === 1) {
+                    Top recycler
+                  } @else {
+                    recycled weight
+                  }
+                </p>
               </div>
 
-              <div class="mt-5 rounded-lg bg-muted/60 p-4">
-                <div class="flex items-center justify-between gap-3">
-                  <div>
-                    <p class="text-xs font-medium text-muted-foreground">Total weight</p>
-                    <p class="mt-1 text-2xl font-semibold tracking-tight">{{ weightLabel(entry) }}</p>
-                  </div>
-                  <ng-icon name="lucideScale" class="size-6! text-primary" />
-                </div>
-              </div>
+              <span
+                class="absolute inset-x-0 bottom-0 h-1.5"
+                [class]="podiumStripClass(entry.rank)"
+                aria-hidden="true"
+              ></span>
             </article>
           }
         </section>
@@ -79,7 +95,7 @@
 
       @if (currentUserRank() && !currentUserIsVisible()) {
         @if (currentUserRank(); as currentUser) {
-          <section class="rounded-2xl border border-primary/40 bg-primary/10 p-5 shadow-sm">
+          <section class="card-lift rounded-2xl border border-primary/40 bg-primary/10 p-5">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div class="flex min-w-0 items-center gap-3">
                 <span class="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
@@ -87,7 +103,7 @@
                 </span>
                 <div class="min-w-0">
                   <p class="text-sm font-semibold text-primary">Your rank</p>
-                  <h2 class="truncate text-lg font-semibold">#{{ currentUser.rank }} · {{ weightLabel(currentUser) }}</h2>
+                  <h2 class="truncate text-lg font-bold">#{{ currentUser.rank }} · {{ weightLabel(currentUser) }}</h2>
                 </div>
               </div>
               <p class="text-sm text-muted-foreground">
@@ -98,61 +114,89 @@
         }
       }
 
-      <section class="rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <section class="card-lift rounded-2xl border border-border/60 bg-card p-5">
         <div class="flex items-center justify-between gap-3">
           <div>
             <h2 class="text-base font-semibold">All Ranked Contributors</h2>
-            <p class="mt-1 text-sm text-muted-foreground">Top 20 customers by completed pickup weight.</p>
+            <p class="mt-1 text-sm text-muted-foreground">
+              Top 20 customers by completed pickup weight. Bars compare against the current leader.
+            </p>
           </div>
           <ng-icon name="lucideRecycle" class="size-5! text-primary" />
         </div>
 
-        <div class="mt-4 grid gap-3">
+        <div class="mt-4 grid gap-2.5">
           @for (entry of remainingEntries(); track entry.userId) {
             <div
-              class="grid gap-3 rounded-lg border p-3 sm:grid-cols-[auto_1fr_auto] sm:items-center"
+              class="rounded-2xl border p-3 transition-colors"
               [class.border-primary]="entry.isCurrentUser"
               [class.bg-primary/10]="entry.isCurrentUser"
               [class.border-border]="!entry.isCurrentUser"
               [class.bg-background]="!entry.isCurrentUser"
             >
-              <span class="grid size-10 place-items-center rounded-lg text-sm font-bold" [class]="rankClass(entry.rank)">
-                #{{ entry.rank }}
-              </span>
-              <div class="flex min-w-0 items-center gap-3">
-                <div class="grid size-10 shrink-0 place-items-center overflow-hidden rounded-full bg-muted text-xs font-bold text-muted-foreground">
+              <div class="flex items-center gap-3">
+                <span
+                  class="grid size-9 shrink-0 place-items-center rounded-full text-xs font-bold"
+                  [class]="rankClass(entry.rank)"
+                >
+                  #{{ entry.rank }}
+                </span>
+
+                <div class="grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-muted text-xs font-bold text-muted-foreground">
                   @if (entry.avatarUrl) {
                     <img [src]="entry.avatarUrl" [alt]="entry.name" class="size-full object-cover" />
                   } @else {
                     {{ initials(entry.name) }}
                   }
                 </div>
-                <span class="min-w-0">
-                  <span class="block truncate text-sm font-semibold">{{ entry.name }}</span>
-                  <span class="mt-1 block text-xs text-muted-foreground">{{ entry.completedPickups }} completed pickup{{ entry.completedPickups === 1 ? '' : 's' }}</span>
+
+                <span class="min-w-0 flex-1">
+                  <span class="block truncate text-sm font-semibold">
+                    {{ entry.name }}
+                    @if (entry.isCurrentUser) {
+                      <span class="text-primary">(You)</span>
+                    }
+                  </span>
+                  <span class="block text-xs text-muted-foreground">
+                    {{ entry.completedPickups }} completed pickup{{ entry.completedPickups === 1 ? '' : 's' }}
+                  </span>
+                </span>
+
+                <span class="inline-flex shrink-0 items-center gap-1.5 text-sm font-bold">
+                  <ng-icon name="lucideScale" class="size-4! text-primary" />
+                  {{ weightLabel(entry) }}
                 </span>
               </div>
-              <span class="inline-flex items-center gap-2 text-sm font-bold">
-                <ng-icon name="lucideScale" class="size-4! text-primary" />
-                {{ weightLabel(entry) }}
-              </span>
+
+              <div class="mt-2.5 h-2 overflow-hidden rounded-full bg-muted">
+                <div
+                  class="h-full rounded-full bg-linear-to-r from-primary to-teal-500"
+                  [style.width.%]="barPercent(entry)"
+                ></div>
+              </div>
             </div>
           } @empty {
-            <app-empty-state
-              icon="lucideUser"
-              title="No completed pickup weights yet."
-              description="The ranking will appear after customers complete pickups."
-            />
+            @if (topThree().length === 0) {
+              <app-empty-state
+                icon="lucideUser"
+                title="No completed pickup weights yet."
+                description="The ranking will appear after customers complete pickups."
+              />
+            } @else {
+              <p class="rounded-2xl border border-dashed border-border bg-card/50 p-4 text-sm text-muted-foreground">
+                Only the podium is ranked so far. Complete pickups to join the list.
+              </p>
+            }
           }
         </div>
       </section>
 
       <a
         routerLink="/customer"
-        class="inline-flex w-fit items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold shadow-sm transition-colors hover:bg-muted"
+        class="inline-flex w-fit items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold shadow-sm transition-colors hover:bg-muted"
       >
+        <ng-icon name="lucideChevronRight" class="size-4! rotate-180" />
         Back to dashboard
-        <ng-icon name="lucideChevronRight" class="size-4!" />
       </a>
     </div>
   </app-fetch-state>

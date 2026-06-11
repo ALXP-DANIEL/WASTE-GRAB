@@ -9,6 +9,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideAward,
   lucideChevronRight,
+  lucideCrown,
   lucideMedal,
   lucideRecycle,
   lucideScale,
@@ -27,6 +28,7 @@ import type { LeaderboardEntry } from '@wastegrab/shared';
     provideIcons({
       lucideAward,
       lucideChevronRight,
+      lucideCrown,
       lucideMedal,
       lucideRecycle,
       lucideScale,
@@ -81,6 +83,50 @@ export class CustomerLeaderboardPage {
 
   protected weightLabel(entry: LeaderboardEntry): string {
     return `${Number(entry.totalWeightKg).toFixed(1)} kg`;
+  }
+
+  /** Bar width relative to the #1 contributor, floored so small values stay visible. */
+  protected barPercent(entry: LeaderboardEntry): number {
+    const top = Number(this.leaderboard()[0]?.totalWeightKg ?? 0);
+    if (!top) return 0;
+    return Math.max(4, Math.round((Number(entry.totalWeightKg) / top) * 100));
+  }
+
+  protected medalIcon(rank: number): string {
+    return rank === 1 ? 'lucideCrown' : 'lucideMedal';
+  }
+
+  protected podiumCardClass(rank: number): string {
+    switch (rank) {
+      case 1:
+        return 'border-amber-400/50 sm:order-2 sm:-translate-y-4';
+      case 2:
+        return 'border-border sm:order-1';
+      default:
+        return 'border-orange-400/40 sm:order-3';
+    }
+  }
+
+  protected podiumRingClass(rank: number): string {
+    switch (rank) {
+      case 1:
+        return 'ring-4 ring-amber-400/60';
+      case 2:
+        return 'ring-2 ring-border';
+      default:
+        return 'ring-2 ring-orange-400/50';
+    }
+  }
+
+  protected podiumStripClass(rank: number): string {
+    switch (rank) {
+      case 1:
+        return 'bg-linear-to-r from-amber-400 to-yellow-300';
+      case 2:
+        return 'bg-linear-to-r from-muted-foreground/40 to-muted-foreground/20';
+      default:
+        return 'bg-linear-to-r from-orange-400 to-amber-300';
+    }
   }
 
   private async loadLeaderboard(): Promise<void> {

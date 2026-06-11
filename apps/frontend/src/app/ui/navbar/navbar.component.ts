@@ -23,6 +23,7 @@ import {
   lucideUsers,
   lucideRecycle,
   lucideBell,
+  lucideChartNoAxesColumn,
 } from '@ng-icons/lucide';
 
 import { UserRole, type User } from '@wastegrab/shared';
@@ -88,7 +89,7 @@ const ROLE_NAV = {
         ROUTE_PATHS.customer.base,
         ROUTE_PATHS.customer.leaderboard,
       ),
-      icon: 'lucideTrophy',
+      icon: 'lucideChartNoAxesColumn',
       showOnMobile: false,
     },
   ],
@@ -215,6 +216,7 @@ function getInitials(name?: string | null): string {
       lucideRecycle,
       lucideBell,
       lucideTrophy,
+      lucideChartNoAxesColumn,
       lucideGift,
       lucideImage,
       lucideLayoutDashboard,
