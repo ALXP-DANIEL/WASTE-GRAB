@@ -6,6 +6,13 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { provideIcons } from '@ng-icons/core';
+import {
+  lucideCheckCircle2,
+  lucideFileText,
+  lucideScale,
+  lucideStar,
+} from '@ng-icons/lucide';
 import { firstValueFrom } from 'rxjs';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 
@@ -14,18 +21,19 @@ import { AuthService } from '@/services/auth.service';
 import { CustomerVoucherService } from '@/services/customer-voucher.service';
 import { PickupRequestService } from '@/services/pickup-request.service';
 import { CustomerActivePickupCardComponent } from './_components/customer-active-pickup-card.component';
+import { CustomerHeroComponent } from './_components/customer-hero.component';
 import { CustomerQuickActionsComponent } from './_components/customer-quick-actions.component';
 import { CustomerRankPanelComponent } from './_components/customer-rank-panel.component';
 import { CustomerRecentRequestsComponent } from './_components/customer-recent-requests.component';
-import { CustomerStatCardComponent } from './_components/customer-stat-card.component';
 import { CustomerVoucherPanelComponent } from './_components/customer-voucher-panel.component';
 import type {
-  CustomerDashboardStat,
   CustomerLeaderboardRow,
   CustomerPickupSummary,
   CustomerQuickAction,
   CustomerVoucherSummary,
 } from './_components/customer-dashboard.models';
+import type { StatCardItem } from '@/ui/stat-card/stat-card.models';
+import { StatGridComponent } from '@/ui/stat-card/stat-grid.component';
 import {
   ImageType,
   type LeaderboardEntry,
@@ -46,12 +54,21 @@ import { AppHeaderComponent } from '@/ui/header/header.component';
     CommonModule,
     FetchStateComponent,
     CustomerActivePickupCardComponent,
+    CustomerHeroComponent,
     CustomerQuickActionsComponent,
     CustomerRankPanelComponent,
     CustomerRecentRequestsComponent,
-    CustomerStatCardComponent,
     CustomerVoucherPanelComponent,
     AppHeaderComponent,
+    StatGridComponent,
+  ],
+  viewProviders: [
+    provideIcons({
+      lucideCheckCircle2,
+      lucideFileText,
+      lucideScale,
+      lucideStar,
+    }),
   ],
 })
 export class CustomerPage {
@@ -124,7 +141,8 @@ export class CustomerPage {
       .slice(0, 2)
       .map((redemption) => ({
         title: redemption.voucher.title,
-        detail: `${redemption.redeemedCode || 'No code'} · ${this.voucherExpiryLabel(redemption)}`,
+        code: redemption.redeemedCode || 'No code',
+        expiryLabel: this.voucherExpiryLabel(redemption),
         pointsSpent: redemption.pointsSpent,
         route: this.vouchersPath,
       })),
@@ -144,6 +162,7 @@ export class CustomerPage {
       return entries.map((entry) => ({
         rank: entry.rank,
         name: entry.name,
+        avatarUrl: entry.avatarUrl,
         value: `${Number(entry.totalWeightKg).toFixed(1)} kg`,
         isCurrentUser: entry.isCurrentUser,
         route: this.leaderboardPath,
@@ -178,11 +197,11 @@ export class CustomerPage {
     },
   ]);
 
-  protected readonly dashboardStats = computed<CustomerDashboardStat[]>(() => [
+  protected readonly dashboardStats = computed<StatCardItem[]>(() => [
     {
-      label: 'Total requests',
+      label: 'Total Requests',
       value: String(this.requests().length),
-      icon: 'lucidePackage',
+      icon: 'lucideFileText',
       tone: 'brand',
     },
     {
@@ -192,21 +211,21 @@ export class CustomerPage {
           (request) => request.status === PickupStatus.COMPLETED,
         ).length,
       ),
-      icon: 'lucideActivity',
-      tone: 'info',
+      icon: 'lucideCheckCircle2',
+      tone: 'success',
     },
     {
       label: 'Contributed',
       value: Number(this.rewardSummary()?.completedWeightKg ?? 0).toFixed(1),
       unit: 'kg',
       icon: 'lucideScale',
-      tone: 'success',
+      tone: 'brand',
     },
     {
       label: 'Points',
       value: `${this.rewardSummary()?.pointsBalance ?? 0}`,
-      icon: 'lucideCoins',
-      tone: 'warning',
+      icon: 'lucideStar',
+      tone: 'brand',
     },
   ]);
 
@@ -279,6 +298,17 @@ export class CustomerPage {
     });
   }
 
+  protected dateTimeLabel(value: string): string {
+    return new Date(value).toLocaleString(undefined, {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
+  }
+
   private toPickupSummary(
     request: PickupRequestWithDetails,
   ): CustomerPickupSummary {
@@ -295,6 +325,7 @@ export class CustomerPage {
       points: this.potentialPoints(request),
       itemCount: request.items.length,
       createdAtLabel: this.dateLabel(request.createdAt),
+      createdAtFullLabel: this.dateTimeLabel(request.createdAt),
       detailRoute: [...this.pickupsPath, request.id],
       statusMessage: this.statusMessage(request.status),
     };

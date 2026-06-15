@@ -1,68 +1,38 @@
 <section class="grid gap-5 p-4 md:p-6 lg:p-8">
-  <app-header mode="route" />
+  <app-header />
 
-  <app-fetch-state
-    [isLoading]="isLoadingRequests()"
-    [loadError]="loadErrorRequests()"
-    loadingText="Loading dashboard data..."
-  >
-    <div class="grid w-full gap-5">
-      <header class="brand-hero card-lift relative min-w-0 overflow-hidden rounded-3xl p-5 lg:p-7">
-        <div
-          class="pointer-events-none absolute -right-10 -top-12 size-44 rounded-full bg-white/10"
-          aria-hidden="true"
-        ></div>
-        <div
-          class="pointer-events-none absolute -bottom-16 right-16 size-36 rounded-full bg-white/5"
-          aria-hidden="true"
-        ></div>
-        <p class="text-sm font-medium text-white/80">Good morning,</p>
-        <h1 class="mt-1 truncate text-2xl font-bold tracking-tight lg:text-3xl">
-          {{ customerName() }}
-        </h1>
-      </header>
+  <div class="grid w-full gap-5">
+    <app-customer-hero [customerName]="customerName()" />
 
-      <section class="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        @for (stat of dashboardStats(); track stat.label) {
-        <app-customer-stat-card [stat]="stat" />
-        }
-      </section>
+    <app-stat-grid [stats]="dashboardStats()" />
 
-      <section class="lg:grid lg:grid-cols-3 lg:gap-6">
-        <div class="grid gap-5 lg:col-span-2">
-          <div>
-            <div class="mb-2 flex items-center justify-between">
-              <h2 class="text-sm font-semibold text-muted-foreground">
-                Active pickup
-              </h2>
-            </div>
-            <app-customer-active-pickup-card
-              [pickup]="activePickupSummary()"
-              [newPickupRoute]="newPickupPath"
-            />
-          </div>
+    <section class="lg:grid lg:grid-cols-3 lg:gap-6">
+      <div class="grid gap-5 lg:col-span-2">
+        <app-customer-active-pickup-card
+          [pickup]="activePickupSummary()"
+          [newPickupRoute]="newPickupPath"
+        />
 
-          <app-customer-quick-actions [actions]="quickActions()" />
-        </div>
+        <app-customer-quick-actions [actions]="quickActions()" />
+      </div>
 
-        <aside
-          class="mt-5 grid max-h-none content-start gap-5 overflow-visible lg:mt-0 lg:max-h-[calc(70dvh-8rem)] lg:overflow-y-auto lg:pr-1"
-        >
-          <app-customer-voucher-panel
-            [vouchers]="activeVoucherSummaries()"
-            [vouchersRoute]="vouchersPath"
-          />
-          <app-customer-rank-panel
-            [rows]="leaderboardRows()"
-            [leaderboardRoute]="leaderboardPath"
-          />
-        </aside>
-      </section>
+      <aside
+        class="mt-5 grid max-h-none content-start gap-5 overflow-visible lg:mt-0 lg:max-h-[calc(70dvh-8rem)] lg:overflow-y-auto lg:pr-1"
+      >
+        <app-customer-voucher-panel
+          [vouchers]="activeVoucherSummaries()"
+          [vouchersRoute]="vouchersPath"
+        />
+        <app-customer-rank-panel
+          [rows]="leaderboardRows()"
+          [leaderboardRoute]="leaderboardPath"
+        />
+      </aside>
+    </section>
 
-      <app-customer-recent-requests
-        [requests]="recentPickupSummaries()"
-        [pickupsRoute]="pickupsPath"
-      />
-    </div>
-  </app-fetch-state>
+    <app-customer-recent-requests
+      [requests]="recentPickupSummaries()"
+      [pickupsRoute]="pickupsPath"
+    />
+  </div>
 </section>

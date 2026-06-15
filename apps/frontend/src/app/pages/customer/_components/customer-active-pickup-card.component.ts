@@ -16,24 +16,38 @@ import {
 
 import { PickupStatus } from '@wastegrab/shared';
 import type { CustomerPickupSummary } from './customer-dashboard.models';
+import { AppPanelComponent } from '@/ui/panel/panel.component';
 
-const pickupSteps: Array<{ status: PickupStatus; label: string; icon: string }> = [
+const pickupSteps: Array<{
+  status: PickupStatus;
+  label: string;
+  icon: string;
+}> = [
   { status: PickupStatus.PENDING, label: 'Pending', icon: 'lucideClock3' },
   { status: PickupStatus.ACCEPTED, label: 'Accepted', icon: 'lucideTruck' },
   { status: PickupStatus.ARRIVED, label: 'Arrived', icon: 'lucideMapPin' },
-  { status: PickupStatus.VERIFIED, label: 'Verified', icon: 'lucideCheckCircle2' },
-  { status: PickupStatus.COMPLETED, label: 'Completed', icon: 'lucidePackageCheck' },
+  {
+    status: PickupStatus.VERIFIED,
+    label: 'Verified',
+    icon: 'lucideCheckCircle2',
+  },
+  {
+    status: PickupStatus.COMPLETED,
+    label: 'Completed',
+    icon: 'lucidePackageCheck',
+  },
 ];
 
 @Component({
   selector: 'app-customer-active-pickup-card',
-  imports: [CommonModule, RouterLink, NgIcon],
+  imports: [CommonModule, RouterLink, NgIcon, AppPanelComponent],
   template: `
-    @if (pickup(); as current) {
-      <a
-        [routerLink]="current.detailRoute"
-        class="card-lift block rounded-2xl border border-primary/30 bg-card p-4 transition-colors hover:border-primary/60 lg:p-5"
-      >
+    <app-panel title="Active Pickup" icon="lucideTruck">
+      @if (pickup(); as current) {
+        <a
+          [routerLink]="current.detailRoute"
+          class="block rounded-2xl border border-primary/30 bg-background/40 p-3 transition-colors hover:border-primary/60 hover:bg-muted/40 sm:p-4 lg:p-5"
+        >
         <div class="flex items-center justify-between gap-3">
           <div class="flex min-w-0 items-center gap-2">
             <span class="font-mono text-sm font-semibold"
@@ -53,9 +67,9 @@ const pickupSteps: Array<{ status: PickupStatus; label: string; icon: string }> 
         </div>
 
         <div
-          class="mt-3 flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-2 text-sm text-primary"
+          class="mt-3 flex items-center gap-2 rounded-lg bg-primary/10 px-2.5 py-2 text-xs text-primary sm:px-3 sm:text-sm"
         >
-          <ng-icon name="lucideTruck" class="size-4!" />
+          <ng-icon name="lucideTruck" class="size-3.5! sm:size-4!" />
           <span class="min-w-0 flex-1 truncate font-medium">{{
             current.statusMessage
           }}</span>
@@ -64,9 +78,9 @@ const pickupSteps: Array<{ status: PickupStatus; label: string; icon: string }> 
           }}</span>
         </div>
 
-        <div class="mt-4 grid gap-5 md:grid-cols-[7rem_1fr] md:items-stretch">
+        <div class="mt-3 hidden gap-3 sm:mt-4 sm:flex md:grid md:grid-cols-[7rem_1fr] md:gap-5 md:items-stretch">
           <div
-            class="aspect-square overflow-hidden rounded-lg border border-border bg-muted"
+            class="size-16 shrink-0 overflow-hidden rounded-lg border border-border bg-muted sm:size-20 md:size-auto md:aspect-square"
           >
             @if (current.imageUrl) {
               <img
@@ -83,29 +97,27 @@ const pickupSteps: Array<{ status: PickupStatus; label: string; icon: string }> 
             }
           </div>
 
-          <div class="min-w-0">
-            <h2 class="truncate text-xl font-semibold">{{ current.title }}</h2>
-            <p
-              class="mt-1 line-clamp-2 text-sm/6  text-muted-foreground"
-            >
+          <div class="min-w-0 flex-1">
+            <h2 class="truncate text-base font-semibold sm:text-xl">{{ current.title }}</h2>
+            <p class="mt-1 line-clamp-1 text-xs/5 text-muted-foreground sm:line-clamp-2 sm:text-sm/6">
               {{ current.address }}
             </p>
 
-            <div class="mt-3 grid grid-cols-3 gap-2 text-center">
-              <div class="rounded-lg bg-muted/60 p-2 ">
-                <p class="text-xs text-muted-foreground">Weight</p>
+            <div class="mt-2 grid grid-cols-3 gap-1.5 text-center sm:mt-3 sm:gap-2">
+              <div class="rounded-lg bg-muted/60 p-1.5  sm:p-2">
+                <p class="text-[10px] text-muted-foreground sm:text-xs">Weight</p>
                 <p class="truncate text-sm font-semibold">
                   {{ current.weightKg | number: '1.1-1' }} kg
                 </p>
               </div>
-              <div class="rounded-lg bg-muted/60 p-2 ">
-                <p class="text-xs text-muted-foreground">Potential Points</p>
+              <div class="rounded-lg bg-muted/60 p-1.5  sm:p-2">
+                <p class="text-[10px] text-muted-foreground sm:text-xs">Points</p>
                 <p class="truncate text-sm font-semibold">
                   {{ current.points }}
                 </p>
               </div>
-              <div class="rounded-lg bg-muted/60 p-2 ">
-                <p class="text-xs text-muted-foreground">Items</p>
+              <div class="rounded-lg bg-muted/60 p-1.5  sm:p-2">
+                <p class="text-[10px] text-muted-foreground sm:text-xs">Items</p>
                 <p class="truncate text-sm font-semibold">
                   {{ current.itemCount }}
                 </p>
@@ -114,19 +126,19 @@ const pickupSteps: Array<{ status: PickupStatus; label: string; icon: string }> 
           </div>
         </div>
 
-        <div class="mt-4 rounded-xl border border-border bg-card p-3">
+        <div class="mt-3 rounded-xl border border-border bg-card p-2.5 sm:mt-4 sm:p-3">
           <ol class="flex items-center">
             @for (step of steps; track step.status) {
               <li class="flex flex-1 items-center last:flex-none">
-                <div class="flex flex-col items-center gap-1.5">
+                <div class="flex flex-col items-center gap-1 sm:gap-1.5">
                   <span
-                    class="flex size-7 items-center justify-center rounded-full border text-xs font-semibold"
+                    class="flex size-6 items-center justify-center rounded-full border text-xs font-semibold sm:size-7"
                     [ngClass]="stepDotClass(current.status, step.status)"
                   >
-                    <ng-icon [name]="step.icon" class="size-3.5!" />
+                    <ng-icon [name]="step.icon" class="size-3! sm:size-3.5!" />
                   </span>
                   <span
-                    class="text-[11px] font-medium"
+                    class="hidden text-[11px] font-medium sm:inline"
                     [ngClass]="
                       isStepReached(current.status, step.status)
                         ? 'text-foreground'
@@ -139,7 +151,7 @@ const pickupSteps: Array<{ status: PickupStatus; label: string; icon: string }> 
 
                 @if (!$last) {
                   <span
-                    class="mx-1 mb-5 h-0.5 flex-1 rounded-full"
+                    class="mx-0.5 mb-0 h-0.5 flex-1 rounded-full sm:mx-1 sm:mb-5"
                     [ngClass]="
                       isStepComplete(current.status, steps[$index + 1].status)
                         ? 'bg-primary'
@@ -151,35 +163,38 @@ const pickupSteps: Array<{ status: PickupStatus; label: string; icon: string }> 
             }
           </ol>
         </div>
-      </a>
-    } @else {
-      <section class="card-lift rounded-2xl border border-border/60 bg-card p-4 lg:p-5">
+        </a>
+      } @else {
+        <section
+          class="rounded-2xl border border-border/70 bg-background/40 p-3 sm:p-4 lg:p-5"
+        >
         <div
-          class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+          class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
         >
           <div class="flex items-start gap-3">
             <span
-              class="grid size-10 shrink-0 place-items-center rounded-full bg-primary/10 text-primary"
+              class="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary sm:size-10 sm:rounded-full"
             >
-              <ng-icon name="lucideCalendarCheck" class="size-5!" />
+              <ng-icon name="lucideCalendarCheck" class="size-4.5! sm:size-5!" />
             </span>
             <div>
               <h2 class="text-base font-semibold">No active pickup request</h2>
-              <p class="mt-1 text-sm text-muted-foreground">
+              <p class="mt-1 text-xs text-muted-foreground sm:text-sm">
                 Create a new request when your recyclables are ready.
               </p>
             </div>
           </div>
           <a
             [routerLink]="newPickupRoute()"
-            class="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+            class="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 sm:h-11 sm:px-5"
           >
             <ng-icon name="lucidePlus" class="size-4!" />
             Request pickup
           </a>
         </div>
-      </section>
-    }
+        </section>
+      }
+    </app-panel>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   viewProviders: [

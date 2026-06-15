@@ -2,64 +2,177 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideChevronRight, lucideImage, lucideMapPin } from '@ng-icons/lucide';
+import {
+  lucideCheckCircle2,
+  lucideClock3,
+  lucideFileText,
+  lucideImage,
+  lucideScale,
+  lucideStar,
+} from '@ng-icons/lucide';
 
 import type { CustomerPickupSummary } from './customer-dashboard.models';
+import { AppPanelComponent } from '@/ui/panel/panel.component';
 
 @Component({
   selector: 'app-customer-recent-requests',
-  imports: [CommonModule, RouterLink, NgIcon],
+  imports: [CommonModule, RouterLink, NgIcon, AppPanelComponent],
   template: `
-    <section>
-      <div class="mb-2 flex items-center justify-between">
-        <h2 class="text-sm font-semibold text-muted-foreground">Recent requests</h2>
-        <a [routerLink]="pickupsRoute()" class="text-xs font-semibold text-primary">View all</a>
-      </div>
-
-      <div class="space-y-2">
+    <app-panel
+      title="Recent Requests"
+      icon="lucideFileText"
+      [actionRoute]="pickupsRoute()"
+    >
+      <div
+        class="overflow-hidden rounded-2xl border border-border/70 bg-background/40"
+      >
+        @if (requests().length) {
+          <div
+            class="hidden grid-cols-[1.7fr_1fr_1fr_0.7fr_0.7fr] items-center border-b border-border/70 px-3 py-2 text-xs font-semibold text-muted-foreground md:grid"
+          >
+            <span>Request / Category</span>
+            <span>Date</span>
+            <span>Status</span>
+            <span class="text-right">Weight</span>
+            <span class="text-right">Points</span>
+          </div>
+        }
         @for (request of requests(); track request.id) {
-          <a [routerLink]="request.detailRoute" class="card-lift flex items-center gap-3 rounded-2xl border border-border/60 bg-card p-3 transition-colors hover:bg-muted/40">
-            <span class="size-11 shrink-0 overflow-hidden rounded-lg border border-border bg-muted">
-              @if (request.imageUrl) {
-                <img [src]="request.imageUrl" alt="Pickup image" class="size-full object-cover" />
-              } @else {
-                <span class="grid size-full place-items-center text-muted-foreground">
-                  <ng-icon name="lucideImage" class="size-5!" />
+          <a
+            [routerLink]="request.detailRoute"
+            class="grid gap-2 border-b border-border/70 px-3 py-2.5 text-sm transition-colors last:border-b-0 hover:bg-muted/40 md:hidden"
+          >
+            <span class="flex min-w-0 items-center gap-3">
+              <span
+                class="grid size-10 shrink-0 place-items-center overflow-hidden rounded-xl bg-primary/10 text-primary"
+              >
+                @if (request.imageUrl) {
+                  <img
+                    [src]="request.imageUrl"
+                    alt="Pickup image"
+                    class="size-full rounded-lg object-cover"
+                  />
+                } @else {
+                  <ng-icon name="lucideImage" class="size-4!" />
+                }
+              </span>
+              <span class="min-w-0">
+                <span class="block truncate font-semibold">
+                  {{ request.title }}
                 </span>
-              }
-            </span>
-
-            <span class="min-w-0 flex-1">
-              <span class="flex min-w-0 items-center gap-2">
-                <span class="truncate font-mono text-xs font-semibold">#{{ request.shortId }}</span>
-                <span class="rounded-full px-2 py-0.5 text-[10px] font-bold capitalize" [class]="request.statusClass">
-                  {{ request.statusLabel }}
+                <span class="mt-0.5 block truncate text-xs text-muted-foreground">
+                  #{{ request.shortId }} · {{ request.createdAtLabel }}
                 </span>
               </span>
-              <span class="mt-1 flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
-                <ng-icon name="lucideMapPin" class="size-3.5! shrink-0" />
-                <span class="truncate">{{ request.address }}</span>
+            </span>
+
+            <span class="flex items-center justify-between gap-3">
+              <span
+                class="inline-flex w-fit items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold capitalize"
+                [class]="request.statusClass"
+              >
+                <ng-icon
+                  [name]="statusIcon(request.statusLabel)"
+                  class="size-3.5!"
+                />
+                {{ request.statusLabel }}
+              </span>
+
+              <span class="flex shrink-0 items-center gap-3 text-xs font-semibold">
+                <span class="flex items-center gap-1">
+                  <ng-icon name="lucideScale" class="size-3.5! text-primary" />
+                  {{ request.weightKg | number: '1.1-1' }} kg
+                </span>
+                <span class="flex items-center gap-1">
+                  <ng-icon name="lucideStar" class="size-3.5! text-primary" />
+                  {{ request.points }}
+                </span>
+              </span>
+            </span>
+          </a>
+
+          <a
+            [routerLink]="request.detailRoute"
+            class="hidden border-b border-border/70 px-3 py-2.5 text-sm transition-colors last:border-b-0 hover:bg-muted/40 md:grid md:grid-cols-[1.7fr_1fr_1fr_0.7fr_0.7fr] md:items-center md:gap-3"
+          >
+            <span class="flex min-w-0 items-center gap-3">
+              <span
+                class="grid size-8 shrink-0 place-items-center overflow-hidden rounded-lg bg-primary/10 text-primary"
+              >
+                @if (request.imageUrl) {
+                  <img
+                    [src]="request.imageUrl"
+                    alt="Pickup image"
+                    class="size-full rounded-lg object-cover"
+                  />
+                } @else {
+                  <ng-icon name="lucideImage" class="size-4!" />
+                }
+              </span>
+              <span class="min-w-0">
+                <span class="block truncate font-semibold">
+                  {{ request.title }}
+                </span>
+                <span
+                  class="block truncate font-mono text-[11px] text-muted-foreground"
+                >
+                  #{{ request.shortId }}
+                </span>
               </span>
             </span>
 
-            <span class="shrink-0 text-right">
-              <span class="block text-sm font-semibold">{{ request.weightKg | number:'1.1-1' }} kg</span>
-              <span class="block text-xs text-muted-foreground">{{ request.points }} pts</span>
+            <span class="text-sm text-muted-foreground">
+              {{ request.createdAtFullLabel }}
             </span>
-            <ng-icon name="lucideChevronRight" class="size-4! shrink-0 text-muted-foreground" />
+
+            <span
+              class="inline-flex w-fit items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold capitalize"
+              [class]="request.statusClass"
+            >
+              <ng-icon
+                [name]="statusIcon(request.statusLabel)"
+                class="size-3.5!"
+              />
+              {{ request.statusLabel }}
+            </span>
+
+            <span class="hidden items-center justify-end gap-1 text-sm font-semibold md:flex">
+              <ng-icon name="lucideScale" class="size-3.5! text-primary" />
+              {{ request.weightKg | number: '1.1-1' }} kg
+            </span>
+
+            <span
+              class="flex items-center gap-1 text-sm font-semibold md:justify-end md:text-xs"
+            >
+              <ng-icon name="lucideStar" class="size-3.5! text-primary" />
+              {{ request.points }}
+            </span>
           </a>
         } @empty {
-          <div class="rounded-2xl border border-dashed border-border bg-card p-4 text-sm text-muted-foreground">
+          <div class="p-4 text-sm text-muted-foreground">
             Pickup requests will appear here after you create one.
           </div>
         }
       </div>
-    </section>
+    </app-panel>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  viewProviders: [provideIcons({ lucideChevronRight, lucideImage, lucideMapPin })],
+  viewProviders: [
+    provideIcons({
+      lucideCheckCircle2,
+      lucideClock3,
+      lucideFileText,
+      lucideImage,
+      lucideScale,
+      lucideStar,
+    }),
+  ],
 })
 export class CustomerRecentRequestsComponent {
   readonly requests = input.required<readonly CustomerPickupSummary[]>();
   readonly pickupsRoute = input.required<readonly string[]>();
+
+  protected statusIcon(statusLabel: string): string {
+    return statusLabel === 'completed' ? 'lucideCheckCircle2' : 'lucideClock3';
+  }
 }
