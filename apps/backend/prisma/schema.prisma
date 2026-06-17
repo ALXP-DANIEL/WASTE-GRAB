@@ -117,6 +117,7 @@ model WasteCategory {
   isHazardous     Boolean      @default(false) @map("is_hazardous")
   isAiDetectable  Boolean      @default(true) @map("is_ai_detectable")
   description     String?      @db.Text
+  imageUrl        String?      @map("image_url") @db.Text
   pickupItems     PickupItem[]
 
   @@map("waste_categories")

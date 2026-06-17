@@ -1,5 +1,4 @@
 import { randomUUID } from "node:crypto";
-import { promises as fs } from "node:fs";
 import { Router, type Request, type RequestHandler } from "express";
 import multer from "multer";
 import sharp from "sharp";
@@ -35,7 +34,7 @@ type RequestedPickupItem = {
 const pickupRouter = Router();
 
 const upload = multer({
-  dest: "uploads/",
+  storage: multer.memoryStorage(),
   limits: {
     fileSize: 5 * 1024 * 1024,
     files: 5,
@@ -420,7 +419,7 @@ pickupRouter.post(
 
         for (const file of files) {
           const imagePath = `pickup-requests/${user.id}/${pickupRequestId}/${randomUUID()}.jpg`;
-          const image = await sharp(file.path)
+          const image = await sharp(file.buffer)
             .rotate()
             .resize({
               width: 1600,
@@ -485,8 +484,6 @@ pickupRouter.post(
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unable to create pickup request.";
       res.status(400).json({ error: message } as ApiErrorResponse);
-    } finally {
-      await Promise.all(files.map((file) => fs.unlink(file.path).catch(() => undefined)));
     }
   }) as RequestHandler,
 );

@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal, v
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '@/services/auth.service';
-import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
+import { ResponsiveDialogService } from '@/services/responsive-dialog.service';
 import { ZardAvatarComponent } from '@/ui/zard/avatar/avatar.component';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { ZardBadgeComponent } from '@/ui/zard/badge';
@@ -47,7 +47,7 @@ type AddressItem = Address;
 })
 export class ProfilePage implements OnInit {
   protected readonly authService = inject(AuthService);
-  private readonly dialogService = inject(ZardDialogService);
+  private readonly dialogService = inject(ResponsiveDialogService);
   private readonly router = inject(Router);
 
   private readonly profileModal = viewChild(ProfileModalComponent);

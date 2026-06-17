@@ -29,8 +29,8 @@ import { AppHeaderComponent } from '@/ui/header/header.component';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { StatCardComponent } from '@/ui/stat-card/stat-card.component';
 import { RouteMapComponent, type RouteMapPoint, type RouteMapStop } from '@/ui/route-map/route-map.component';
-import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
 import { Z_MODAL_DATA } from '@/ui/zard/dialog/dialog.service';
+import { ResponsiveDialogService } from '@/services/responsive-dialog.service';
 import { PickupStatus, type AdminPickupRequest, type CollectionLocation, type CollectorPickupRequest, type PickupItem, type PickupRequestWithDetails } from '@wastegrab/shared';
 import { firstValueFrom, map } from 'rxjs';
 
@@ -341,7 +341,7 @@ export class PickupDetailPage {
   private readonly collectorPickups = inject(CollectorPickupService);
   private readonly customerPickups = inject(PickupRequestService);
   private readonly auth = inject(AuthService);
-  private readonly dialogService = inject(ZardDialogService);
+  private readonly dialogService = inject(ResponsiveDialogService);
   private readonly router = inject(Router);
 
   protected readonly pickup = signal<PickupDetail | null>(null);

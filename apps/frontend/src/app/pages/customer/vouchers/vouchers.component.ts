@@ -15,7 +15,7 @@ import { AppHeaderComponent } from '@/ui/header/header.component';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { EmptyStateComponent } from '@/ui/empty-state/empty-state.component';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
-import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
+import { ResponsiveDialogService } from '@/services/responsive-dialog.service';
 import { CustomerVoucherService } from '@/services/customer-voucher.service';
 import type {
   CustomerVoucherCatalogItem,
@@ -42,7 +42,7 @@ type VoucherTab = 'available' | 'redeemed';
 })
 export class CustomerVouchersPage implements OnInit {
   private readonly voucherService = inject(CustomerVoucherService);
-  private readonly dialogService = inject(ZardDialogService);
+  private readonly dialogService = inject(ResponsiveDialogService);
 
   protected readonly activeTab = signal<VoucherTab>('available');
   protected readonly pointsBalance = signal(0);

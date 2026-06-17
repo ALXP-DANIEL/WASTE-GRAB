@@ -110,6 +110,6 @@ test('new pickup page blocks creation while an active request exists', async ({
   await page.goto('/customer/new-pickup');
 
   await expect(page.getByText('Active request already exists')).toBeVisible();
-  await expect(page.getByText('You already have an active pickup request.')).toBeVisible();
+  await expect(page.getByText('You already have an active pickup request in progress')).toBeVisible();
   await expect(page.getByRole('button', { name: 'View My Requests' })).toBeVisible();
 });

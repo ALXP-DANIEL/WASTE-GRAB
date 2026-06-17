@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideBrain, lucideCircleSlash, lucidePencil, lucidePlus, lucideSparkles, lucideTrash2 } from '@ng-icons/lucide';
+import { lucideBrain, lucideCircleSlash, lucideImage, lucidePencil, lucidePlus, lucideSparkles, lucideTrash2 } from '@ng-icons/lucide';
 
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { ZardTableImports } from '@/ui/zard/table';
@@ -43,6 +43,7 @@ type WasteCategoryFilter = 'all' | 'active' | 'hazardous' | 'banned';
     provideIcons({
       lucideBrain,
       lucideCircleSlash,
+      lucideImage,
       lucidePencil,
       lucidePlus,
       lucideSparkles,
@@ -58,6 +59,7 @@ export class AdminWasteCategoriesPage implements OnInit {
   protected readonly categories = signal<WasteCategory[]>([]);
   protected readonly isLoading = signal(true);
   protected readonly loadError = signal('');
+  protected readonly isUploadingImage = signal(false);
   protected readonly activeFilter = signal<WasteCategoryFilter>('all');
   protected readonly modalMode = signal<WasteCategoryModalMode>(null);
   protected readonly editingCategoryId = signal<string | null>(null);
@@ -90,6 +92,7 @@ export class AdminWasteCategoriesPage implements OnInit {
     isHazardous: new FormControl(false, { nonNullable: true }),
     isAiDetectable: new FormControl(true, { nonNullable: true }),
     description: new FormControl('', { nonNullable: true }),
+    imageUrl: new FormControl('', { nonNullable: true }),
   });
 
   ngOnInit(): void {
@@ -114,6 +117,7 @@ export class AdminWasteCategoriesPage implements OnInit {
       isHazardous: false,
       isAiDetectable: true,
       description: '',
+      imageUrl: '',
     });
     this.modalMode.set('add');
   }
@@ -128,6 +132,7 @@ export class AdminWasteCategoriesPage implements OnInit {
       isHazardous: category.isHazardous,
       isAiDetectable: category.isAiDetectable,
       description: category.description ?? '',
+      imageUrl: category.imageUrl ?? '',
     });
     this.modalMode.set('edit');
   }
@@ -185,6 +190,47 @@ export class AdminWasteCategoriesPage implements OnInit {
         });
       },
     });
+  }
+
+  protected uploadImage(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+
+    if (!file) return;
+
+    if (!file.type.startsWith('image/') || file.type === 'image/svg+xml') {
+      this.dialogService.create({
+        zTitle: 'Unsupported Image',
+        zDescription: 'Please choose a JPG, PNG, WebP, or HEIC image.',
+        zOkText: 'OK',
+        zWidth: 'max-w-sm',
+      });
+      return;
+    }
+
+    this.isUploadingImage.set(true);
+    this.wasteCategoryService.uploadImage(file).subscribe({
+      next: ({ imageUrl }) => {
+        this.form.controls.imageUrl.setValue(imageUrl);
+        this.form.controls.imageUrl.markAsDirty();
+      },
+      error: () => {
+        this.isUploadingImage.set(false);
+        this.dialogService.create({
+          zTitle: 'Upload failed',
+          zDescription: 'Unable to upload the category image. Please try again.',
+          zOkText: 'OK',
+          zWidth: 'max-w-sm',
+        });
+      },
+      complete: () => this.isUploadingImage.set(false),
+    });
+  }
+
+  protected clearImage(): void {
+    this.form.controls.imageUrl.setValue('');
+    this.form.controls.imageUrl.markAsDirty();
   }
 
   protected statusLabel(category: WasteCategory): string {

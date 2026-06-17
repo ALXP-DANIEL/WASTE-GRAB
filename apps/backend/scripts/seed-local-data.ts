@@ -105,6 +105,33 @@ const seedPickupRequestIds = [
   seedIds.kotaKinabaluPickup,
 ];
 
+// Each active pickup must belong to a distinct customer so that no customer ever
+// has more than one active (non-terminal) request, matching the app rule.
+// customer@test.com keeps the VERIFIED pickup as its single active request, plus
+// its completed/cancelled history; every other active pickup gets its own owner.
+const seedPickupRequesters: Array<{ pickupId: string; name: string; email: string }> = [
+  { pickupId: seedIds.ampangPickup, name: "Nurul Huda", email: "nurul.huda@test.com" },
+  { pickupId: seedIds.cherasPickup, name: "Daniel Lim", email: "daniel.lim@test.com" },
+  { pickupId: seedIds.shahAlamPickup, name: "Siti Aisyah", email: "siti.aisyah@test.com" },
+  { pickupId: seedIds.puchongPickup, name: "Arjun Menon", email: "arjun.menon@test.com" },
+  { pickupId: seedIds.subangPickup, name: "Mei Ling Tan", email: "meiling.tan@test.com" },
+  { pickupId: seedIds.pjPickup, name: "Faizal Rahman", email: "faizal.rahman@test.com" },
+  { pickupId: seedIds.klangPickup, name: "Kavitha Nair", email: "kavitha.nair@test.com" },
+  { pickupId: seedIds.kajangPickup, name: "Wong Wei Jie", email: "weijie.wong@test.com" },
+  { pickupId: seedIds.rawangPickup, name: "Hafiz Ismail", email: "hafiz.ismail@test.com" },
+  { pickupId: seedIds.serembanPickup, name: "Priya Sharma", email: "priya.sharma@test.com" },
+  { pickupId: seedIds.melakaPickup, name: "Aaron Teoh", email: "aaron.teoh@test.com" },
+  { pickupId: seedIds.johorPickup, name: "Zulkifli Hassan", email: "zulkifli.hassan@test.com" },
+  { pickupId: seedIds.penangPickup, name: "Lim Cheng Hooi", email: "chenghooi.lim@test.com" },
+  { pickupId: seedIds.ipohPickup, name: "Suresh Kumar", email: "suresh.kumar@test.com" },
+  { pickupId: seedIds.kuantanPickup, name: "Farah Aziz", email: "farah.aziz@test.com" },
+  { pickupId: seedIds.kotaBharuPickup, name: "Tan Boon Hwa", email: "boonhwa.tan@test.com" },
+  { pickupId: seedIds.terengganuPickup, name: "Iskandar Yusof", email: "iskandar.yusof@test.com" },
+  { pickupId: seedIds.alorSetarPickup, name: "Geetha Raj", email: "geetha.raj@test.com" },
+  { pickupId: seedIds.kuchingPickup, name: "Joanna Chong", email: "joanna.chong@test.com" },
+  { pickupId: seedIds.kotaKinabaluPickup, name: "Mohd Faiz", email: "mohd.faiz@test.com" },
+];
+
 const seedWasteCategories = [
   {
     name: "Plastic",
@@ -114,6 +141,7 @@ const seedWasteCategories = [
     isHazardous: false,
     isAiDetectable: true,
     description: "Plastic bottles, containers, and clean recyclable plastic items",
+    imageUrl: "https://images.unsplash.com/photo-1572964734607-0051976fac79?auto=format&fit=crop&w=600&q=80",
   },
   {
     name: "Metal",
@@ -123,6 +151,7 @@ const seedWasteCategories = [
     isHazardous: false,
     isAiDetectable: true,
     description: "Aluminum cans, steel tins, and other recyclable metal waste",
+    imageUrl: "https://images.unsplash.com/photo-1605600659908-0ef719419d41?auto=format&fit=crop&w=600&q=80",
   },
   {
     name: "Paper",
@@ -132,6 +161,7 @@ const seedWasteCategories = [
     isHazardous: false,
     isAiDetectable: true,
     description: "Paper, newspapers, magazines, and cardboard",
+    imageUrl: "https://images.unsplash.com/photo-1589998059171-988d887df646?auto=format&fit=crop&w=600&q=80",
   },
   {
     name: "Glass",
@@ -141,6 +171,7 @@ const seedWasteCategories = [
     isHazardous: false,
     isAiDetectable: true,
     description: "Glass bottles and jars",
+    imageUrl: "https://images.unsplash.com/photo-1561049501-e1f96bdd98fd?auto=format&fit=crop&w=600&q=80",
   },
   {
     name: "Organic",
@@ -150,6 +181,7 @@ const seedWasteCategories = [
     isHazardous: false,
     isAiDetectable: false,
     description: "Food waste and biodegradable material",
+    imageUrl: "https://images.unsplash.com/photo-1591958911259-bee2173bdccc?auto=format&fit=crop&w=600&q=80",
   },
   {
     name: "E-Waste",
@@ -159,6 +191,7 @@ const seedWasteCategories = [
     isHazardous: true,
     isAiDetectable: false,
     description: "Electronic waste that requires special hazardous handling",
+    imageUrl: "https://images.unsplash.com/photo-1610018556010-6a1aa28c7d8a?auto=format&fit=crop&w=600&q=80",
   },
   {
     name: "Medical Waste",
@@ -168,8 +201,41 @@ const seedWasteCategories = [
     isHazardous: true,
     isAiDetectable: false,
     description: "Banned medical or biohazard waste",
+    imageUrl: "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=600&q=80",
   },
 ];
+
+const seedPickupImagePool = [
+  "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1605600659908-0ef719419d41?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1572964734607-0051976fac79?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1589998059171-988d887df646?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1610018556010-6a1aa28c7d8a?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1561049501-e1f96bdd98fd?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80",
+];
+
+function hashString(value: string): number {
+  let hash = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+  }
+
+  return hash;
+}
+
+// Deterministically pick 1-3 distinct images per pickup so reseeds stay stable.
+function seedPickupImagesFor<T>(pickupId: string, imageType: T): Array<{ imageUrl: string; imageType: T }> {
+  const hash = hashString(pickupId);
+  const count = (hash % 3) + 1;
+  const start = hash % seedPickupImagePool.length;
+
+  return Array.from({ length: count }, (_unused, offset) => ({
+    imageUrl: seedPickupImagePool[(start + offset) % seedPickupImagePool.length],
+    imageType,
+  }));
+}
 
 export async function seedLocalData() {
   await seedLocalUsers();
@@ -405,6 +471,7 @@ export async function seedLocalWasteCategories() {
 export async function seedLocalVouchersAndRewards() {
   const { prisma } = await import("../src/prisma.js");
   const {
+    ImageType,
     PickupStatus,
     PointLedgerStatus,
     PointLedgerType,
@@ -423,6 +490,22 @@ export async function seedLocalVouchersAndRewards() {
 
   if (!customer || !collector || !paper || !glass || !plastic) {
     throw new Error("Users and waste categories must be seeded before vouchers and rewards.");
+  }
+
+  const passwordHash = hashPassword(seedPassword);
+  const requesterIdByPickupId = new Map<string, string>();
+  for (const requester of seedPickupRequesters) {
+    const owner = await prisma.user.upsert({
+      where: { email: requester.email },
+      update: { name: requester.name, role: "CUSTOMER" },
+      create: {
+        name: requester.name,
+        email: requester.email,
+        passwordHash,
+        role: "CUSTOMER",
+      },
+    });
+    requesterIdByPickupId.set(requester.pickupId, owner.id);
   }
 
   await prisma.voucher.upsert({
@@ -689,6 +772,10 @@ export async function seedLocalVouchersAndRewards() {
           },
         ],
       },
+      images: {
+        deleteMany: {},
+        create: seedPickupImagesFor(seedIds.completedPickup, ImageType.USER_UPLOAD),
+      },
     },
     create: {
       id: seedIds.completedPickup,
@@ -744,6 +831,9 @@ export async function seedLocalVouchersAndRewards() {
             actualWeight: "1.30",
           },
         ],
+      },
+      images: {
+        create: seedPickupImagesFor(seedIds.completedPickup, ImageType.USER_UPLOAD),
       },
     },
   });
@@ -1148,10 +1238,12 @@ export async function seedLocalVouchersAndRewards() {
   ];
 
   for (const pickup of seedPickupRequests) {
+    const ownerId = requesterIdByPickupId.get(pickup.id) ?? customer.id;
+    const pickupImages = seedPickupImagesFor(pickup.id, ImageType.USER_UPLOAD);
     await prisma.pickupRequest.upsert({
       where: { id: pickup.id },
       update: {
-        userId: customer.id,
+        userId: ownerId,
         collectorId: pickup.collectorId,
         addressText: pickup.addressText,
         latitude: pickup.latitude,
@@ -1166,10 +1258,14 @@ export async function seedLocalVouchersAndRewards() {
           deleteMany: {},
           create: pickup.items,
         },
+        images: {
+          deleteMany: {},
+          create: pickupImages,
+        },
       },
       create: {
         id: pickup.id,
-        userId: customer.id,
+        userId: ownerId,
         collectorId: pickup.collectorId,
         addressText: pickup.addressText,
         latitude: pickup.latitude,
@@ -1182,6 +1278,9 @@ export async function seedLocalVouchersAndRewards() {
         createdAt: pickup.createdAt,
         items: {
           create: pickup.items,
+        },
+        images: {
+          create: pickupImages,
         },
       },
     });
