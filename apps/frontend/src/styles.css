@@ -4,6 +4,42 @@
 
 html, body {
   overscroll-behavior: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+img {
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+}
+
+input,
+textarea,
+[contenteditable="true"] {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* Ticket card notch cutouts at the tear-line junction. */
+.ticket-notch {
+  --notch-x: 5rem;
+  --notch-r: 8px;
+  mask-image:
+    radial-gradient(circle var(--notch-r) at var(--notch-x) 0, transparent 100%, black 0),
+    radial-gradient(circle var(--notch-r) at var(--notch-x) 100%, transparent 100%, black 0);
+  mask-composite: intersect;
+  -webkit-mask-image:
+    radial-gradient(circle var(--notch-r) at var(--notch-x) 0, transparent 100%, black 0),
+    radial-gradient(circle var(--notch-r) at var(--notch-x) 100%, transparent 100%, black 0);
+  -webkit-mask-composite: source-in;
+}
+
+@media (width >= 40rem) {
+  .ticket-notch {
+    --notch-x: 7rem;
+    --notch-r: 10px;
+  }
 }
 @import 'driver.js/dist/driver.css';
 @plugin "tailwindcss-animate";

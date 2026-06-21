@@ -142,6 +142,7 @@ export class CustomerPage {
     this.activeVouchers()
       .slice(0, 2)
       .map((redemption) => ({
+        imageUrl: redemption.voucher.imageUrl ?? null,
         title: redemption.voucher.title,
         code: redemption.redeemedCode || 'No code',
         expiryLabel: this.voucherExpiryLabel(redemption),

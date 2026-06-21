@@ -29,6 +29,7 @@ export type CustomerPickupSummary = {
 };
 
 export type CustomerVoucherSummary = {
+  imageUrl?: string | null;
   title: string;
   code: string;
   expiryLabel: string;

@@ -7,13 +7,24 @@ import {
   inject,
 } from '@angular/core';
 
-import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  Router,
+  RouterLink,
+} from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideLogOut, lucideSettings, lucideUser } from '@ng-icons/lucide';
+import {
+  lucideLogOut,
+  lucideSettings,
+  lucideUser,
+  lucideTrophy,
+} from '@ng-icons/lucide';
 import { filter, Subscription } from 'rxjs';
 
 import { AuthService } from '@/services/auth.service';
 import { ROUTE_PATHS, routePath } from '@/app-route-paths';
+import { UserRole } from '@wastegrab/shared';
 import { ZardAvatarComponent } from '@/ui/zard/avatar/avatar.component';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
 import {
@@ -37,7 +48,9 @@ import { AppHeaderQuoteComponent } from './header-quote.component';
     RouterLink,
     NgIcon,
   ],
-  viewProviders: [provideIcons({ lucideLogOut, lucideSettings, lucideUser })],
+  viewProviders: [
+    provideIcons({ lucideLogOut, lucideSettings, lucideUser, lucideTrophy }),
+  ],
   template: `
     <header class="flex items-center justify-between pointer-events-auto">
       <div>
@@ -77,8 +90,12 @@ import { AppHeaderQuoteComponent } from './header-quote.component';
         >
           <!-- User info header -->
           <div class="border-b border-border px-4 py-3">
-            <p class="truncate text-sm font-semibold text-foreground">{{ user()?.name }}</p>
-            <p class="truncate text-xs text-muted-foreground">{{ user()?.email }}</p>
+            <p class="truncate text-sm font-semibold text-foreground">
+              {{ user()?.name }}
+            </p>
+            <p class="truncate text-xs text-muted-foreground">
+              {{ user()?.email }}
+            </p>
           </div>
 
           <div class="p-1">
@@ -87,18 +104,40 @@ import { AppHeaderQuoteComponent } from './header-quote.component';
               [routerLink]="profileRoute"
               class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
             >
-              <ng-icon name="lucideUser" class="size-4! text-muted-foreground" />
+              <ng-icon
+                name="lucideUser"
+                class="size-4! text-muted-foreground"
+              />
               Profile
             </a>
+
+            @if (showAchievementsLink()) {
+              <a
+                z-dropdown-menu-item
+                [routerLink]="achievementsRoute()"
+                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
+              >
+                <ng-icon
+                  name="lucideTrophy"
+                  class="size-4! text-muted-foreground"
+                />
+                Achievements
+              </a>
+            }
 
             <a
               z-dropdown-menu-item
               [routerLink]="settingsRoute"
               class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
             >
-              <ng-icon name="lucideSettings" class="size-4! text-muted-foreground" />
+              <ng-icon
+                name="lucideSettings"
+                class="size-4! text-muted-foreground"
+              />
               Settings
             </a>
+
+            <div class="my-1 h-px bg-border"></div>
 
             <button
               z-dropdown-menu-item
@@ -125,13 +164,28 @@ export class AppHeaderComponent implements OnInit, OnDestroy {
 
   protected activeRouteTitle = '';
   protected readonly profileRoute = routePath(ROUTE_PATHS.profile);
+  protected readonly showAchievementsLink = computed(
+    () => this.authService.currentUser()?.role === UserRole.CUSTOMER,
+  );
+  protected readonly achievementsRoute = computed(() =>
+    routePath(ROUTE_PATHS.customer.base, ROUTE_PATHS.customer.achievements),
+  );
   protected readonly settingsRoute = routePath(ROUTE_PATHS.settings);
   protected readonly user = computed(() => this.authService.currentUser());
   protected readonly userInitials = computed(() => {
     const name = this.user()?.name?.trim() ?? '';
-    return name.split(/\s+/).filter(Boolean).slice(0, 2).map(p => p[0]?.toUpperCase() ?? '').join('') || 'U';
+    return (
+      name
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((p) => p[0]?.toUpperCase() ?? '')
+        .join('') || 'U'
+    );
   });
-  protected readonly avatarAlt = computed(() => `${this.user()?.name?.trim() || 'User'} avatar`);
+  protected readonly avatarAlt = computed(
+    () => `${this.user()?.name?.trim() || 'User'} avatar`,
+  );
 
   ngOnInit(): void {
     this.updateRouteTitle();
@@ -157,8 +211,10 @@ export class AppHeaderComponent implements OnInit, OnDestroy {
       zWidth: 'max-w-sm',
       zOnOk: () => {
         this.authService.logout().subscribe({
-          next: () => void this.router.navigateByUrl(routePath(ROUTE_PATHS.auth)),
-          error: () => void this.router.navigateByUrl(routePath(ROUTE_PATHS.auth)),
+          next: () =>
+            void this.router.navigateByUrl(routePath(ROUTE_PATHS.auth)),
+          error: () =>
+            void this.router.navigateByUrl(routePath(ROUTE_PATHS.auth)),
         });
       },
     });
