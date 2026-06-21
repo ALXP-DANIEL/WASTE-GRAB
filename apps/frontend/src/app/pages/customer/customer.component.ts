@@ -190,7 +190,7 @@ export class CustomerPage {
       icon: 'lucideTicket',
     },
     {
-      label: 'View ranks',
+      label: 'View leaderboard',
       route: this.leaderboardPath,
       icon: 'lucideTrophy',
     },
@@ -230,11 +230,14 @@ export class CustomerPage {
 
   constructor() {
     void this.loadPickupRequests();
-    interval(60_000).pipe(takeUntilDestroyed()).subscribe(() => {
-      void this.loadPickupRequests();
-    });
+    interval(60_000)
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        void this.loadPickupRequests();
+      });
     effect(() => {
-      if (this.notificationService.pickupUpdate()) void this.loadPickupRequests();
+      if (this.notificationService.pickupUpdate())
+        void this.loadPickupRequests();
     });
   }
 
@@ -279,12 +282,18 @@ export class CustomerPage {
 
   private statusIconName(status: PickupStatus): string {
     switch (status) {
-      case PickupStatus.PENDING:    return 'lucideClock3';
-      case PickupStatus.ACCEPTED:   return 'lucideTruck';
-      case PickupStatus.ARRIVED:    return 'lucideMapPin';
-      case PickupStatus.VERIFIED:   return 'lucideCheckCircle2';
-      case PickupStatus.COMPLETED:  return 'lucideCheckCircle2';
-      default:                      return 'lucideAlertCircle';
+      case PickupStatus.PENDING:
+        return 'lucideClock3';
+      case PickupStatus.ACCEPTED:
+        return 'lucideTruck';
+      case PickupStatus.ARRIVED:
+        return 'lucideMapPin';
+      case PickupStatus.VERIFIED:
+        return 'lucideCheckCircle2';
+      case PickupStatus.COMPLETED:
+        return 'lucideCheckCircle2';
+      default:
+        return 'lucideAlertCircle';
     }
   }
 
@@ -340,7 +349,8 @@ export class CustomerPage {
       imageUrl: this.primaryImage(request),
       weightKg: this.requestWeight(request),
       points: this.potentialPoints(request),
-      pointsLabel: request.status === PickupStatus.COMPLETED ? 'pts awarded' : 'pts',
+      pointsLabel:
+        request.status === PickupStatus.COMPLETED ? 'pts awarded' : 'pts',
       itemCount: request.items.length,
       isActive: this.isActiveStatus(request.status),
       createdAtLabel: this.dateLabel(request.createdAt),

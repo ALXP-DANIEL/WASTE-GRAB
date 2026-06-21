@@ -86,7 +86,7 @@ const ROLE_NAV = {
       showOnMobile: false,
     },
     {
-      label: 'Ranks',
+      label: 'Leaderboard',
       route: routePath(
         ROUTE_PATHS.customer.base,
         ROUTE_PATHS.customer.leaderboard,
@@ -327,7 +327,9 @@ function getInitials(name?: string | null): string {
     <!-- Mobile Bottom Nav -->
     <nav class="lg:hidden mx-3 mb-2 mt-0 z-40 flex items-center gap-2">
       <!-- Main pill -->
-      <div class="flex flex-1 items-center gap-1 rounded-full bg-card p-2 shadow-xl ring-1 ring-border/60">
+      <div
+        class="flex flex-1 items-center gap-1 rounded-full bg-card p-2 shadow-xl ring-1 ring-border/60"
+      >
         @for (item of mobileNavItems(); track item.route) {
           <a
             [routerLink]="item.route"
@@ -336,15 +338,24 @@ function getInitials(name?: string | null): string {
             [routerLinkActiveOptions]="{ exact: true }"
             ariaCurrentWhenActive="page"
             class="flex flex-1 items-center justify-center gap-2 transition-all active:scale-95"
-            [class]="rla.isActive ? 'rounded-full bg-primary px-3 py-2' : 'py-2'"
+            [class]="
+              rla.isActive ? 'rounded-full bg-primary px-3 py-2' : 'py-2'
+            "
           >
             <ng-icon
               [name]="item.icon"
               class="size-5! shrink-0"
-              [class]="rla.isActive ? 'text-primary-foreground' : 'text-muted-foreground'"
+              [class]="
+                rla.isActive
+                  ? 'text-primary-foreground'
+                  : 'text-muted-foreground'
+              "
             />
             @if (rla.isActive) {
-              <span class="whitespace-nowrap text-xs font-bold text-primary-foreground">{{ item.label }}</span>
+              <span
+                class="whitespace-nowrap text-xs font-bold text-primary-foreground"
+                >{{ item.label }}</span
+              >
             }
           </a>
         }
@@ -390,8 +401,9 @@ export class AppNavbarComponent {
     this.navItems().filter((item) => item.showOnMobile && !item.primary),
   );
 
-  protected readonly mobilePrimaryItem = computed(() =>
-    this.navItems().find((item) => item.showOnMobile && item.primary) ?? null,
+  protected readonly mobilePrimaryItem = computed(
+    () =>
+      this.navItems().find((item) => item.showOnMobile && item.primary) ?? null,
   );
 
   protected readonly profileRoute = routePath(ROUTE_PATHS.profile);

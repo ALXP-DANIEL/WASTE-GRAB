@@ -12,70 +12,76 @@ import { AppPanelComponent } from '@/ui/panel/panel.component';
   imports: [CommonModule, RouterLink, NgIcon, AppPanelComponent],
   template: `
     <app-panel
-      title="Top Ranks"
+      title="Top Leaderboard"
       icon="lucideTrophy"
       actionLabel="View Leaderboard"
       [actionRoute]="leaderboardRoute()"
     >
-        @if (rows().length) {
-          <ul class="overflow-hidden rounded-xl border border-border/70 bg-background/40">
-            @for (row of rows(); track row.rank + row.name) {
-              <li class="border-b border-border/70 last:border-b-0">
-                <a
-                  [routerLink]="row.route"
-                  class="flex items-center gap-2 px-2.5 py-1.5 text-sm transition-colors hover:bg-muted/40"
+      @if (rows().length) {
+        <ul
+          class="overflow-hidden rounded-xl border border-border/70 bg-background/40"
+        >
+          @for (row of rows(); track row.rank + row.name) {
+            <li class="border-b border-border/70 last:border-b-0">
+              <a
+                [routerLink]="row.route"
+                class="flex items-center gap-2 px-2.5 py-1.5 text-sm transition-colors hover:bg-muted/40"
+                [ngClass]="
+                  row.isCurrentUser
+                    ? 'bg-primary/10 text-primary hover:bg-primary/15'
+                    : ''
+                "
+              >
+                <span
+                  class="grid size-6 shrink-0 place-items-center rounded-full text-[11px] font-bold"
+                  [ngClass]="rankClass(row.rank)"
+                >
+                  {{ row.rank }}
+                </span>
+                <span
+                  class="grid size-7 shrink-0 place-items-center rounded-full bg-muted text-[11px] font-semibold text-muted-foreground"
+                >
+                  @if (row.avatarUrl) {
+                    <img
+                      [src]="row.avatarUrl"
+                      [alt]="row.name + ' avatar'"
+                      class="size-full rounded-full object-cover"
+                    />
+                  } @else {
+                    {{ initials(row.name) }}
+                  }
+                </span>
+                <span
+                  class="min-w-0 flex-1 truncate font-semibold"
                   [ngClass]="
-                    row.isCurrentUser
-                      ? 'bg-primary/10 text-primary hover:bg-primary/15'
-                      : ''
+                    row.isCurrentUser ? 'text-primary' : 'text-foreground'
                   "
                 >
-                  <span
-                    class="grid size-6 shrink-0 place-items-center rounded-full text-[11px] font-bold"
-                    [ngClass]="rankClass(row.rank)"
-                  >
-                    {{ row.rank }}
-                  </span>
-                  <span
-                    class="grid size-7 shrink-0 place-items-center rounded-full bg-muted text-[11px] font-semibold text-muted-foreground"
-                  >
-                    @if (row.avatarUrl) {
-                      <img
-                        [src]="row.avatarUrl"
-                        [alt]="row.name + ' avatar'"
-                        class="size-full rounded-full object-cover"
-                      />
-                    } @else {
-                      {{ initials(row.name) }}
-                    }
-                  </span>
-                  <span
-                    class="min-w-0 flex-1 truncate font-semibold"
-                    [ngClass]="row.isCurrentUser ? 'text-primary' : 'text-foreground'"
-                  >
-                    {{ row.name }}
-                    @if (row.isCurrentUser) {
-                      <span> (You)</span>
-                    }
-                  </span>
-                  <span
-                    class="shrink-0 text-xs font-bold"
-                    [ngClass]="row.isCurrentUser ? 'text-primary' : 'text-foreground'"
-                    >{{ row.value }}</span
-                  >
-                </a>
-              </li>
-            }
-          </ul>
-        } @else {
-          <a
-            [routerLink]="leaderboardRoute()"
-            class="flex items-center justify-between rounded-2xl border border-dashed border-border bg-background/40 p-3 text-sm text-muted-foreground"
-          >
-            Complete a pickup to join the rankings.
-            <ng-icon name="lucideArrowRight" class="size-4!" />
-          </a>
-        }
+                  {{ row.name }}
+                  @if (row.isCurrentUser) {
+                    <span> (You)</span>
+                  }
+                </span>
+                <span
+                  class="shrink-0 text-xs font-bold"
+                  [ngClass]="
+                    row.isCurrentUser ? 'text-primary' : 'text-foreground'
+                  "
+                  >{{ row.value }}</span
+                >
+              </a>
+            </li>
+          }
+        </ul>
+      } @else {
+        <a
+          [routerLink]="leaderboardRoute()"
+          class="flex items-center justify-between rounded-2xl border border-dashed border-border bg-background/40 p-3 text-sm text-muted-foreground"
+        >
+          Complete a pickup to join the rankings.
+          <ng-icon name="lucideArrowRight" class="size-4!" />
+        </a>
+      }
     </app-panel>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

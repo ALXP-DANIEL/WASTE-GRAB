@@ -11,7 +11,6 @@ export const ROUTE_PATHS = {
     vouchers: 'vouchers',
     leaderboard: 'leaderboard',
     myRequests: 'my-requests',
-    rewards: 'rewards',
     achievements: 'achievements',
   },
   admin: {
