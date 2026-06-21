@@ -46,6 +46,21 @@
       </button>
     </section>
 
+    <section>
+      <button
+        z-button
+        zType="default"
+        [routerLink]="['/customer/new-pickup']"
+        [zDisabled]="activeRequests().length > 0"
+        [title]="activeRequests().length > 0 ? 'Complete or cancel your active request before creating a new one' : ''"
+        rightSide
+        class="gap-2 text-background text-lg w-full h-14 justify-center"
+      >
+        <ng-icon name="lucidePlus" class="size-5! text-background" />
+        New Request
+      </button>
+    </section>
+
     @if (latestActiveRequest()) {
     <section class="brand-hero card-lift relative overflow-hidden rounded-3xl">
       <div
