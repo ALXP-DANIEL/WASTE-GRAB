@@ -14,7 +14,6 @@ import {
   lucidePin,
   lucidePlus,
   lucideRadio,
-  lucideRefreshCw,
   lucideSend,
   lucideTrash2,
 } from '@ng-icons/lucide';
@@ -79,7 +78,6 @@ type MarkdownFormat = 'h1' | 'h2' | 'bold' | 'italic' | 'list';
       lucidePin,
       lucidePlus,
       lucideRadio,
-      lucideRefreshCw,
       lucideSend,
       lucideTrash2,
     }),
@@ -305,10 +303,6 @@ export class AdminNotificationsPage implements OnInit {
         });
       },
     });
-  }
-
-  protected refreshLogs(): void {
-    this.loadLogs();
   }
 
   private loadLogs(): void {

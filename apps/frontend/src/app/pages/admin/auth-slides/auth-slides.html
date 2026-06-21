@@ -27,9 +27,7 @@
       description="Manage the real image slides shown on the login and registration screen."
       [filters]="filters"
       [activeFilter]="activeFilter()"
-      [showRefresh]="true"
       (filterChange)="setFilter($event)"
-      (refresh)="refresh()"
     />
 
     <app-fetch-state

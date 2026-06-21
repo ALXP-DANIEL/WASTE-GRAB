@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -13,7 +14,8 @@ import {
   lucideScale,
   lucideStar,
 } from '@ng-icons/lucide';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, interval } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { ROUTE_PATHS } from '@/app.routes';
 import { AuthService } from '@/services/auth.service';
@@ -44,6 +46,7 @@ import {
   type RewardSummary,
 } from '@wastegrab/shared';
 import { AppHeaderComponent } from '@/ui/header/header.component';
+import { NotificationService } from '@/services/notification.service';
 
 @Component({
   selector: 'app-customer-page',
@@ -73,6 +76,7 @@ export class CustomerPage {
   protected readonly authService = inject(AuthService);
   private readonly pickupRequests = inject(PickupRequestService);
   private readonly voucherService = inject(CustomerVoucherService);
+  private readonly notificationService = inject(NotificationService);
 
   readonly newPickupPath = [
     '/',
@@ -225,6 +229,12 @@ export class CustomerPage {
 
   constructor() {
     void this.loadPickupRequests();
+    interval(60_000).pipe(takeUntilDestroyed()).subscribe(() => {
+      void this.loadPickupRequests();
+    });
+    effect(() => {
+      if (this.notificationService.pickupUpdate()) void this.loadPickupRequests();
+    });
   }
 
   private shortId(id: string): string {

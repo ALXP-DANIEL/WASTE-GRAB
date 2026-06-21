@@ -103,10 +103,6 @@ export class AdminWasteCategoriesPage implements OnInit {
     this.activeFilter.set(filter);
   }
 
-  protected refresh(): void {
-    this.loadCategories();
-  }
-
   protected openAdd(): void {
     this.editingCategoryId.set(null);
     this.form.reset({

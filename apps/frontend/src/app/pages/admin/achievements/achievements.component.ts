@@ -89,10 +89,6 @@ export class AdminAchievementsPage implements OnInit {
     this.activeFilter.set(filter);
   }
 
-  protected refresh(): void {
-    this.loadAchievements();
-  }
-
   protected openAdd(): void {
     this.editingAchievementId.set(null);
     this.form.reset({

@@ -3,7 +3,7 @@ import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { CollectorPickupService } from '@/services/collector-pickup.service';
 import { ROUTE_PATHS } from '@/app.routes';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -18,7 +18,9 @@ import {
   lucideScale,
   lucideTruck,
 } from '@ng-icons/lucide';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, interval } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NotificationService } from '@/services/notification.service';
 import { PickupStatus, type CollectionLocation, type CollectorPickupRequest } from '@wastegrab/shared';
 
 type CollectorStat = {
@@ -50,6 +52,7 @@ type CollectorStat = {
 })
 export class CollectorPage {
   private readonly pickupService = inject(CollectorPickupService);
+  private readonly notificationService = inject(NotificationService);
 
   protected readonly pickupsPath = ['/', ROUTE_PATHS.collector.base, ROUTE_PATHS.collector.pickups];
   protected readonly myPickupsPath = ['/', ROUTE_PATHS.collector.base, ROUTE_PATHS.collector.myPickups];
@@ -96,6 +99,12 @@ export class CollectorPage {
 
   constructor() {
     void this.loadDashboard();
+    interval(30_000).pipe(takeUntilDestroyed()).subscribe(() => {
+      void this.loadDashboard();
+    });
+    effect(() => {
+      if (this.notificationService.pickupUpdate()) void this.loadDashboard();
+    });
   }
 
   protected shortId(id: string): string {

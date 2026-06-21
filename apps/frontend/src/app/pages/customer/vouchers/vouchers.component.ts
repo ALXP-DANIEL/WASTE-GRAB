@@ -6,7 +6,6 @@ import {
   lucideCoins,
   lucideGift,
   lucideReceiptText,
-  lucideRefreshCw,
   lucideTicket,
 } from '@ng-icons/lucide';
 import { firstValueFrom } from 'rxjs';
@@ -34,7 +33,6 @@ type VoucherTab = 'available' | 'redeemed';
       lucideCoins,
       lucideGift,
       lucideReceiptText,
-      lucideRefreshCw,
       lucideTicket,
     }),
   ],
@@ -63,10 +61,6 @@ export class CustomerVouchersPage implements OnInit {
 
   protected selectTab(tab: VoucherTab): void {
     this.activeTab.set(tab);
-  }
-
-  protected refresh(): void {
-    void this.loadVouchers();
   }
 
   protected redeemVoucher(voucher: CustomerVoucherCatalogItem): void {

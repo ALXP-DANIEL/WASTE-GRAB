@@ -1,10 +1,11 @@
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, interval } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { EmptyStateComponent } from '@/ui/empty-state/empty-state.component';
@@ -26,6 +27,7 @@ import {
   lucideTruck,
 } from '@ng-icons/lucide';
 import { PickupRequestService } from '@/services/pickup-request.service';
+import { NotificationService } from '@/services/notification.service';
 import { ImageType, PickupStatus, type PickupRequestWithDetails } from '@wastegrab/shared';
 
 type RequestFilter = 'all' | 'active' | 'completed' | 'cancelled';
@@ -61,6 +63,7 @@ type FilterOption = {
 })
 export class CustomerPickupsPage {
   private readonly pickupRequests = inject(PickupRequestService);
+  private readonly notificationService = inject(NotificationService);
 
   protected readonly requests = signal<PickupRequestWithDetails[]>([]);
   protected readonly isLoading = signal(true);
@@ -114,14 +117,16 @@ export class CustomerPickupsPage {
 
   constructor() {
     void this.loadPickupRequests();
+    interval(30_000).pipe(takeUntilDestroyed()).subscribe(() => {
+      void this.loadPickupRequests();
+    });
+    effect(() => {
+      if (this.notificationService.pickupUpdate()) void this.loadPickupRequests();
+    });
   }
 
   protected setFilter(filter: RequestFilter): void {
     this.activeFilter.set(filter);
-  }
-
-  protected refresh(): void {
-    void this.loadPickupRequests();
   }
 
   protected statusLabel(status: PickupStatus): string {

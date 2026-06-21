@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -12,13 +12,14 @@ import {
   lucideMapPin,
   lucideNavigation,
   lucidePackageCheck,
-  lucideRefreshCw,
   lucideScale,
   lucideTruck,
   lucideXCircle,
 } from '@ng-icons/lucide';
 import { ImageType, PickupStatus, type CollectionLocation, type CollectorPickupRequest } from '@wastegrab/shared';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, interval } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NotificationService } from '@/services/notification.service';
 
 import { CollectorPickupService, type CollectorLocation, type CollectorPickupScope } from '@/services/collector-pickup.service';
 import { AppHeaderComponent } from '@/ui/header/header.component';
@@ -61,7 +62,6 @@ const ROUTE_FIT_THRESHOLD_KM = 15;
       lucideMapPin,
       lucideNavigation,
       lucidePackageCheck,
-      lucideRefreshCw,
       lucideScale,
       lucideTruck,
       lucideXCircle,
@@ -72,6 +72,7 @@ const ROUTE_FIT_THRESHOLD_KM = 15;
 export class CollectorPickupsPage {
   private readonly pickupService = inject(CollectorPickupService);
   private readonly route = inject(ActivatedRoute);
+  private readonly notificationService = inject(NotificationService);
 
   protected readonly pickupScope = this.readPickupScope();
   protected readonly pickups = signal<CollectorPickupRequest[]>([]);
@@ -179,14 +180,16 @@ export class CollectorPickupsPage {
 
   constructor() {
     void this.loadPickups();
+    interval(30_000).pipe(takeUntilDestroyed()).subscribe(() => {
+      void this.loadPickups(false);
+    });
+    effect(() => {
+      if (this.notificationService.pickupUpdate()) void this.loadPickups(false);
+    });
   }
 
   protected setFilter(filter: PickupFilter): void {
     this.activeFilter.set(filter);
-  }
-
-  protected refresh(): void {
-    void this.loadPickups();
   }
 
   protected async requestLocationAndRefresh(): Promise<void> {

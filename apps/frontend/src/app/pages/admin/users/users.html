@@ -42,9 +42,7 @@
       description="Manage user accounts, roles, and permissions."
       [filters]="filters"
       [activeFilter]="activeFilter()"
-      [showRefresh]="true"
       (filterChange)="setFilter($event)"
-      (refresh)="refresh()"
     />
 
     <app-fetch-state

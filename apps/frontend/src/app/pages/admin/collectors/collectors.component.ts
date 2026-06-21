@@ -105,10 +105,6 @@ export class AdminCollectorsPage implements OnInit {
     this.activeFilter.set(filter);
   }
 
-  protected refresh(): void {
-    this.loadLocations();
-  }
-
   private loadLocations(): void {
     this.isLoading.set(true);
     this.loadError.set('');

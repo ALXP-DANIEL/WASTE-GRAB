@@ -89,10 +89,6 @@ export class AdminCollectionLocationPage implements OnInit, OnDestroy {
     this.clearPlaceImageObjectUrl();
   }
 
-  protected refresh(): void {
-    this.loadLocations();
-  }
-
   private loadLocations(): void {
     this.isLoading.set(true);
     this.loadError.set('');

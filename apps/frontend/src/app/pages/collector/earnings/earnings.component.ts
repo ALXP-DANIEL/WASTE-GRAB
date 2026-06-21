@@ -115,10 +115,6 @@ export class CollectorEarningsPage {
     void this.loadEarnings();
   }
 
-  protected refresh(): void {
-    void this.loadEarnings();
-  }
-
   protected pickupWeight(pickup: CollectorPickupRequest): number {
     return pickup.items.reduce(
       (total, item) => total + Number(item.actualWeight ?? item.estimatedWeight ?? 0),

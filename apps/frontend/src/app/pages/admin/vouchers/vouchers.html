@@ -86,9 +86,7 @@
       description="Create and manage rewards customers can redeem with points."
       [filters]="catalogFilters"
       [activeFilter]="activeCatalogFilter()"
-      [showRefresh]="true"
       (filterChange)="setCatalogFilter($event)"
-      (refresh)="refresh()"
     />
 
     <app-fetch-state
@@ -295,9 +293,7 @@
       description="Latest voucher redemption activity across customers."
       [filters]="redemptionFilters()"
       [activeFilter]="activeRedemptionFilter()"
-      [showRefresh]="true"
       (filterChange)="setRedemptionFilter($event)"
-      (refresh)="refresh()"
     />
 
     <app-fetch-state
@@ -369,9 +365,7 @@
       description="Audit trail for earned, spent, adjusted, expired, and reversed points."
       [filters]="ledgerFilters()"
       [activeFilter]="activeLedgerFilter()"
-      [showRefresh]="true"
       (filterChange)="setLedgerFilter($event)"
-      (refresh)="refresh()"
     />
 
     <app-fetch-state

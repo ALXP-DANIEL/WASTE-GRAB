@@ -1,17 +1,5 @@
 <section class="grid min-w-0 gap-4 p-4 lg:p-8">
-  <app-header mode="route">
-    <button
-      z-button
-      type="button"
-      rightSide
-      zType="outline"
-      class="gap-2"
-      (click)="refresh()"
-    >
-      <ng-icon name="lucideRefreshCw" class="size-4!" />
-      Refresh
-    </button>
-  </app-header>
+  <app-header mode="route" />
 
   <div class="grid grid-cols-2 gap-3 xl:grid-cols-4">
     <app-stat-card
@@ -49,9 +37,7 @@
       description="Review customer pickup requests, status, collectors, images, and point estimates."
       [filters]="filters"
       [activeFilter]="activeFilter()"
-      [showRefresh]="true"
       (filterChange)="setFilter($event)"
-      (refresh)="refresh()"
     />
 
     <app-fetch-state

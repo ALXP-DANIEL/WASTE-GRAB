@@ -11,18 +11,17 @@ import {
   lucideLoaderCircle,
   lucideMapPin,
   lucidePackageCheck,
-  lucideRefreshCw,
   lucideScale,
   lucideTruck,
   lucideXCircle,
 } from '@ng-icons/lucide';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, interval } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AdminPickupService } from '@/services/admin-pickup.service';
 import { ImageType, PickupStatus, type AdminPickupRequest } from '@wastegrab/shared';
 
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
-import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { StatCardComponent } from '@/ui/stat-card/stat-card.component';
 import { ZardTableImports } from '@/ui/zard/table';
@@ -32,7 +31,7 @@ type PickupFilter = 'all' | 'active' | 'completed' | 'cancelled';
 @Component({
   selector: 'app-admin-pickups-page',
   templateUrl: './pickups.html',
-  imports: [CommonModule, RouterLink, AppHeaderComponent, FetchStateComponent, ZardButtonComponent, TableHeaderComponent, StatCardComponent, NgIcon, ...ZardTableImports],
+  imports: [CommonModule, RouterLink, AppHeaderComponent, FetchStateComponent, TableHeaderComponent, StatCardComponent, NgIcon, ...ZardTableImports],
   viewProviders: [
     provideIcons({
       lucideArrowUpRight,
@@ -43,7 +42,6 @@ type PickupFilter = 'all' | 'active' | 'completed' | 'cancelled';
       lucideLoaderCircle,
       lucideMapPin,
       lucidePackageCheck,
-      lucideRefreshCw,
       lucideScale,
       lucideTruck,
       lucideXCircle,
@@ -84,14 +82,13 @@ export class AdminPickupsPage {
 
   constructor() {
     void this.loadPickups();
+    interval(60_000).pipe(takeUntilDestroyed()).subscribe(() => {
+      void this.loadPickups();
+    });
   }
 
   protected setFilter(filter: PickupFilter): void {
     this.activeFilter.set(filter);
-  }
-
-  protected refresh(): void {
-    void this.loadPickups();
   }
 
   protected statusLabel(status: PickupStatus): string {

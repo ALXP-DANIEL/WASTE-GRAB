@@ -23,6 +23,7 @@ import type { Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../../prisma.js";
 import { getCurrentUserFromRequest } from "../../services/auth.service.js";
 import { createNotification } from "../../services/notification.service.js";
+import { emitPickupUpdateEvent } from "../../services/notification-stream.service.js";
 import { removeImages, uploadPublicImage } from "../../services/supabase-storage.service.js";
 
 type PickupRequestUpload = Request & { files?: Express.Multer.File[] };
@@ -319,6 +320,10 @@ pickupRouter.patch(
       },
       include: pickupRequestInclude,
     });
+
+    if (existing.collectorId) {
+      emitPickupUpdateEvent(existing.collectorId, existing.id);
+    }
 
     const payload: GetPickupRequestResponse = {
       pickupRequest: toPickupRequestWithDetails(cancelled),

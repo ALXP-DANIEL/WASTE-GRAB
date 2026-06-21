@@ -22,6 +22,7 @@ import {
   lucideXCircle,
 } from '@ng-icons/lucide';
 import { AdminPickupService } from '@/services/admin-pickup.service';
+import { NotificationService } from '@/services/notification.service';
 import { CollectorPickupService, type CollectorLocation, type CollectorPickupScope } from '@/services/collector-pickup.service';
 import { AuthService } from '@/services/auth.service';
 import { PickupRequestService } from '@/services/pickup-request.service';
@@ -337,6 +338,7 @@ export class DropoffLocationDialogComponent {
 })
 export class PickupDetailPage {
   private readonly route = inject(ActivatedRoute);
+  private readonly notificationService = inject(NotificationService);
   private readonly adminPickups = inject(AdminPickupService);
   private readonly collectorPickups = inject(CollectorPickupService);
   private readonly customerPickups = inject(PickupRequestService);
@@ -475,11 +477,12 @@ export class PickupDetailPage {
   constructor() {
     effect(() => {
       const id = this.pickupId();
-      if (!id) {
-        return;
-      }
-
+      if (!id) return;
       void this.loadPickup();
+    });
+    effect(() => {
+      const update = this.notificationService.pickupUpdate();
+      if (update?.pickupId === this.pickupId()) void this.loadPickup();
     });
   }
 

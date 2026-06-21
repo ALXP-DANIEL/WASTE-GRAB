@@ -86,9 +86,7 @@
       description="Create and review admin notification batches."
       [filters]="filters"
       [activeFilter]="activeFilter()"
-      [showRefresh]="true"
       (filterChange)="setFilter($event)"
-      (refresh)="refreshLogs()"
     />
 
     <app-fetch-state
@@ -261,9 +259,7 @@
       description="Recipient counts for recent admin announcements."
       [filters]="filters"
       [activeFilter]="activeFilter()"
-      [showRefresh]="true"
       (filterChange)="setFilter($event)"
-      (refresh)="refreshLogs()"
     />
 
     <app-fetch-state
@@ -348,9 +344,7 @@
       description="Review clearable, pinned, and expiring notification batches."
       [filters]="filters"
       [activeFilter]="activeFilter()"
-      [showRefresh]="true"
       (filterChange)="setFilter($event)"
-      (refresh)="refreshLogs()"
     />
 
     <app-fetch-state

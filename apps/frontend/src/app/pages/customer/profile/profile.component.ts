@@ -134,10 +134,6 @@ export class ProfilePage implements OnInit {
     this.activeAddressFilter.set(filter);
   }
 
-  protected refreshAddresses(): void {
-    this.loadAddresses();
-  }
-
   protected editProfile(): void {
     this.profileModal()?.openEditProfile();
   }

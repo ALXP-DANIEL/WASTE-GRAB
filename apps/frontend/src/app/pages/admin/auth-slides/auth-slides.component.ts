@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideImage, lucidePencil, lucidePlus, lucideRefreshCw, lucideTrash2 } from '@ng-icons/lucide';
+import { lucideImage, lucidePencil, lucidePlus, lucideTrash2 } from '@ng-icons/lucide';
 import { firstValueFrom } from 'rxjs';
 import type { AuthSlide } from '@wastegrab/shared';
 
@@ -48,7 +48,6 @@ type AuthSlideFilter = 'all' | 'active' | 'inactive';
       lucideImage,
       lucidePencil,
       lucidePlus,
-      lucideRefreshCw,
       lucideTrash2,
     }),
   ],
@@ -93,10 +92,6 @@ export class AdminAuthSlidesPage implements OnInit {
 
   protected setFilter(filter: AuthSlideFilter): void {
     this.activeFilter.set(filter);
-  }
-
-  protected refresh(): void {
-    void this.loadSlides();
   }
 
   protected openAdd(): void {

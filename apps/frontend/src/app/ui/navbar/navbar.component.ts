@@ -38,6 +38,7 @@ interface NavItem {
   route: string;
   icon: string;
   showOnMobile: boolean;
+  primary?: boolean;
 }
 
 type Role = User['role'];
@@ -58,6 +59,7 @@ const ROLE_NAV = {
       ),
       icon: 'lucidePlus',
       showOnMobile: true,
+      primary: true,
     },
     {
       label: 'My Pickups',
@@ -187,7 +189,7 @@ const ROLE_NAV = {
       showOnMobile: true,
     },
   ],
-} satisfies Record<Role, readonly NavItem[]>;
+} as Record<Role, readonly NavItem[]>;
 
 function getInitials(name?: string | null): string {
   const initials = name
@@ -323,42 +325,34 @@ function getInitials(name?: string | null): string {
     </aside>
 
     <!-- Mobile Bottom Nav -->
-    <nav
-      class="lg:hidden m-2 mt-0 bg-card/95 backdrop-blur border border-border/60 rounded-[1.75rem] shadow-lg z-40"
-    >
-      <div class="flex h-20 items-stretch gap-2 p-2">
-        @for (item of navItems(); track item.route) {
-          @if (item.showOnMobile) {
+    <nav class="lg:hidden mx-3 mb-2 mt-0 z-40">
+      <div class="flex h-18 items-center gap-1 rounded-3xl border border-border/60 bg-card/95 px-2 shadow-lg backdrop-blur">
+        @for (item of mobileNavItems(); track item.route) {
+          @if (item.primary) {
+            <!-- Primary CTA pill -->
             <a
               [routerLink]="item.route"
-              routerLinkActive="bg-primary text-primary-foreground shadow-sm"
+              routerLinkActive="opacity-90"
               [routerLinkActiveOptions]="{ exact: true }"
               ariaCurrentWhenActive="page"
-              class="flex-1 flex flex-col items-center justify-center gap-1 rounded-3xl text-muted-foreground transition-colors hover:bg-primary/10"
+              class="mx-1 flex flex-1 items-center justify-center gap-2 rounded-2xl bg-primary p-3 text-primary-foreground shadow-md transition-all active:scale-95"
+            >
+              <ng-icon [name]="item.icon" class="size-5! shrink-0" />
+              <span class="text-xs font-bold">{{ item.label }}</span>
+            </a>
+          } @else {
+            <a
+              [routerLink]="item.route"
+              routerLinkActive="text-primary"
+              [routerLinkActiveOptions]="{ exact: true }"
+              ariaCurrentWhenActive="page"
+              class="flex flex-1 flex-col items-center justify-center gap-1 rounded-2xl py-2 text-muted-foreground transition-all active:scale-95 hover:text-primary"
             >
               <ng-icon [name]="item.icon" class="size-5!" />
-              <span class="text-xs font-medium">{{ item.label }}</span>
+              <span class="text-[10px] font-semibold leading-none">{{ item.label }}</span>
             </a>
           }
         }
-
-        <!-- Profile -->
-        <a
-          [routerLink]="profileRoute"
-          routerLinkActive="bg-primary text-primary-foreground shadow-sm"
-          [routerLinkActiveOptions]="{ exact: true }"
-          ariaCurrentWhenActive="page"
-          class="flex-1 flex flex-col items-center justify-center gap-1 rounded-3xl text-muted-foreground transition-colors hover:bg-primary/10"
-        >
-          <z-avatar
-            [zSrc]="user()?.avatarUrl || ''"
-            [zFallback]="userInitials()"
-            [zAlt]="avatarAlt()"
-            zSize="sm"
-            class="ring-2 ring-primary/20"
-          />
-          <span class="text-xs font-medium">Profile</span>
-        </a>
       </div>
     </nav>
   `,
@@ -383,6 +377,10 @@ export class AppNavbarComponent {
     const role = this.user()?.role;
     return role ? (this.roleNav[role] ?? []) : [];
   });
+
+  protected readonly mobileNavItems = computed(() =>
+    this.navItems().filter((item) => item.showOnMobile),
+  );
 
   protected readonly profileRoute = routePath(ROUTE_PATHS.profile);
   protected readonly settingsRoute = routePath(ROUTE_PATHS.settings);

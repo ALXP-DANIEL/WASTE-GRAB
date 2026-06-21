@@ -36,9 +36,7 @@
       description="Manage pickup categories, point rewards, AI detection, and restrictions."
       [filters]="filters"
       [activeFilter]="activeFilter()"
-      [showRefresh]="true"
       (filterChange)="setFilter($event)"
-      (refresh)="refresh()"
     />
 
     <app-fetch-state

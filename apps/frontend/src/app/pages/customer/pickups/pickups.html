@@ -7,7 +7,7 @@
       [zDisabled]="activeRequests().length > 0"
       [title]="activeRequests().length > 0 ? 'Complete or cancel your active request before creating a new one' : ''"
       rightSide
-      class="gap-1"
+      class="hidden gap-1 lg:inline-flex"
     >
       <ng-icon name="lucidePlus" class="size-4!" />
       New Request
@@ -105,9 +105,7 @@
         description="Track uploaded waste images, estimates, and pickup status."
         [filters]="filters"
         [activeFilter]="activeFilter()"
-        [showRefresh]="true"
         (filterChange)="setFilter($event)"
-        (refresh)="refresh()"
       />
 
       <app-fetch-state

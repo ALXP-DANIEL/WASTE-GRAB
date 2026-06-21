@@ -92,9 +92,7 @@
       description="Filter saved addresses and refresh your latest address data."
       [filters]="addressFilters"
       [activeFilter]="activeAddressFilter()"
-      [showRefresh]="true"
       (filterChange)="setAddressFilter($event)"
-      (refresh)="refreshAddresses()"
     />
 
     @if (isLoadingAddress()) {

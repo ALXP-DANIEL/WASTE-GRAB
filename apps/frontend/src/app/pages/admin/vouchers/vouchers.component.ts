@@ -161,10 +161,6 @@ export class AdminVouchersPage implements OnInit {
     this.activeLedgerFilter.set(filter);
   }
 
-  protected refresh(): void {
-    void this.loadInitialData();
-  }
-
   protected openAdd(): void {
     this.editingVoucherId.set(null);
     this.form.reset({

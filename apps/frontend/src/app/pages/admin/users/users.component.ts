@@ -119,10 +119,6 @@ export class AdminUsersPage implements OnInit {
     this.activeFilter.set(filter);
   }
 
-  protected refresh(): void {
-    this.loadUsers();
-  }
-
   private loadUsers(): void {
     this.isLoading.set(true);
     this.loadError.set('');
