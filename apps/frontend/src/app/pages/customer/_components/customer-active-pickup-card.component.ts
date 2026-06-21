@@ -140,7 +140,7 @@ const pickupSteps: Array<{
                   <span
                     class="hidden text-[11px] font-medium sm:inline"
                     [ngClass]="
-                      isStepReached(current.status, step.status)
+                      isStepComplete(current.status, step.status)
                         ? 'text-foreground'
                         : 'text-muted-foreground'
                     "
@@ -218,10 +218,6 @@ export class CustomerActivePickupCardComponent {
   protected readonly steps = pickupSteps;
 
   protected isStepComplete(current: PickupStatus, step: PickupStatus): boolean {
-    return this.statusIndex(current) >= this.statusIndex(step);
-  }
-
-  protected isStepReached(current: PickupStatus, step: PickupStatus): boolean {
     return this.statusIndex(current) >= this.statusIndex(step);
   }
 

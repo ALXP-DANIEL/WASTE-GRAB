@@ -37,6 +37,7 @@ import {
   type WasteCategory,
 } from '@wastegrab/shared';
 import { driver, type Driver } from 'driver.js';
+import { ROUTE_PATHS } from '@/app.routes';
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { PickupRequestService } from '@/services/pickup-request.service';
 import { AuthService } from '@/services/auth.service';
@@ -877,7 +878,7 @@ export class CustomerNewPickupPage implements AfterViewInit, OnDestroy {
       zWidth: 'max-w-md',
       zOnOk: () => {
         this.resetForm();
-        void this.router.navigate(['/customer', 'my-requests']);
+        void this.router.navigate(['/', ROUTE_PATHS.customer.base, ROUTE_PATHS.customer.myRequests]);
       },
     });
   }
@@ -921,7 +922,7 @@ export class CustomerNewPickupPage implements AfterViewInit, OnDestroy {
       zCancelText: null,
       zWidth: 'max-w-md',
       zOnOk: () => {
-        void this.router.navigate(['/customer', 'my-requests']);
+        void this.router.navigate(['/', ROUTE_PATHS.customer.base, ROUTE_PATHS.customer.myRequests]);
       },
     });
   }

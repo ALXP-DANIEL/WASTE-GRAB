@@ -2,7 +2,6 @@ import type { PickupStatus } from '@wastegrab/shared';
 
 export type CustomerQuickAction = {
   label: string;
-  description: string;
   route: readonly string[];
   icon: string;
   primary?: boolean;

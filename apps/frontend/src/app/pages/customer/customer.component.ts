@@ -14,7 +14,6 @@ import {
   lucideStar,
 } from '@ng-icons/lucide';
 import { firstValueFrom } from 'rxjs';
-import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 
 import { ROUTE_PATHS } from '@/app.routes';
 import { AuthService } from '@/services/auth.service';
@@ -52,7 +51,6 @@ import { AppHeaderComponent } from '@/ui/header/header.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    FetchStateComponent,
     CustomerActivePickupCardComponent,
     CustomerHeroComponent,
     CustomerQuickActionsComponent,
@@ -172,26 +170,22 @@ export class CustomerPage {
   protected readonly quickActions = computed<CustomerQuickAction[]>(() => [
     {
       label: 'Request pickup',
-      description: 'Submit sorted recyclables for collection.',
       route: this.newPickupPath,
       icon: 'lucidePlus',
       primary: true,
     },
     {
       label: 'Track requests',
-      description: `${this.activeRequests().length} active request${this.activeRequests().length === 1 ? '' : 's'}.`,
       route: this.pickupsPath,
       icon: 'lucideTruck',
     },
     {
       label: 'Use rewards',
-      description: `${this.rewardSummary()?.pointsBalance ?? 0} points ready to spend.`,
       route: this.vouchersPath,
       icon: 'lucideTicket',
     },
     {
       label: 'View ranks',
-      description: 'See top contributors by verified weight.',
       route: this.leaderboardPath,
       icon: 'lucideTrophy',
     },
@@ -233,18 +227,18 @@ export class CustomerPage {
     void this.loadPickupRequests();
   }
 
-  protected shortId(id: string): string {
+  private shortId(id: string): string {
     return id.slice(0, 8).toUpperCase();
   }
 
-  protected categoryLabel(request: PickupRequestWithDetails): string {
+  private categoryLabel(request: PickupRequestWithDetails): string {
     return (
       request.aiClassificationLabel ||
       `${request.items.length} waste item${request.items.length === 1 ? '' : 's'}`
     );
   }
 
-  protected requestWeight(request: PickupRequestWithDetails): number {
+  private requestWeight(request: PickupRequestWithDetails): number {
     return request.items.reduce(
       (total, item) =>
         total + Number(item.actualWeight ?? item.estimatedWeight ?? 0),
@@ -252,31 +246,31 @@ export class CustomerPage {
     );
   }
 
-  protected potentialPoints(request: PickupRequestWithDetails): number {
+  private potentialPoints(request: PickupRequestWithDetails): number {
     return request.items.reduce((total, item) => {
       const weight = Number(item.actualWeight ?? item.estimatedWeight ?? 0);
       return total + Math.round(weight * (item.category?.pointsPerKg ?? 0));
     }, 0);
   }
 
-  protected primaryImage(request: PickupRequestWithDetails): string | null {
+  private primaryImage(request: PickupRequestWithDetails): string | null {
     return (
       request.images.find((image) => image.imageType === ImageType.USER_UPLOAD)
         ?.imageUrl ?? null
     );
   }
 
-  protected voucherExpiryLabel(redemption: CustomerVoucherRedemption): string {
+  private voucherExpiryLabel(redemption: CustomerVoucherRedemption): string {
     return redemption.voucher.expiresAt
       ? `Expires ${new Date(redemption.voucher.expiresAt).toLocaleDateString()}`
       : 'No expiry';
   }
 
-  protected statusLabel(status: PickupStatus): string {
+  private statusLabel(status: PickupStatus): string {
     return status.toLowerCase().replace(/_/g, ' ');
   }
 
-  protected statusClass(status: PickupStatus): string {
+  private statusClass(status: PickupStatus): string {
     switch (status) {
       case PickupStatus.PENDING:
         return 'bg-amber-500/10 text-amber-700 dark:text-amber-300';
@@ -291,14 +285,14 @@ export class CustomerPage {
     }
   }
 
-  protected dateLabel(value: string): string {
+  private dateLabel(value: string): string {
     return new Date(value).toLocaleDateString(undefined, {
       month: 'short',
       day: 'numeric',
     });
   }
 
-  protected dateTimeLabel(value: string): string {
+  private dateTimeLabel(value: string): string {
     return new Date(value).toLocaleString(undefined, {
       day: '2-digit',
       month: 'short',
