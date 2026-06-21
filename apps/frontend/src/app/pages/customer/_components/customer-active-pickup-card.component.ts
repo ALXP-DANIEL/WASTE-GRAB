@@ -186,11 +186,7 @@ const pickupSteps: Array<{
           </div>
           <a
             [routerLink]="newPickupRoute()"
-<<<<<<< HEAD
-            class="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 sm:h-11 sm:px-5"
-=======
             class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-background shadow-sm transition-colors hover:bg-primary/90"
->>>>>>> 3a9c682 (Updated customer pages styling)
           >
             <ng-icon name="lucidePlus" class="size-4!" />
             Request pickup
