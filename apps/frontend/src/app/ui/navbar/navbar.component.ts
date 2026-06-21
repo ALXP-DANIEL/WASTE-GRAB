@@ -230,6 +230,7 @@ function getInitials(name?: string | null): string {
       lucideLogOut,
       lucideSettings,
       lucideChevronRight,
+      lucideChartNoAxesColumn
     }),
   ],
   template: `
