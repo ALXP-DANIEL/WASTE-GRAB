@@ -1,17 +1,5 @@
 <section class="grid gap-5 p-4 md:p-6 lg:p-8">
   <app-header mode="route">
-    <button
-      z-button
-      zType="default"
-      [routerLink]="['/customer/new-pickup']"
-      [zDisabled]="activeRequests().length > 0"
-      [title]="activeRequests().length > 0 ? 'Complete or cancel your active request before creating a new one' : ''"
-      rightSide
-      class="gap-1"
-    >
-      <ng-icon name="lucidePlus" class="size-4!" />
-      New Request
-    </button>
   </app-header>
 
   <div class="mx-auto grid w-full max-w-7xl gap-5">
@@ -41,6 +29,21 @@
         [value]="totalPotentialPoints()"
         tone="warning"
       />
+    </section>
+
+    <section>
+      <button
+        z-button
+        zType="default"
+        [routerLink]="['/customer/new-pickup']"
+        [zDisabled]="activeRequests().length > 0"
+        [title]="activeRequests().length > 0 ? 'Complete or cancel your active request before creating a new one' : ''"
+        rightSide
+        class="gap-2 text-background text-lg w-full h-14 justify-center"
+      >
+        <ng-icon name="lucidePlus" class="size-5! text-background" />
+        New Request
+      </button>
     </section>
 
     @if (latestActiveRequest()) {
@@ -216,7 +219,7 @@
         >
           <a
             routerLink="/customer/new-pickup"
-            class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+            class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-background shadow-sm transition-colors hover:bg-primary/90"
           >
             <ng-icon name="lucidePlus" class="size-4!" />
             New Request

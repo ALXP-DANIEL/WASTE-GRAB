@@ -21,7 +21,7 @@
     >
       <div class="flex items-center gap-3">
         <span
-          class="grid size-12 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground"
+          class="grid size-12 shrink-0 place-items-center rounded-lg bg-primary text-background"
         >
           <ng-icon name="lucideCoins" class="size-6!" />
         </span>
@@ -53,7 +53,7 @@
       type="button"
       class="inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition-colors"
       [class.bg-primary]="activeTab() === 'available'"
-      [class.text-primary-foreground]="activeTab() === 'available'"
+      [class.text-background]="activeTab() === 'available'"
       [class.text-muted-foreground]="activeTab() !== 'available'"
       (click)="selectTab('available')"
     >
@@ -64,7 +64,7 @@
       type="button"
       class="inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition-colors"
       [class.bg-primary]="activeTab() === 'redeemed'"
-      [class.text-primary-foreground]="activeTab() === 'redeemed'"
+      [class.text-background]="activeTab() === 'redeemed'"
       [class.text-muted-foreground]="activeTab() !== 'redeemed'"
       (click)="selectTab('redeemed')"
     >

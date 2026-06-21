@@ -37,7 +37,7 @@
           type="button"
           class="flex min-h-16 max-h-16 flex-col items-center justify-center gap-1 rounded-lg px-2 text-center text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 hover:border-2 hover:border-primary/50"
           [class.bg-primary]="isStepActive(step.id)"
-          [class.text-primary-foreground]="isStepActive(step.id)"
+          [class.text-background]="isStepActive(step.id)"
           [class.bg-primary/10]="!isStepActive(step.id) && isStepComplete(step.id)"
           [class.text-primary]="!isStepActive(step.id) && isStepComplete(step.id)"
           [class.text-muted-foreground]="!isStepActive(step.id) && !isStepComplete(step.id)"
@@ -45,7 +45,7 @@
           (click)="goToStep(step.id)"
         >
           <span
-            class="flex size-7 items-center justify-center rounded-lg bg-background/70"
+            class="flex size-7 items-center justify-center rounded-lg bg-background/20"
           >
             <ng-icon [name]="step.icon" class="size-4!" />
           </span>
@@ -599,7 +599,7 @@
 
       <button
         type="submit"
-        class="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+        class="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-background shadow-sm transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
         [disabled]="isSubmitting() || isAnalyzing() || !isStepActive('confirm') || !canCreateRequest()"
         data-tour="pickup-submit"
       >
