@@ -92,7 +92,7 @@ const ROLE_NAV = {
         ROUTE_PATHS.customer.leaderboard,
       ),
       icon: 'lucideChartNoAxesColumn',
-      showOnMobile: true,
+      showOnMobile: false,
     },
   ],
   [UserRole.ADMIN]: [
