@@ -22,11 +22,10 @@ import { AppPanelComponent } from '@/ui/panel/panel.component';
         @for (action of actions(); track action.label) {
           <a
             [routerLink]="action.route"
-<<<<<<< HEAD
             class="card-lift flex min-h-16 flex-col justify-between gap-2 rounded-xl p-3 transition-all hover:-translate-y-0.5 lg:min-h-20 lg:gap-3 lg:rounded-2xl lg:p-4"
             [ngClass]="
               action.primary
-                ? 'brand-hero'
+                ? 'bg-primary text-background shadow-sm hover:bg-primary/90'
                 : 'border border-border/60 bg-card hover:bg-muted/40'
             "
           >
@@ -35,7 +34,7 @@ import { AppPanelComponent } from '@/ui/panel/panel.component';
                 class="grid size-7 place-items-center rounded-lg lg:size-9 lg:rounded-full"
                 [ngClass]="
                   action.primary
-                    ? 'bg-white/15 text-white'
+                    ? 'bg-background text-primary'
                     : 'bg-primary/10 text-primary'
                 "
               >
@@ -45,7 +44,7 @@ import { AppPanelComponent } from '@/ui/panel/panel.component';
                 name="lucideChevronRight"
                 class="size-3.5! lg:size-4!"
                 [ngClass]="
-                  action.primary ? 'text-white/80' : 'text-muted-foreground'
+                  action.primary ? 'text-background' : 'text-muted-foreground'
                 "
               />
             </span>
@@ -53,20 +52,6 @@ import { AppPanelComponent } from '@/ui/panel/panel.component';
               <span class="block truncate text-xs font-semibold lg:text-sm">{{
                 action.label
               }}</span>
-=======
-            class="flex min-h-24 flex-col justify-between gap-3 rounded-xl p-4 transition-colors"
-            [ngClass]="action.primary ? 'bg-primary text-background hover:bg-primary/90' : 'border border-border bg-card hover:bg-muted/40'"
-          >
-            <span class="flex items-center justify-between gap-2">
-              <ng-icon [name]="action.icon" class="size-5!" [ngClass]="action.primary ? '' : 'text-primary'" />
-              <ng-icon name="lucideChevronRight" class="size-4!" [ngClass]="action.primary ? 'text-background' : 'text-muted-foreground'" />
-            </span>
-            <span>
-              <span class="block text-sm font-semibold">{{ action.label }}</span>
-              <span class="mt-1 block line-clamp-2 text-xs" [ngClass]="action.primary ? 'text-background' : 'text-muted-foreground'">
-                {{ action.description }}
-              </span>
->>>>>>> 3a9c682 (Updated customer pages styling)
             </span>
           </a>
         }

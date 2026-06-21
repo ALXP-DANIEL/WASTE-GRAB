@@ -230,7 +230,6 @@ function getInitials(name?: string | null): string {
       lucideLogOut,
       lucideSettings,
       lucideChevronRight,
-      lucideChartNoAxesColumn
     }),
   ],
   template: `
@@ -270,7 +269,7 @@ function getInitials(name?: string | null): string {
         <div class="space-y-3 border-t border-primary/20 p-4">
 
           <a [routerLink]="profileRoute" 
-          class="block p-2 rounded-2xl bg-sidebar-primary border border-background 
+          class="block p-2 rounded-2xl bg-primary border border-background 
           transition-colors text-background hover:text-foreground hover:bg-background"
           routerLinkActive="!bg-background text-primary-foreground rounded-l-2xl -mr-8 dark:text-foreground">
             <div class="flex items-center gap-4 pl-1">
@@ -279,7 +278,7 @@ function getInitials(name?: string | null): string {
                 [zFallback]="userInitials()"
                 [zAlt]="avatarAlt()"
                 zSize="md"
-                class="w-10 h-10 text-primary-foreground"
+                class="w-10 h-10 text-foreground"
               />
               <div class="flex flex-col width-full">
                 <p class="truncate text-md font-bold">{{ user()?.name }}</p>
