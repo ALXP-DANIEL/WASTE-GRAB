@@ -20,26 +20,37 @@
     </div>
   </section>
 
-  <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+  <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
     <app-stat-card
+      class="sm:col-span-1"
       icon="lucideTrophy"
       label="Unlocked"
       [value]="achievements().length"
       tone="brand"
     />
     <app-stat-card
+      class="sm:col-span-1"
       icon="lucideCoins"
-      label="Earned from achievements"
+      label="Points Earned"
       [value]="totalPoints()"
       unit="pts"
       tone="warning"
     />
     <app-stat-card
-      class="col-span-2 sm:col-span-1"
+      class="sm:col-span-1"
       icon="lucideScale"
-      label="Milestone types"
-      [value]="totalWeightAwards() + ' weight · ' + pickupAwards() + ' pickup'"
+      label="Total weight submitted"
+      [value]="totalWeightAwards()"
+      unit="kg"
       tone="success"
+    />
+    <app-stat-card
+      class="sm:col-span-1"
+      icon="lucideTruck"
+      label="Total pickups"
+      [value]="pickupAwards()"
+      unit="pickups"
+      tone="info"
     />
   </div>
 
