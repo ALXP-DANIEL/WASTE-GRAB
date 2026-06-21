@@ -14,7 +14,7 @@ import { AppPanelComponent } from '@/ui/panel/panel.component';
     <app-panel
       title="Top Leaderboard"
       icon="lucideTrophy"
-      actionLabel="View Leaderboard"
+      actionLabel="View All"
       [actionRoute]="leaderboardRoute()"
     >
       @if (rows().length) {
