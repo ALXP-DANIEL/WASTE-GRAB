@@ -210,7 +210,7 @@ export class CustomerPage {
         ).length,
       ),
       icon: 'lucideCheckCircle2',
-      tone: 'success',
+      tone: 'brand',
     },
     {
       label: 'Contributed',
@@ -276,6 +276,17 @@ export class CustomerPage {
       : 'No expiry';
   }
 
+  private statusIconName(status: PickupStatus): string {
+    switch (status) {
+      case PickupStatus.PENDING:    return 'lucideClock3';
+      case PickupStatus.ACCEPTED:   return 'lucideTruck';
+      case PickupStatus.ARRIVED:    return 'lucideMapPin';
+      case PickupStatus.VERIFIED:   return 'lucideCheckCircle2';
+      case PickupStatus.COMPLETED:  return 'lucideCheckCircle2';
+      default:                      return 'lucideAlertCircle';
+    }
+  }
+
   private statusLabel(status: PickupStatus): string {
     return status.toLowerCase().replace(/_/g, ' ');
   }
@@ -324,10 +335,13 @@ export class CustomerPage {
       status: request.status,
       statusLabel: this.statusLabel(request.status),
       statusClass: this.statusClass(request.status),
+      statusIcon: this.statusIconName(request.status),
       imageUrl: this.primaryImage(request),
       weightKg: this.requestWeight(request),
       points: this.potentialPoints(request),
+      pointsLabel: request.status === PickupStatus.COMPLETED ? 'pts awarded' : 'pts',
       itemCount: request.items.length,
+      isActive: this.isActiveStatus(request.status),
       createdAtLabel: this.dateLabel(request.createdAt),
       createdAtFullLabel: this.dateTimeLabel(request.createdAt),
       detailRoute: [...this.pickupsPath, request.id],

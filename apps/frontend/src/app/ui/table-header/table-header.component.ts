@@ -4,9 +4,6 @@ import {
   input,
   output,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-
-import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 
 export type FilterOption<T extends string = string> = {
   value: T;
@@ -16,33 +13,27 @@ export type FilterOption<T extends string = string> = {
 @Component({
   selector: 'app-table-header',
   standalone: true,
-  imports: [
-    CommonModule,
-    ZardButtonComponent,
-  ],
+  imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
-      class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"
+      class="flex flex-wrap items-center justify-between gap-3"
     >
       <div>
-        <h2 class="text-lg font-semibold">{{ title() }}</h2>
-        <p class="text-sm text-muted-foreground">
-          {{ description() }}
-        </p>
+        <h2 class="text-base font-bold text-foreground">{{ title() }}</h2>
+        @if (description()) {
+          <p class="text-xs text-muted-foreground">{{ description() }}</p>
+        }
       </div>
 
       @if (filters().length > 0) {
-        <div class="flex flex-wrap gap-2">
+        <div class="flex items-center gap-1.5 rounded-2xl bg-muted p-1">
           @for (filter of filters(); track filter.value) {
             <button
-              z-button
               type="button"
-              zSize="sm"
-              [zType]="
-                activeFilter() === filter.value ? 'default' : 'outline'
-              "
               (click)="filterChange.emit(filter.value)"
+              class="rounded-xl px-3 py-1.5 text-xs font-semibold transition-all"
+              [class]="activeFilter() === filter.value ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
             >
               {{ filter.label }}
             </button>

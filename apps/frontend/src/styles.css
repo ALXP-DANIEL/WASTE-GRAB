@@ -1,6 +1,10 @@
 
 @layer ng-icon, theme, base, components, utilities;
 @import 'tailwindcss';
+
+html, body {
+  overscroll-behavior: none;
+}
 @import 'driver.js/dist/driver.css';
 @plugin "tailwindcss-animate";
 

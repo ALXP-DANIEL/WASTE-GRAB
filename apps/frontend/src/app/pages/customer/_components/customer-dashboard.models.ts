@@ -15,10 +15,13 @@ export type CustomerPickupSummary = {
   status: PickupStatus;
   statusLabel: string;
   statusClass: string;
+  statusIcon: string;
   imageUrl: string | null;
   weightKg: number;
   points: number;
+  pointsLabel: string;
   itemCount: number;
+  isActive: boolean;
   createdAtLabel: string;
   createdAtFullLabel: string;
   detailRoute: readonly string[];
