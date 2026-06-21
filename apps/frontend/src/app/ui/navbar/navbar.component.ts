@@ -92,7 +92,7 @@ const ROLE_NAV = {
         ROUTE_PATHS.customer.leaderboard,
       ),
       icon: 'lucideChartNoAxesColumn',
-      showOnMobile: false,
+      showOnMobile: true,
     },
   ],
   [UserRole.ADMIN]: [
@@ -325,35 +325,43 @@ function getInitials(name?: string | null): string {
     </aside>
 
     <!-- Mobile Bottom Nav -->
-    <nav class="lg:hidden mx-3 mb-2 mt-0 z-40">
-      <div class="flex h-18 items-center gap-1 rounded-3xl border border-border/60 bg-card/95 px-2 shadow-lg backdrop-blur">
+    <nav class="lg:hidden mx-3 mb-2 mt-0 z-40 flex items-center gap-2">
+      <!-- Main pill -->
+      <div class="flex flex-1 items-center gap-1 rounded-full bg-card p-2 shadow-xl ring-1 ring-border/60">
         @for (item of mobileNavItems(); track item.route) {
-          @if (item.primary) {
-            <!-- Primary CTA pill -->
-            <a
-              [routerLink]="item.route"
-              routerLinkActive="opacity-90"
-              [routerLinkActiveOptions]="{ exact: true }"
-              ariaCurrentWhenActive="page"
-              class="mx-1 flex flex-1 items-center justify-center gap-2 rounded-2xl bg-primary p-3 text-primary-foreground shadow-md transition-all active:scale-95"
-            >
-              <ng-icon [name]="item.icon" class="size-5! shrink-0" />
-              <span class="text-xs font-bold">{{ item.label }}</span>
-            </a>
-          } @else {
-            <a
-              [routerLink]="item.route"
-              routerLinkActive="text-primary"
-              [routerLinkActiveOptions]="{ exact: true }"
-              ariaCurrentWhenActive="page"
-              class="flex flex-1 flex-col items-center justify-center gap-1 rounded-2xl py-2 text-muted-foreground transition-all active:scale-95 hover:text-primary"
-            >
-              <ng-icon [name]="item.icon" class="size-5!" />
-              <span class="text-[10px] font-semibold leading-none">{{ item.label }}</span>
-            </a>
-          }
+          <a
+            [routerLink]="item.route"
+            routerLinkActive
+            #rla="routerLinkActive"
+            [routerLinkActiveOptions]="{ exact: true }"
+            ariaCurrentWhenActive="page"
+            class="flex flex-1 items-center justify-center gap-2 transition-all active:scale-95"
+            [class]="rla.isActive ? 'rounded-full bg-primary px-3 py-2' : 'py-2'"
+          >
+            <ng-icon
+              [name]="item.icon"
+              class="size-5! shrink-0"
+              [class]="rla.isActive ? 'text-primary-foreground' : 'text-muted-foreground'"
+            />
+            @if (rla.isActive) {
+              <span class="whitespace-nowrap text-xs font-bold text-primary-foreground">{{ item.label }}</span>
+            }
+          </a>
         }
       </div>
+
+      <!-- Primary action bubble -->
+      @if (mobilePrimaryItem(); as primary) {
+        <a
+          [routerLink]="primary.route"
+          routerLinkActive="ring-2 ring-primary/40 ring-offset-2"
+          [routerLinkActiveOptions]="{ exact: true }"
+          ariaCurrentWhenActive="page"
+          class="grid size-14 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground shadow-xl transition-all active:scale-95 hover:bg-primary/90"
+        >
+          <ng-icon [name]="primary.icon" class="size-6!" />
+        </a>
+      }
     </nav>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -379,7 +387,11 @@ export class AppNavbarComponent {
   });
 
   protected readonly mobileNavItems = computed(() =>
-    this.navItems().filter((item) => item.showOnMobile),
+    this.navItems().filter((item) => item.showOnMobile && !item.primary),
+  );
+
+  protected readonly mobilePrimaryItem = computed(() =>
+    this.navItems().find((item) => item.showOnMobile && item.primary) ?? null,
   );
 
   protected readonly profileRoute = routePath(ROUTE_PATHS.profile);
