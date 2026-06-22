@@ -16,7 +16,9 @@ import { HEADER_QUOTES } from './header-quotes';
   standalone: true,
   imports: [NgIcon],
   template: `
-    <p class="mt-1 flex min-h-6 min-w-0 max-w-full items-center gap-1 overflow-hidden text-xs/relaxed text-primary lg:text-sm/relaxed">
+    <p
+      class="mt-1 flex min-h-6 min-w-0 max-w-full items-center gap-1 overflow-hidden text-[0.70rem]/relaxed text-primary lg:text-sm/relaxed"
+    >
       <ng-icon name="lucideLeaf" class="size-4!" />
       <span>"</span>
       @for (word of visibleWords(); track $index) {

@@ -13,8 +13,8 @@ import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponen
 import { ZardInputDirective } from '@/ui/zard/input';
 import { ZardSelectImports } from '@/ui/zard/select/select.imports';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
-import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
-import { StatCardComponent } from '@/ui/stat-card/stat-card.component';
+import { StatGridComponent } from '@/ui/stat-card/stat-grid.component';
+import type { StatCardItem } from '@/ui/stat-card/stat-card.models';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { UserService } from '@/services/user.service';
 import { DisplayRolePipe, RoleBadgeTypePipe } from '@/utils/role.pipe';
@@ -35,8 +35,7 @@ type UserFilter = 'all' | 'admin' | 'collector' | 'customer';
     ZardButtonComponent,
     ZardBadgeComponent,
     ZardModalComponent,
-    FetchStateComponent,
-    StatCardComponent,
+    StatGridComponent,
     TableHeaderComponent,
     ZardFormFieldComponent,
     ZardFormLabelComponent,
@@ -78,6 +77,11 @@ export class AdminUsersPage implements OnInit {
   protected readonly adminCount = computed(() => this.users().filter((user) => user.role === UserRole.ADMIN).length);
   protected readonly collectorCount = computed(() => this.users().filter((user) => user.role === UserRole.COLLECTOR).length);
   protected readonly customerCount = computed(() => this.users().filter((user) => user.role === UserRole.CUSTOMER).length);
+  protected readonly stats = computed<StatCardItem[]>(() => [
+    { icon: 'lucideUsers', label: 'Customers', value: this.customerCount() },
+    { icon: 'lucideTruck', label: 'Collectors', value: this.collectorCount() },
+    { icon: 'lucideShield', label: 'Admins', value: this.adminCount(), spanClass: 'col-span-2 sm:col-span-1' },
+  ]);
   protected readonly filteredUsers = computed(() => {
     const users = this.users();
     const filter = this.activeFilter();

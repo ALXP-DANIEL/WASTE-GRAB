@@ -14,15 +14,17 @@ import {
   lucideGift,
   lucideReceiptText,
   lucideTicket,
+  lucideWallet,
 } from '@ng-icons/lucide';
 import { firstValueFrom } from 'rxjs';
 
 import { AppHeaderComponent } from '@/ui/header/header.component';
-import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import {
   TableHeaderComponent,
   type FilterOption,
 } from '@/ui/table-header/table-header.component';
+import { StatGridComponent } from '@/ui/stat-card/stat-grid.component';
+import type { StatCardItem } from '@/ui/stat-card/stat-card.models';
 import {
   CustomerVoucherCardComponent,
   type VoucherCardItem,
@@ -42,10 +44,10 @@ type VoucherTab = 'available' | 'redeemed';
   imports: [
     CommonModule,
     AppHeaderComponent,
-    FetchStateComponent,
     TableHeaderComponent,
     NgIcon,
     CustomerVoucherCardComponent,
+    StatGridComponent,
   ],
   viewProviders: [
     provideIcons({
@@ -54,6 +56,7 @@ type VoucherTab = 'available' | 'redeemed';
       lucideGift,
       lucideReceiptText,
       lucideTicket,
+      lucideWallet,
     }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -78,6 +81,11 @@ export class CustomerVouchersPage implements OnInit {
   protected readonly affordableCount = computed(
     () => this.vouchers().filter((voucher) => voucher.canRedeem).length,
   );
+  protected readonly stats = computed<StatCardItem[]>(() => [
+    { icon: 'lucideWallet', label: 'Available Points', value: this.pointsBalance(), unit: 'pts' },
+    { icon: 'lucideTicket', label: 'Available Vouchers', value: this.vouchers().length },
+    { icon: 'lucideGift', label: 'Can Redeem', value: this.affordableCount(), spanClass: 'col-span-2 sm:col-span-1' },
+  ]);
   protected readonly voucherListDescription = computed(() => {
     if (this.activeTab() === 'available') {
       const count = this.vouchers().length;

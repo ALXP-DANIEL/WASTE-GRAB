@@ -1,39 +1,8 @@
 <section class="grid gap-5 p-4 md:p-6 lg:p-8">
   <app-header mode="route" />
 
-  <app-fetch-state
-    [isLoading]="isLoading()"
-    [loadError]="loadError()"
-    loadingText="Loading earnings data..."
-  >
     <div class="grid gap-5">
-      <section class="grid grid-cols-2 gap-3 xl:grid-cols-4">
-        <app-stat-card
-          icon="lucidePackageCheck"
-          label="Completed Pickups"
-          [value]="completedPickups().length"
-          tone="brand"
-        />
-        <app-stat-card
-          icon="lucideScale"
-          label="Collected Weight"
-          [value]="totalWeightKg() | number: '1.1-1'"
-          unit="kg"
-          tone="success"
-        />
-        <app-stat-card
-          icon="lucideCalendarCheck"
-          label="This Month"
-          [value]="completedThisMonth()"
-          tone="info"
-        />
-        <app-stat-card
-          icon="lucideTruck"
-          label="Active Assignments"
-          [value]="activePickups().length"
-          tone="warning"
-        />
-      </section>
+      <app-stat-grid [stats]="stats()" gridClass="grid grid-cols-2 gap-3 xl:grid-cols-4" />
 
       <section class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
         <div class="rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6">
@@ -121,5 +90,4 @@
         </div>
       </section>
     </div>
-  </app-fetch-state>
 </section>

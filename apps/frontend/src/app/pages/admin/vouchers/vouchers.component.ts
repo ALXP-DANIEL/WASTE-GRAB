@@ -17,7 +17,6 @@ import { AppHeaderComponent } from '@/ui/header/header.component';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { ZardDatePickerComponent } from '@/ui/zard/date-picker';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
-import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/ui/zard/form/form.component';
 import { ZardInputDirective } from '@/ui/zard/input';
@@ -44,7 +43,6 @@ type VoucherCatalogFilter = 'all' | VoucherStatus;
     ReactiveFormsModule,
     AppHeaderComponent,
     ZardButtonComponent,
-    FetchStateComponent,
     TableHeaderComponent,
     ZardDatePickerComponent,
     ZardModalComponent,

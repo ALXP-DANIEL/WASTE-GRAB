@@ -10,11 +10,6 @@
     </a>
   </app-header>
 
-  <app-fetch-state
-    [isLoading]="isLoading()"
-    [loadError]="loadError()"
-    loadingText="Loading pickup details..."
-  >
     @if (pickup(); as currentPickup) {
     <div class="grid gap-4">
       <section class="brand-hero card-lift relative overflow-hidden rounded-3xl p-4 lg:p-6">
@@ -81,43 +76,7 @@
         </div>
       </section>
 
-      <section class="grid grid-cols-2 gap-3 xl:grid-cols-4">
-        <app-stat-card
-          icon="lucideScale"
-          label="Total weight"
-          [value]="totalWeight() | number:'1.2-2'"
-          unit="kg"
-          tone="success"
-        />
-        <app-stat-card
-          icon="lucideCoins"
-          [label]="pointsSummaryLabel()"
-          [value]="totalPoints()"
-          unit="pts"
-          tone="warning"
-        />
-        <app-stat-card
-          icon="lucideImage"
-          label="Images"
-          [value]="currentPickup.images.length"
-          tone="info"
-        />
-        @if (showDistance(currentPickup)) {
-        <app-stat-card
-          icon="lucideNavigation"
-          label="Distance"
-          [value]="distanceLabel(currentPickup)"
-          tone="brand"
-        />
-        } @else {
-        <app-stat-card
-          icon="lucidePackageCheck"
-          label="Current status"
-          [value]="statusLabel(currentPickup.status)"
-          tone="brand"
-        />
-        }
-      </section>
+      <app-stat-grid [stats]="stats()" gridClass="grid grid-cols-2 gap-3 xl:grid-cols-4" />
 
       @if (isCollectorDetail() && routeMapStops(currentPickup).length > 0) {
       <section
@@ -533,12 +492,11 @@
       </p>
       <a
         [routerLink]="backRoute()"
-        class="mt-4 inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm"
+        class="mt-4 inline-flex h-11 items-center justify-center gap-2 rounded-full btn-brand px-5 text-sm font-semibold shadow-sm transition-all"
       >
         <ng-icon name="lucideArrowLeft" class="size-4!" />
         {{ backLabel() }}
       </a>
     </section>
     }
-  </app-fetch-state>
 </section>

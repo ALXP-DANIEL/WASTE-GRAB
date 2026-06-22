@@ -6,7 +6,6 @@ import { lucidePencil, lucidePlus, lucideScale, lucideTrash2, lucideTrophy, luci
 import { AchievementMetric, type Achievement } from '@wastegrab/shared';
 import { AchievementService } from '@/services/achievement.service';
 import { AppHeaderComponent } from '@/ui/header/header.component';
-import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
@@ -26,7 +25,6 @@ type Filter = 'all' | 'active' | 'inactive';
     CommonModule,
     ReactiveFormsModule,
     AppHeaderComponent,
-    FetchStateComponent,
     TableHeaderComponent,
     ZardButtonComponent,
     ZardModalComponent,

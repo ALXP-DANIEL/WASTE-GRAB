@@ -20,31 +20,9 @@
     </div>
   </section>
 
-  <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
-    <app-stat-card
-      icon="lucideTrophy"
-      label="Unlocked"
-      [value]="achievements().length"
-      tone="brand"
-    />
-    <app-stat-card
-      icon="lucideCoins"
-      label="Earned from achievements"
-      [value]="totalPoints()"
-      unit="pts"
-      tone="warning"
-    />
-    <app-stat-card
-      class="col-span-2 sm:col-span-1"
-      icon="lucideScale"
-      label="Milestone types"
-      [value]="totalWeightAwards() + ' weight · ' + pickupAwards() + ' pickup'"
-      tone="success"
-    />
-  </div>
+  <app-stat-grid [stats]="stats()" gridClass="grid grid-cols-2 gap-3 sm:grid-cols-3" />
 
-  <app-fetch-state [isLoading]="isLoading()" [loadError]="loadError()" loadingText="Loading achievements...">
-    <section class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+  <section class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
       @for (entry of achievements(); track entry.id) {
       <article class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         <div class="bg-linear-to-r from-primary/20 via-teal-500/15 to-teal-400/20 p-4">
@@ -83,5 +61,4 @@
       />
       }
     </section>
-  </app-fetch-state>
 </section>

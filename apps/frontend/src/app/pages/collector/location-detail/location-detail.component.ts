@@ -9,13 +9,12 @@ import { firstValueFrom } from 'rxjs';
 import { CollectorPickupService } from '@/services/collector-pickup.service';
 import { LocationService } from '@/services/location.service';
 import { AppHeaderComponent } from '@/ui/header/header.component';
-import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { RouteMapComponent, type RouteMapStop } from '@/ui/route-map/route-map.component';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 
 @Component({
   selector: 'app-collector-location-detail-page',
-  imports: [CommonModule, RouterLink, AppHeaderComponent, FetchStateComponent, RouteMapComponent, ZardButtonComponent, NgIcon],
+  imports: [CommonModule, RouterLink, AppHeaderComponent, RouteMapComponent, ZardButtonComponent, NgIcon],
   template: `
     <section class="grid min-w-0 gap-4 p-4 lg:p-8">
       <app-header mode="route">
@@ -25,7 +24,6 @@ import { ZardButtonComponent } from '@/ui/zard/button/button.component';
         </a>
       </app-header>
 
-      <app-fetch-state [isLoading]="isLoading()" [loadError]="loadError()" loadingText="Loading location...">
         @if (location(); as loc) {
         <div class="grid gap-4">
           <section class="rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6">
@@ -90,7 +88,6 @@ import { ZardButtonComponent } from '@/ui/zard/button/button.component';
           </section>
         </div>
         }
-      </app-fetch-state>
     </section>
   `,
   viewProviders: [provideIcons({ lucideArrowLeft, lucideImage, lucideMapPin, lucideNavigation })],

@@ -13,7 +13,7 @@ export const buttonVariants = cva(
   {
     variants: {
       zType: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/80',
+        default: 'btn-brand border-transparent',
         destructive:
           'bg-destructive/10 hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/20 text-destructive focus-visible:border-destructive/40 dark:hover:bg-destructive/30',
         outline:

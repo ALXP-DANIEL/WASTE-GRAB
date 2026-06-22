@@ -30,11 +30,6 @@
       (filterChange)="setFilter($event)"
     />
 
-    <app-fetch-state
-      [isLoading]="isLoading()"
-      [loadError]="loadError()"
-      loadingText="Loading auth slides..."
-    >
       <div class="grid gap-3 lg:hidden">
         @for (slide of filteredSlides(); track slide.id) {
         <article class="rounded-lg border border-border p-3">
@@ -142,7 +137,6 @@
           </tbody>
         </table>
       </div>
-    </app-fetch-state>
   </section>
 </section>
 

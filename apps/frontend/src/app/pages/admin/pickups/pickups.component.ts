@@ -21,9 +21,9 @@ import { AdminPickupService } from '@/services/admin-pickup.service';
 import { ImageType, PickupStatus, type AdminPickupRequest } from '@wastegrab/shared';
 
 import { AppHeaderComponent } from '@/ui/header/header.component';
-import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
-import { StatCardComponent } from '@/ui/stat-card/stat-card.component';
+import { StatGridComponent } from '@/ui/stat-card/stat-grid.component';
+import type { StatCardItem } from '@/ui/stat-card/stat-card.models';
 import { ZardTableImports } from '@/ui/zard/table';
 
 type PickupFilter = 'all' | 'active' | 'completed' | 'cancelled';
@@ -31,7 +31,7 @@ type PickupFilter = 'all' | 'active' | 'completed' | 'cancelled';
 @Component({
   selector: 'app-admin-pickups-page',
   templateUrl: './pickups.html',
-  imports: [CommonModule, RouterLink, AppHeaderComponent, FetchStateComponent, TableHeaderComponent, StatCardComponent, NgIcon, ...ZardTableImports],
+  imports: [CommonModule, RouterLink, AppHeaderComponent, TableHeaderComponent, StatGridComponent, NgIcon, ...ZardTableImports],
   viewProviders: [
     provideIcons({
       lucideArrowUpRight,
@@ -69,6 +69,12 @@ export class AdminPickupsPage {
   protected readonly completedPickups = computed(() => this.pickups().filter((pickup) => pickup.status === PickupStatus.COMPLETED));
   protected readonly cancelledPickups = computed(() => this.pickups().filter((pickup) => pickup.status === PickupStatus.CANCELLED));
   protected readonly totalPotentialPoints = computed(() => this.pickups().reduce((total, pickup) => total + this.potentialPoints(pickup), 0));
+  protected readonly stats = computed<StatCardItem[]>(() => [
+    { icon: 'lucidePackageCheck', label: 'Total', value: this.pickups().length },
+    { icon: 'lucideTruck', label: 'Active', value: this.activePickups().length },
+    { icon: 'lucideCheckCircle2', label: 'Completed', value: this.completedPickups().length },
+    { icon: 'lucideCoins', label: 'Pickup Points', value: this.totalPotentialPoints(), unit: 'pts' },
+  ]);
 
   protected readonly filteredPickups = computed(() => {
     const filter = this.activeFilter();

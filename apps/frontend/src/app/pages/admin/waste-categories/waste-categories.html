@@ -6,27 +6,7 @@
     </button>
   </app-header>
 
-  <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
-    <app-stat-card
-      icon="lucideSparkles"
-      label="Active"
-      [value]="activeCount()"
-      tone="brand"
-    />
-    <app-stat-card
-      icon="lucideBrain"
-      label="AI Detectable"
-      [value]="aiCount()"
-      tone="info"
-    />
-    <app-stat-card
-      class="col-span-2 sm:col-span-1"
-      icon="lucideCircleSlash"
-      label="Restricted"
-      [value]="restrictedCount()"
-      tone="warning"
-    />
-  </div>
+  <app-stat-grid [stats]="stats()" gridClass="grid grid-cols-2 gap-3 sm:grid-cols-3" />
 
   <section
     class="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6"
@@ -39,11 +19,6 @@
       (filterChange)="setFilter($event)"
     />
 
-    <app-fetch-state
-      [isLoading]="isLoading()"
-      [loadError]="loadError()"
-      loadingText="Loading waste categories..."
-    >
       <div class="grid gap-3 lg:hidden">
         @for (category of filteredCategories(); track category.id) {
         <article class="rounded-lg border border-border p-3">
@@ -268,7 +243,6 @@
           </tbody>
         </table>
       </div>
-    </app-fetch-state>
   </section>
 
   @if (modalMode() === 'add' || modalMode() === 'edit') {

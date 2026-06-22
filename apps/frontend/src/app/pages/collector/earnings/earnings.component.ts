@@ -15,9 +15,9 @@ import { PickupStatus, type CollectorPickupRequest } from '@wastegrab/shared';
 import { ROUTE_PATHS } from '@/app-route-paths';
 import { CollectorPickupService } from '@/services/collector-pickup.service';
 import { AppHeaderComponent } from '@/ui/header/header.component';
-import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { EmptyStateComponent } from '@/ui/empty-state/empty-state.component';
-import { StatCardComponent } from '@/ui/stat-card/stat-card.component';
+import { StatGridComponent } from '@/ui/stat-card/stat-grid.component';
+import type { StatCardItem } from '@/ui/stat-card/stat-card.models';
 
 type MonthlySummary = {
   key: string;
@@ -36,9 +36,8 @@ type MonthlySummary = {
     RouterLink,
     NgIcon,
     AppHeaderComponent,
-    FetchStateComponent,
     EmptyStateComponent,
-    StatCardComponent,
+    StatGridComponent,
   ],
   viewProviders: [
     provideIcons({
@@ -83,6 +82,13 @@ export class CollectorEarningsPage {
       return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
     }).length;
   });
+
+  protected readonly stats = computed<StatCardItem[]>(() => [
+    { icon: 'lucidePackageCheck', label: 'Completed Pickups', value: this.completedPickups().length },
+    { icon: 'lucideScale', label: 'Collected Weight', value: this.totalWeightKg().toFixed(1), unit: 'kg' },
+    { icon: 'lucideCalendarCheck', label: 'This Month', value: this.completedThisMonth() },
+    { icon: 'lucideTruck', label: 'Active Assignments', value: this.activePickups().length },
+  ]);
 
   protected readonly monthlySummaries = computed<MonthlySummary[]>(() => {
     const groups = new Map<string, { label: string; pickupCount: number; weightKg: number }>();

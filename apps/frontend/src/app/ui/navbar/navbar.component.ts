@@ -248,10 +248,12 @@ function getInitials(name?: string | null): string {
           @for (item of navItems(); track item.route) {
             <a
               [routerLink]="item.route"
-              routerLinkActive="bg-primary text-primary-foreground shadow-sm"
+              routerLinkActive
+              #rlaDesktop="routerLinkActive"
               [routerLinkActiveOptions]="{ exact: true }"
               ariaCurrentWhenActive="page"
-              class="group mb-1 flex items-center gap-3 rounded-full text-sm font-semibold text-muted-foreground"
+              class="group mb-1 flex items-center gap-3 rounded-full text-sm font-semibold"
+              [class]="rlaDesktop.isActive ? 'btn-brand text-white shadow-sm' : 'text-muted-foreground'"
             >
               <span
                 class="flex w-full items-center gap-3 rounded-full px-4 py-2.5 transition-colors group-hover:bg-primary/10"
@@ -339,7 +341,7 @@ function getInitials(name?: string | null): string {
             ariaCurrentWhenActive="page"
             class="flex flex-1 items-center justify-center gap-2 transition-all active:scale-95"
             [class]="
-              rla.isActive ? 'rounded-full bg-primary px-3 py-2' : 'py-2'
+              rla.isActive ? 'rounded-full btn-brand px-3 py-2' : 'py-2'
             "
           >
             <ng-icon
@@ -347,13 +349,13 @@ function getInitials(name?: string | null): string {
               class="size-5! shrink-0"
               [class]="
                 rla.isActive
-                  ? 'text-primary-foreground'
+                  ? 'text-white'
                   : 'text-muted-foreground'
               "
             />
             @if (rla.isActive) {
               <span
-                class="whitespace-nowrap text-xs font-bold text-primary-foreground"
+                class="whitespace-nowrap text-xs font-bold text-white"
                 >{{ item.label }}</span
               >
             }
@@ -368,7 +370,7 @@ function getInitials(name?: string | null): string {
           routerLinkActive="ring-2 ring-primary/40 ring-offset-2"
           [routerLinkActiveOptions]="{ exact: true }"
           ariaCurrentWhenActive="page"
-          class="grid size-14 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground shadow-xl transition-all active:scale-95 hover:bg-primary/90"
+          class="grid size-14 shrink-0 place-items-center rounded-full btn-brand shadow-xl transition-all active:scale-95"
         >
           <ng-icon [name]="primary.icon" class="size-6!" />
         </a>

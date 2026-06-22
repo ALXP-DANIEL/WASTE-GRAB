@@ -1,5 +1,4 @@
 import { AppHeaderComponent } from '@/ui/header/header.component';
-import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { CollectorPickupService } from '@/services/collector-pickup.service';
 import { ROUTE_PATHS } from '@/app.routes';
 import { CommonModule } from '@angular/common';
@@ -34,7 +33,7 @@ type CollectorStat = {
   selector: 'app-collector-page',
   templateUrl: './collector.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, AppHeaderComponent, FetchStateComponent, RouterLink, NgIcon],
+  imports: [CommonModule, AppHeaderComponent, RouterLink, NgIcon],
   viewProviders: [
     provideIcons({
       lucideArrowRight,

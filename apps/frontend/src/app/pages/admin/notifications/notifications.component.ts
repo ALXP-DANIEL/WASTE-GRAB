@@ -22,7 +22,6 @@ import { NotificationTargetRole, type AdminNotificationLog } from '@wastegrab/sh
 import { ROUTE_PATHS, routePath } from '@/app.routes';
 import { AdminNotificationService } from '@/services/admin-notification.service';
 import { AppHeaderComponent } from '@/ui/header/header.component';
-import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { ZardBadgeComponent } from '@/ui/zard/badge';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
@@ -49,7 +48,6 @@ type MarkdownFormat = 'h1' | 'h2' | 'bold' | 'italic' | 'list';
     DatePipe,
     ReactiveFormsModule,
     AppHeaderComponent,
-    FetchStateComponent,
     TableHeaderComponent,
     ZardBadgeComponent,
     ZardButtonComponent,

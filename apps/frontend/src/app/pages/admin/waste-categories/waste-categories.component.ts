@@ -11,8 +11,8 @@ import { ZardModalComponent } from '@/ui/zard/modal/modal.component';
 import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/ui/zard/form/form.component';
 import { ZardInputDirective } from '@/ui/zard/input';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
-import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
-import { StatCardComponent } from '@/ui/stat-card/stat-card.component';
+import { StatGridComponent } from '@/ui/stat-card/stat-grid.component';
+import type { StatCardItem } from '@/ui/stat-card/stat-card.models';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { WasteCategoryService } from '@/services/waste-category.service';
 import type { WasteCategory } from '@wastegrab/shared';
@@ -28,8 +28,7 @@ type WasteCategoryFilter = 'all' | 'active' | 'hazardous' | 'banned';
     AppHeaderComponent,
     ...ZardTableImports,
     ZardButtonComponent,
-    FetchStateComponent,
-    StatCardComponent,
+    StatGridComponent,
     TableHeaderComponent,
     ZardCheckboxComponent,
     ZardModalComponent,
@@ -74,6 +73,11 @@ export class AdminWasteCategoriesPage implements OnInit {
   protected readonly restrictedCount = computed(() => this.categories().filter((category) => (
     category.isBanned || category.isHazardous
   )).length);
+  protected readonly stats = computed<StatCardItem[]>(() => [
+    { icon: 'lucideSparkles', label: 'Active', value: this.activeCount() },
+    { icon: 'lucideBrain', label: 'AI Detectable', value: this.aiCount() },
+    { icon: 'lucideCircleSlash', label: 'Restricted', value: this.restrictedCount(), spanClass: 'col-span-2 sm:col-span-1' },
+  ]);
   protected readonly filteredCategories = computed(() => {
     const categories = this.categories();
     const filter = this.activeFilter();

@@ -11,6 +11,7 @@ import type { StatCardItem } from './stat-card.models';
     <section [class]="gridClass()">
       @for (stat of stats(); track stat.label) {
         <app-stat-card
+          [class]="stat.spanClass ?? ''"
           [icon]="stat.icon"
           [label]="stat.label"
           [value]="stat.value"

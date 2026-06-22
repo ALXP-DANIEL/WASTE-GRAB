@@ -27,7 +27,6 @@ import {
 } from '@ng-icons/lucide';
 
 import { AppHeaderComponent } from '@/ui/header/header.component';
-import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { StatGridComponent } from '@/ui/stat-card/stat-grid.component';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import type { StatCardItem } from '@/ui/stat-card/stat-card.models';
@@ -51,7 +50,6 @@ type RequestFilter = 'all' | 'active' | 'completed' | 'cancelled';
     CommonModule,
     RouterLink,
     AppHeaderComponent,
-    FetchStateComponent,
     StatGridComponent,
     TableHeaderComponent,
     NgIcon,

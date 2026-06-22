@@ -62,7 +62,9 @@ import { AppHeaderQuoteComponent } from './header-quote.component';
       </div>
 
       <div class="flex items-center gap-2 shrink-0">
-        <ng-content select="[rightSide]" />
+        <div class="hidden lg:contents">
+          <ng-content select="[rightSide]" />
+        </div>
         <app-header-notifications />
 
         <!-- Mobile profile dropdown -->
@@ -73,14 +75,13 @@ import { AppHeaderQuoteComponent } from './header-quote.component';
           zTrigger="click"
           type="button"
           aria-label="Account menu"
-          class="lg:hidden rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          class="lg:hidden size-10 shrink-0 rounded-full border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary overflow-hidden"
         >
           <z-avatar
             [zSrc]="user()?.avatarUrl || ''"
             [zFallback]="userInitials()"
             [zAlt]="avatarAlt()"
-            zSize="sm"
-            class="ring-2 ring-primary/20"
+            zSize="default"
           />
         </button>
 

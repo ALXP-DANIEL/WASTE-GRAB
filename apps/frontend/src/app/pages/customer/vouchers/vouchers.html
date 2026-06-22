@@ -1,6 +1,8 @@
 <section class="grid w-full gap-5 p-4 md:p-6 lg:p-8">
   <app-header mode="route" />
 
+  <app-stat-grid [stats]="stats()" gridClass="grid grid-cols-2 gap-3 sm:grid-cols-3" />
+
   <section class="rounded-3xl border border-border bg-card p-5 shadow-sm">
     <app-table-header
       title="Reward Vouchers"
@@ -11,11 +13,6 @@
     />
 
     <div class="mt-5 border-t border-border/70 pt-5">
-      <app-fetch-state
-        [isLoading]="isLoading()"
-        [loadError]="loadError()"
-        loadingText="Loading vouchers..."
-      >
         <!-- Available -->
         @if (activeTab() === 'available') { @if (vouchers().length) {
         <div class="grid items-stretch gap-5 sm:grid-cols-2 xl:grid-cols-3">
@@ -26,7 +23,7 @@
               (click)="redeemVoucher(voucher)"
               [disabled]="!voucher.canRedeem || redeemingVoucherId() === voucher.id"
               class="inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-full text-xs font-bold transition-all active:scale-95 disabled:pointer-events-none disabled:opacity-50"
-              [class]="voucher.canRedeem ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-muted text-muted-foreground'"
+              [class]="voucher.canRedeem ? 'btn-brand' : 'bg-muted text-muted-foreground'"
             >
               @if (redeemingVoucherId() === voucher.id) { Redeeming... } @else if (voucher.canRedeem) { Redeem } @else { {{
               voucher.unavailableReason || 'Unavailable' }} }
@@ -79,7 +76,6 @@
           </div>
         </div>
         } }
-      </app-fetch-state>
     </div>
   </section>
 </section>

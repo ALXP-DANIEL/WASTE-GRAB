@@ -23,10 +23,10 @@ import { NotificationService } from '@/services/notification.service';
 
 import { CollectorPickupService, type CollectorLocation, type CollectorPickupScope } from '@/services/collector-pickup.service';
 import { AppHeaderComponent } from '@/ui/header/header.component';
-import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { RouteMapComponent, type RouteMapStop } from '@/ui/route-map/route-map.component';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
-import { StatCardComponent } from '@/ui/stat-card/stat-card.component';
+import { StatGridComponent } from '@/ui/stat-card/stat-grid.component';
+import type { StatCardItem } from '@/ui/stat-card/stat-card.models';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { ZardTableImports } from '@/ui/zard/table';
 
@@ -50,7 +50,7 @@ const ROUTE_FIT_THRESHOLD_KM = 15;
 @Component({
   selector: 'app-collector-pickups-page',
   templateUrl: './pickups.html',
-  imports: [CommonModule, RouterLink, AppHeaderComponent, FetchStateComponent, ZardButtonComponent, TableHeaderComponent, StatCardComponent, NgIcon, RouteMapComponent, ...ZardTableImports],
+  imports: [CommonModule, RouterLink, AppHeaderComponent, ZardButtonComponent, TableHeaderComponent, StatGridComponent, NgIcon, RouteMapComponent, ...ZardTableImports],
   viewProviders: [
     provideIcons({
       lucideArrowUpRight,
@@ -105,6 +105,12 @@ export class CollectorPickupsPage {
   protected readonly assignedPickups = computed(() => this.pickups().filter((pickup) => pickup.collectorId !== null && this.isActiveStatus(pickup.status)));
   protected readonly completedPickups = computed(() => this.pickups().filter((pickup) => pickup.status === PickupStatus.COMPLETED));
   protected readonly totalPotentialPoints = computed(() => this.pickups().reduce((total, pickup) => total + this.potentialPoints(pickup), 0));
+  protected readonly stats = computed<StatCardItem[]>(() => [
+    { icon: 'lucidePackageCheck', label: 'Total', value: this.pickups().length },
+    { icon: 'lucideMapPin', label: 'Available', value: this.availablePickups().length },
+    { icon: 'lucideTruck', label: 'Assigned', value: this.assignedPickups().length },
+    { icon: 'lucideCoins', label: 'Potential Points', value: this.totalPotentialPoints(), unit: 'pts' },
+  ]);
   protected readonly tableTitle = computed(() => this.pickupScope === 'my' ? 'My Pickups' : 'Available Pickup Requests');
   protected readonly tableDescription = computed(() => this.pickupScope === 'my'
     ? 'Review pickup requests assigned to you.'

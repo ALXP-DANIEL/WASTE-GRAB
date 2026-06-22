@@ -89,11 +89,6 @@
       (filterChange)="setFilter($event)"
     />
 
-    <app-fetch-state
-      [isLoading]="isLoading()"
-      [loadError]="loadError()"
-      loadingText="Loading announcements..."
-    >
       <div class="grid gap-3 lg:hidden">
         @for (log of filteredLogs(); track log.id) {
         <article class="rounded-lg border border-border p-3">
@@ -248,7 +243,6 @@
           </tbody>
         </table>
       </div>
-    </app-fetch-state>
   </section>
   } @if (activeTab() === 'deliveries') {
   <section
@@ -262,11 +256,6 @@
       (filterChange)="setFilter($event)"
     />
 
-    <app-fetch-state
-      [isLoading]="isLoading()"
-      [loadError]="loadError()"
-      loadingText="Loading deliveries..."
-    >
       <div class="max-w-full overflow-x-auto rounded-2xl border border-border">
         <table z-table class="min-w-4xl bg-card">
           <thead z-table-header>
@@ -333,7 +322,6 @@
           </tbody>
         </table>
       </div>
-    </app-fetch-state>
   </section>
   } @if (activeTab() === 'policy') {
   <section
@@ -347,11 +335,6 @@
       (filterChange)="setFilter($event)"
     />
 
-    <app-fetch-state
-      [isLoading]="isLoading()"
-      [loadError]="loadError()"
-      loadingText="Loading policy..."
-    >
       <div class="grid gap-3 sm:grid-cols-3">
         <article class="rounded-lg border border-border p-4">
           <p class="text-sm text-muted-foreground">Clearable</p>
@@ -437,7 +420,6 @@
           </tbody>
         </table>
       </div>
-    </app-fetch-state>
   </section>
   } @if (modalMode() === 'add') {
   <z-modal

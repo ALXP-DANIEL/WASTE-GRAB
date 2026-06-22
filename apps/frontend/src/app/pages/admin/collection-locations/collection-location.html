@@ -6,27 +6,7 @@
     </button>
   </app-header>
 
-  <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
-    <app-stat-card
-      icon="lucideMapPin"
-      label="Locations"
-      [value]="locations().length"
-      tone="brand"
-    />
-    <app-stat-card
-      icon="lucideImage"
-      label="Photos"
-      [value]="imageCount()"
-      tone="info"
-    />
-    <app-stat-card
-      class="col-span-2 sm:col-span-1"
-      icon="lucideMapPin"
-      label="Cities"
-      [value]="cityCount()"
-      tone="success"
-    />
-  </div>
+  <app-stat-grid [stats]="stats()" gridClass="grid grid-cols-2 gap-3 sm:grid-cols-3" />
 
   <section
     class="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6"
@@ -36,11 +16,6 @@
       description="Create collection locations where collectors can send waste."
     />
 
-    <app-fetch-state
-      [isLoading]="isLoading()"
-      [loadError]="loadError()"
-      loadingText="Loading locations..."
-    >
       <div class="grid gap-3 lg:hidden">
         @for (loc of locations(); track loc.id) {
         <article class="rounded-lg border border-border p-3">
@@ -214,7 +189,6 @@
           </tbody>
         </table>
       </div>
-    </app-fetch-state>
   </section>
 
   @if (modalMode() === 'add' || modalMode() === 'edit') {

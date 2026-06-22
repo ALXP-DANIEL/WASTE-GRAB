@@ -11,8 +11,8 @@ import { ZardModalComponent } from '@/ui/zard/modal/modal.component';
 import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/ui/zard/form/form.component';
 import { ZardInputDirective } from '@/ui/zard/input';
 import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
-import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
-import { StatCardComponent } from '@/ui/stat-card/stat-card.component';
+import { StatGridComponent } from '@/ui/stat-card/stat-grid.component';
+import type { StatCardItem } from '@/ui/stat-card/stat-card.models';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { LocationService, type LocationRecord } from '@/services/location.service';
 import { GooglePlaceInputComponent, type GooglePlaceSelection } from '@/ui/google-place-input/google-place-input.component';
@@ -28,8 +28,7 @@ type LocationModalMode = 'add' | 'edit' | null;
     AppHeaderComponent,
     ...ZardTableImports,
     ZardButtonComponent,
-    FetchStateComponent,
-    StatCardComponent,
+    StatGridComponent,
     TableHeaderComponent,
     ZardModalComponent,
     ZardFormFieldComponent,
@@ -64,6 +63,11 @@ export class AdminCollectionLocationPage implements OnInit, OnDestroy {
   protected readonly cityCount = computed(() => new Set(this.locations()
     .map((location) => location.city)
     .filter(Boolean)).size);
+  protected readonly stats = computed<StatCardItem[]>(() => [
+    { icon: 'lucideMapPin', label: 'Locations', value: this.locations().length },
+    { icon: 'lucideImage', label: 'Photos', value: this.imageCount() },
+    { icon: 'lucideMapPin', label: 'Cities', value: this.cityCount(), spanClass: 'col-span-2 sm:col-span-1' },
+  ]);
   protected readonly placeImagePreview = signal<string | null>(null);
   private placeImageFile: File | null = null;
   private placeImageObjectUrl: string | null = null;

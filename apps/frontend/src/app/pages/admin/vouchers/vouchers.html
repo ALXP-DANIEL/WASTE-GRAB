@@ -89,11 +89,6 @@
       (filterChange)="setCatalogFilter($event)"
     />
 
-    <app-fetch-state
-      [isLoading]="isLoading()"
-      [loadError]="loadError()"
-      loadingText="Loading vouchers data..."
-    >
       <div class="grid gap-3 lg:hidden">
         @for (voucher of filteredVouchers(); track voucher.id) {
         <article class="rounded-lg border border-border p-3">
@@ -282,7 +277,6 @@
           </tbody>
         </table>
       </div>
-    </app-fetch-state>
   </section>
   } @if (activeTab() === 'redemptions') {
   <section
@@ -296,11 +290,6 @@
       (filterChange)="setRedemptionFilter($event)"
     />
 
-    <app-fetch-state
-      [isLoading]="isLoading()"
-      [loadError]="loadError()"
-      loadingText="Loading redemptions data..."
-    >
       <div class="max-w-full overflow-x-auto rounded-2xl border border-border">
         <table z-table class="min-w-5xl bg-card">
           <thead z-table-header>
@@ -354,7 +343,6 @@
           </tbody>
         </table>
       </div>
-    </app-fetch-state>
   </section>
   } @if (activeTab() === 'ledger') {
   <section
@@ -368,11 +356,6 @@
       (filterChange)="setLedgerFilter($event)"
     />
 
-    <app-fetch-state
-      [isLoading]="isLoading()"
-      [loadError]="loadError()"
-      loadingText="Loading ledger data..."
-    >
       <div class="max-w-full overflow-x-auto rounded-2xl border border-border">
         <table z-table class="min-w-304 bg-card">
           <thead z-table-header>
@@ -443,7 +426,6 @@
           </tbody>
         </table>
       </div>
-    </app-fetch-state>
   </section>
   } @if (modalMode() === 'add' || modalMode() === 'edit') {
   <z-modal

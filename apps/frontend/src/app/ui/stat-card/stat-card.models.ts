@@ -21,4 +21,5 @@ export type StatCardItem = {
   icon: string;
   tone?: StatCardTone;
   trend?: StatCardTrend;
+  spanClass?: string;
 };

@@ -27,8 +27,8 @@ import { CollectorPickupService, type CollectorLocation, type CollectorPickupSco
 import { AuthService } from '@/services/auth.service';
 import { PickupRequestService } from '@/services/pickup-request.service';
 import { AppHeaderComponent } from '@/ui/header/header.component';
-import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
-import { StatCardComponent } from '@/ui/stat-card/stat-card.component';
+import { StatGridComponent } from '@/ui/stat-card/stat-grid.component';
+import type { StatCardItem } from '@/ui/stat-card/stat-card.models';
 import { RouteMapComponent, type RouteMapPoint, type RouteMapStop } from '@/ui/route-map/route-map.component';
 import { Z_MODAL_DATA } from '@/ui/zard/dialog/dialog.service';
 import { ResponsiveDialogService } from '@/services/responsive-dialog.service';
@@ -314,7 +314,7 @@ export class DropoffLocationDialogComponent {
 @Component({
   selector: 'app-pickup-detail-page',
   templateUrl: './pickup-detail.html',
-  imports: [CommonModule, FormsModule, AppHeaderComponent, FetchStateComponent, RouterLink, NgIcon, RouteMapComponent, StatCardComponent],
+  imports: [CommonModule, FormsModule, AppHeaderComponent, RouterLink, NgIcon, RouteMapComponent, StatGridComponent],
   viewProviders: [
     provideIcons({
       lucideArrowLeft,
@@ -397,6 +397,21 @@ export class PickupDetailPage {
   protected readonly pointsSummaryLabel = computed(() =>
     this.pickup()?.status === PickupStatus.COMPLETED ? 'Awarded points' : 'Potential points',
   );
+  protected readonly stats = computed<StatCardItem[]>(() => {
+    const pickup = this.pickup();
+    if (!pickup) return [];
+    const items: StatCardItem[] = [
+      { icon: 'lucideScale', label: 'Total weight', value: this.totalWeight().toFixed(2), unit: 'kg' },
+      { icon: 'lucideCoins', label: this.pointsSummaryLabel(), value: this.totalPoints(), unit: 'pts' },
+      { icon: 'lucideImage', label: 'Images', value: pickup.images.length },
+    ];
+    items.push(
+      this.showDistance(pickup)
+        ? { icon: 'lucideNavigation', label: 'Distance', value: this.distanceLabel(pickup) }
+        : { icon: 'lucidePackageCheck', label: 'Current status', value: this.statusLabel(pickup.status) },
+    );
+    return items;
+  });
   protected readonly timelineSteps = computed<TimelineStep[]>(() => {
     const pickup = this.pickup();
     if (!pickup) {

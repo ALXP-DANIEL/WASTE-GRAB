@@ -8,7 +8,6 @@ import type { AuthSlide } from '@wastegrab/shared';
 
 import { AdminAuthSlideService } from '@/services/admin-auth-slide.service';
 import { AppHeaderComponent } from '@/ui/header/header.component';
-import { FetchStateComponent } from '@/ui/fetch-state/fetch-state.component';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { ZardBadgeComponent } from '@/ui/zard/badge';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
@@ -30,7 +29,6 @@ type AuthSlideFilter = 'all' | 'active' | 'inactive';
     CommonModule,
     ReactiveFormsModule,
     AppHeaderComponent,
-    FetchStateComponent,
     TableHeaderComponent,
     ZardBadgeComponent,
     ZardButtonComponent,

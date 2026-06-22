@@ -42,7 +42,7 @@ import { CustomerOnboardingComponent } from '@/onboarding/customer-onboarding.co
             : 'lg:pb-0 bg-background'
         "
       >
-        <router-outlet />
+          <router-outlet />
       </main>
     </div>
 
