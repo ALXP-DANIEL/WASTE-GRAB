@@ -50,7 +50,7 @@ test('customer can redeem a reward voucher and view it in My Vouchers', async ({
   await page.getByRole('button', { name: 'Done' }).click();
 
   await expect(page.getByRole('button', { name: 'My Vouchers' })).toHaveClass(
-    /bg-primary/,
+    /bg-card/,
   );
   await expect(page.getByText('COFFEE100', { exact: true })).toBeVisible();
   await expect(page.getByText('100 pts')).toBeVisible();
