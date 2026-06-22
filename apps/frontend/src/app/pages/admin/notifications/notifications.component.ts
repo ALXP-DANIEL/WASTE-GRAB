@@ -16,18 +16,20 @@ import {
   lucideRadio,
   lucideSend,
   lucideTrash2,
+  lucideLoaderCircle,
+  lucideWifi,
 } from '@ng-icons/lucide';
 import { NotificationTargetRole, type AdminNotificationLog } from '@wastegrab/shared';
 
 import { ROUTE_PATHS, routePath } from '@/app.routes';
 import { AdminNotificationService } from '@/services/admin-notification.service';
 import { AppHeaderComponent } from '@/ui/header/header.component';
+import { EmptyStateComponent } from '@/ui/empty-state/empty-state.component';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { ZardBadgeComponent } from '@/ui/zard/badge';
-import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { ZardCheckboxComponent } from '@/ui/zard/checkbox';
 import { ZardDatePickerComponent } from '@/ui/zard/date-picker';
-import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
+import { ResponsiveDialogService } from '@/services/responsive-dialog.service';
 import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/ui/zard/form/form.component';
 import { ZardInputDirective } from '@/ui/zard/input';
 import { ZardModalComponent } from '@/ui/zard/modal/modal.component';
@@ -50,7 +52,6 @@ type MarkdownFormat = 'h1' | 'h2' | 'bold' | 'italic' | 'list';
     AppHeaderComponent,
     TableHeaderComponent,
     ZardBadgeComponent,
-    ZardButtonComponent,
     ZardCheckboxComponent,
     ZardDatePickerComponent,
     ZardModalComponent,
@@ -59,6 +60,7 @@ type MarkdownFormat = 'h1' | 'h2' | 'bold' | 'italic' | 'list';
     ZardFormControlComponent,
     ZardInputDirective,
     NotificationMarkdownPipe,
+    EmptyStateComponent,
     NgIcon,
     ...ZardSelectImports,
     ...ZardTableImports,
@@ -78,12 +80,14 @@ type MarkdownFormat = 'h1' | 'h2' | 'bold' | 'italic' | 'list';
       lucideRadio,
       lucideSend,
       lucideTrash2,
+      lucideLoaderCircle,
+      lucideWifi,
     }),
   ],
 })
 export class AdminNotificationsPage implements OnInit {
   private readonly notificationService = inject(AdminNotificationService);
-  private readonly dialogService = inject(ZardDialogService);
+  private readonly dialogService = inject(ResponsiveDialogService);
 
   protected readonly NotificationTargetRole = NotificationTargetRole;
   protected readonly audienceOptions = [

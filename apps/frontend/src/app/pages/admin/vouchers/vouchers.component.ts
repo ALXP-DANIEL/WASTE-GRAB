@@ -1,22 +1,26 @@
-import { CommonModule } from '@angular/common';
+
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideCoins,
   lucideGift,
+  lucideLoaderCircle,
   lucidePencil,
   lucidePlus,
   lucideReceiptText,
   lucideScrollText,
   lucideTrash2,
+  lucideWifi,
 } from '@ng-icons/lucide';
 import { firstValueFrom } from 'rxjs';
 
 import { AppHeaderComponent } from '@/ui/header/header.component';
+import { EmptyStateComponent } from '@/ui/empty-state/empty-state.component';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { ZardDatePickerComponent } from '@/ui/zard/date-picker';
-import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
+import { ResponsiveDialogService } from '@/services/responsive-dialog.service';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/ui/zard/form/form.component';
 import { ZardInputDirective } from '@/ui/zard/input';
@@ -39,7 +43,8 @@ type VoucherCatalogFilter = 'all' | VoucherStatus;
   selector: 'app-admin-vouchers-page',
   templateUrl: './vouchers.html',
   imports: [
-    CommonModule,
+
+    DatePipe,
     ReactiveFormsModule,
     AppHeaderComponent,
     ZardButtonComponent,
@@ -50,6 +55,7 @@ type VoucherCatalogFilter = 'all' | VoucherStatus;
     ZardFormLabelComponent,
     ZardFormControlComponent,
     ZardInputDirective,
+    EmptyStateComponent,
     NgIcon,
     ...ZardSelectImports,
     ...ZardTableImports,
@@ -58,18 +64,20 @@ type VoucherCatalogFilter = 'all' | VoucherStatus;
     provideIcons({
       lucideCoins,
       lucideGift,
+      lucideLoaderCircle,
       lucidePencil,
       lucidePlus,
       lucideReceiptText,
       lucideScrollText,
       lucideTrash2,
+      lucideWifi,
     }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminVouchersPage implements OnInit {
   private readonly vouchersService = inject(AdminVoucherService);
-  private readonly dialogService = inject(ZardDialogService);
+  private readonly dialogService = inject(ResponsiveDialogService);
 
   protected readonly VoucherStatus = VoucherStatus;
   protected readonly statusOptions = [

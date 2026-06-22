@@ -2,9 +2,10 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucidePencil, lucidePlus, lucideShield, lucideTrash2, lucideTruck, lucideUsers } from '@ng-icons/lucide';
+import { lucideLoaderCircle, lucidePencil, lucidePlus, lucideShield, lucideTrash2, lucideTruck, lucideUsers, lucideWifi } from '@ng-icons/lucide';
 
 import { AppHeaderComponent } from '@/ui/header/header.component';
+import { EmptyStateComponent } from '@/ui/empty-state/empty-state.component';
 import { ZardTableImports } from '@/ui/zard/table';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { ZardBadgeComponent } from '@/ui/zard/badge';
@@ -12,7 +13,7 @@ import { ZardModalComponent } from '@/ui/zard/modal/modal.component';
 import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/ui/zard/form/form.component';
 import { ZardInputDirective } from '@/ui/zard/input';
 import { ZardSelectImports } from '@/ui/zard/select/select.imports';
-import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
+import { ResponsiveDialogService } from '@/services/responsive-dialog.service';
 import { StatGridComponent } from '@/ui/stat-card/stat-grid.component';
 import type { StatCardItem } from '@/ui/stat-card/stat-card.models';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
@@ -44,23 +45,26 @@ type UserFilter = 'all' | 'admin' | 'collector' | 'customer';
     ...ZardSelectImports,
     DisplayRolePipe,
     RoleBadgeTypePipe,
+    EmptyStateComponent,
     NgIcon,
   ],
   viewProviders: [
     provideIcons({
+      lucideLoaderCircle,
       lucidePencil,
       lucidePlus,
       lucideShield,
       lucideTrash2,
       lucideTruck,
       lucideUsers,
+      lucideWifi,
     }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminUsersPage implements OnInit {
   private readonly userService = inject(UserService);
-  private readonly dialogService = inject(ZardDialogService);
+  private readonly dialogService = inject(ResponsiveDialogService);
 
   protected readonly users = signal<User[]>([]);
   protected readonly isLoading = signal(true);

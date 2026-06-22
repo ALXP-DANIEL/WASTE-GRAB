@@ -1,27 +1,39 @@
-<section class="grid min-w-0 gap-4 p-4 lg:p-8">
+<section class="grid gap-5 p-4 md:p-6 lg:p-8">
   <app-header mode="route">
-    <button z-button type="button" rightSide class="gap-2" (click)="openAdd()">
+    <button type="button" rightSide class="inline-flex h-9 items-center gap-1.5 rounded-full btn-brand px-4 text-sm font-semibold shadow-sm transition-all" (click)="openAdd()">
       <ng-icon name="lucidePlus" class="size-4!" />
       New Slide
     </button>
   </app-header>
 
   <div class="grid gap-3 sm:grid-cols-3">
-    <article class="rounded-2xl border border-border bg-card p-4 shadow-sm">
+    <article class="rounded-3xl border border-border bg-card p-4 shadow-sm">
       <p class="text-sm text-muted-foreground">Slides</p>
       <p class="mt-2 text-3xl font-semibold">{{ slides().length }}</p>
     </article>
-    <article class="rounded-2xl border border-border bg-card p-4 shadow-sm">
+    <article class="rounded-3xl border border-border bg-card p-4 shadow-sm">
       <p class="text-sm text-muted-foreground">Active</p>
       <p class="mt-2 text-3xl font-semibold text-primary">{{ activeCount() }}</p>
     </article>
-    <article class="rounded-2xl border border-border bg-card p-4 shadow-sm">
+    <article class="rounded-3xl border border-border bg-card p-4 shadow-sm">
       <p class="text-sm text-muted-foreground">Login Slider</p>
       <p class="mt-2 text-sm font-medium">Uses active slides by sort order</p>
     </article>
   </div>
 
-  <section class="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6">
+  @if (isLoading()) {
+  <div class="flex items-center justify-center py-16">
+    <ng-icon name="lucideLoaderCircle" class="size-6! animate-spin text-muted-foreground" />
+  </div>
+  } @else if (loadError()) {
+  <app-empty-state
+    icon="lucideWifi"
+    [title]="loadError()"
+    description="Pull down to retry or check your connection."
+  />
+  } @else {
+  <section class="overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
+    <div class="border-b border-border px-5 py-4">
     <app-table-header
       title="Auth Slider"
       description="Manage the real image slides shown on the login and registration screen."
@@ -29,6 +41,7 @@
       [activeFilter]="activeFilter()"
       (filterChange)="setFilter($event)"
     />
+    </div>
 
       <div class="grid gap-3 lg:hidden">
         @for (slide of filteredSlides(); track slide.id) {
@@ -138,6 +151,7 @@
         </table>
       </div>
   </section>
+  }
 </section>
 
 @if (modalMode() === 'add' || modalMode() === 'edit') {

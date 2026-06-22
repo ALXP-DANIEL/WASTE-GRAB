@@ -1,10 +1,9 @@
-<section class="grid min-w-0 gap-4 p-4 lg:p-8">
+<section class="grid gap-5 p-4 md:p-6 lg:p-8">
   <app-header mode="route">
     <button
-      z-button
       type="button"
       rightSide
-      class="gap-2"
+      class="inline-flex h-9 items-center gap-1.5 rounded-full btn-brand px-4 text-sm font-semibold shadow-sm transition-all"
       (click)="openAddUser()"
     >
       <ng-icon name="lucidePlus" class="size-4!" />
@@ -14,9 +13,21 @@
 
   <app-stat-grid [stats]="stats()" gridClass="grid grid-cols-2 gap-3 sm:grid-cols-3" />
 
+  @if (isLoading()) {
+  <div class="flex items-center justify-center py-16">
+    <ng-icon name="lucideLoaderCircle" class="size-6! animate-spin text-muted-foreground" />
+  </div>
+  } @else if (loadError()) {
+  <app-empty-state
+    icon="lucideWifi"
+    [title]="loadError()"
+    description="Pull down to retry or check your connection."
+  />
+  } @else {
   <section
-    class="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6"
+    class="overflow-hidden rounded-3xl border border-border bg-card shadow-sm"
   >
+    <div class="border-b border-border px-5 py-4">
     <app-table-header
       title="User Management"
       description="Manage user accounts, roles, and permissions."
@@ -24,6 +35,7 @@
       [activeFilter]="activeFilter()"
       (filterChange)="setFilter($event)"
     />
+    </div>
 
       <!-- Users Table -->
       <div class="grid gap-3 lg:hidden">
@@ -195,6 +207,7 @@
         </table>
       </div>
   </section>
+  }
 </section>
 
 <!-- User Modal -->

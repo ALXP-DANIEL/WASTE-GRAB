@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -14,6 +14,7 @@ import {
   lucidePackageCheck,
   lucideScale,
   lucideTruck,
+  lucideWifi,
   lucideXCircle,
 } from '@ng-icons/lucide';
 import { ImageType, PickupStatus, type CollectionLocation, type CollectorPickupRequest } from '@wastegrab/shared';
@@ -27,8 +28,9 @@ import { RouteMapComponent, type RouteMapStop } from '@/ui/route-map/route-map.c
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { StatGridComponent } from '@/ui/stat-card/stat-grid.component';
 import type { StatCardItem } from '@/ui/stat-card/stat-card.models';
-import { ZardButtonComponent } from '@/ui/zard/button/button.component';
+import { EmptyStateComponent } from '@/ui/empty-state/empty-state.component';
 import { ZardTableImports } from '@/ui/zard/table';
+import { CollectorLocationBarComponent } from '../_components/collector-location-bar.component';
 
 type PickupFilter = 'all' | 'available' | 'assigned' | 'completed' | 'cancelled';
 type LocationStatus = 'idle' | 'requesting' | 'granted' | 'denied' | 'unsupported';
@@ -50,7 +52,7 @@ const ROUTE_FIT_THRESHOLD_KM = 15;
 @Component({
   selector: 'app-collector-pickups-page',
   templateUrl: './pickups.html',
-  imports: [CommonModule, RouterLink, AppHeaderComponent, ZardButtonComponent, TableHeaderComponent, StatGridComponent, NgIcon, RouteMapComponent, ...ZardTableImports],
+  imports: [DecimalPipe, RouterLink, AppHeaderComponent, EmptyStateComponent, CollectorLocationBarComponent, TableHeaderComponent, StatGridComponent, NgIcon, RouteMapComponent, ...ZardTableImports],
   viewProviders: [
     provideIcons({
       lucideArrowUpRight,
@@ -64,6 +66,7 @@ const ROUTE_FIT_THRESHOLD_KM = 15;
       lucidePackageCheck,
       lucideScale,
       lucideTruck,
+      lucideWifi,
       lucideXCircle,
     }),
   ],

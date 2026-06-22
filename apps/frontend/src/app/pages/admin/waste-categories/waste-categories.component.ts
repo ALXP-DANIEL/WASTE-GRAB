@@ -1,16 +1,17 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideBrain, lucideCircleSlash, lucideImage, lucidePencil, lucidePlus, lucideSparkles, lucideTrash2 } from '@ng-icons/lucide';
+import { lucideBrain, lucideCircleSlash, lucideImage, lucideLoaderCircle, lucidePencil, lucidePlus, lucideSparkles, lucideTrash2, lucideWifi } from '@ng-icons/lucide';
 
 import { AppHeaderComponent } from '@/ui/header/header.component';
+import { EmptyStateComponent } from '@/ui/empty-state/empty-state.component';
 import { ZardTableImports } from '@/ui/zard/table';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { ZardCheckboxComponent } from '@/ui/zard/checkbox';
 import { ZardModalComponent } from '@/ui/zard/modal/modal.component';
 import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/ui/zard/form/form.component';
 import { ZardInputDirective } from '@/ui/zard/input';
-import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
+import { ResponsiveDialogService } from '@/services/responsive-dialog.service';
 import { StatGridComponent } from '@/ui/stat-card/stat-grid.component';
 import type { StatCardItem } from '@/ui/stat-card/stat-card.models';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
@@ -36,6 +37,7 @@ type WasteCategoryFilter = 'all' | 'active' | 'hazardous' | 'banned';
     ZardFormLabelComponent,
     ZardFormControlComponent,
     ZardInputDirective,
+    EmptyStateComponent,
     NgIcon,
   ],
   viewProviders: [
@@ -43,17 +45,19 @@ type WasteCategoryFilter = 'all' | 'active' | 'hazardous' | 'banned';
       lucideBrain,
       lucideCircleSlash,
       lucideImage,
+      lucideLoaderCircle,
       lucidePencil,
       lucidePlus,
       lucideSparkles,
       lucideTrash2,
+      lucideWifi,
     }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminWasteCategoriesPage implements OnInit {
   private readonly wasteCategoryService = inject(WasteCategoryService);
-  private readonly dialogService = inject(ZardDialogService);
+  private readonly dialogService = inject(ResponsiveDialogService);
 
   protected readonly categories = signal<WasteCategory[]>([]);
   protected readonly isLoading = signal(true);

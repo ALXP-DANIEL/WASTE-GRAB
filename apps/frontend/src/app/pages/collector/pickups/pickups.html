@@ -1,104 +1,112 @@
-<section class="grid min-w-0 gap-4 p-4 lg:p-8">
+<section class="grid gap-5 p-4 md:p-6 lg:p-8">
   <app-header mode="route" />
 
   <app-stat-grid [stats]="stats()" gridClass="grid grid-cols-2 gap-3 xl:grid-cols-4" />
 
-  <section class="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6">
-    <app-table-header
-      [title]="tableTitle()"
-      [description]="tableDescription()"
-      [filters]="filters()"
-      [activeFilter]="activeFilter()"
-      (filterChange)="setFilter($event)"
-    />
+  @if (isLoading()) {
+  <div class="flex items-center justify-center py-16">
+    <ng-icon name="lucideLoaderCircle" class="size-6! animate-spin text-muted-foreground" />
+  </div>
+  } @else if (loadError()) {
+  <app-empty-state
+    icon="lucideWifi"
+    [title]="loadError()"
+    description="Pull down to retry or check your connection."
+  />
+  } @else {
 
-    <div class="mb-4 flex flex-col gap-3 rounded-2xl border border-border/60 bg-background p-3 sm:flex-row sm:items-center sm:justify-between sm:rounded-full sm:px-4">
-      <span class="inline-flex items-center gap-2 text-sm text-muted-foreground">
-        <span class="grid size-7 shrink-0 place-items-center rounded-full bg-accent text-accent-foreground">
-          <ng-icon name="lucideNavigation" class="size-3.5!" />
-        </span>
-        {{ locationStatusLabel() }}
-      </span>
-      <button z-button zType="outline" type="button" class="gap-2" (click)="requestLocationAndRefresh()">
-        <ng-icon name="lucideNavigation" class="size-4!" />
-        Update my location
-      </button>
+  <section class="overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
+    <div class="border-b border-border px-5 py-4">
+      <app-table-header
+        [title]="tableTitle()"
+        [description]="tableDescription()"
+        [filters]="filters()"
+        [activeFilter]="activeFilter()"
+        (filterChange)="setFilter($event)"
+      />
     </div>
 
-    @if (pickupScope === 'my') {
-    <section class="card-lift mb-4 overflow-hidden rounded-2xl border border-border/60 bg-background">
-      <div class="grid gap-0 xl:grid-cols-[minmax(0,1fr)_22rem]">
-        <div class="min-h-80 bg-muted">
-          @if (collectorLocation() && (routeMapStops().length > 0 || collectionPointMarkers().length > 0)) {
-          <app-route-map
-            class="block h-80"
-            [origin]="collectorLocation()"
-            [stops]="routeMapStops()"
-            [collectionPoints]="collectionPointMarkers()"
-          />
-          } @else if (isRouteMapLoading()) {
-          <div class="grid h-80 place-items-center p-6 text-center">
-            <div>
-              <ng-icon name="lucideLoaderCircle" class="mx-auto size-8! animate-spin text-muted-foreground" />
-              <p class="mt-3 font-semibold">Loading route map</p>
-              <p class="mt-1 max-w-md text-sm text-muted-foreground">
-                Checking your location and active assigned stops.
-              </p>
+    <div class="p-5">
+      <app-collector-location-bar
+        class="mb-4 block"
+        [statusLabel]="locationStatusLabel()"
+        (refresh)="requestLocationAndRefresh()"
+      />
+
+      @if (pickupScope === 'my') {
+      <section class="card-lift mb-4 overflow-hidden rounded-2xl border border-border/60 bg-background">
+        <div class="grid gap-0 xl:grid-cols-[minmax(0,1fr)_22rem]">
+          <div class="min-h-80 bg-muted">
+            @if (collectorLocation() && (routeMapStops().length > 0 || collectionPointMarkers().length > 0)) {
+            <app-route-map
+              class="block h-80"
+              [origin]="collectorLocation()"
+              [stops]="routeMapStops()"
+              [collectionPoints]="collectionPointMarkers()"
+            />
+            } @else if (isRouteMapLoading()) {
+            <div class="grid h-80 place-items-center p-6 text-center">
+              <div>
+                <ng-icon name="lucideLoaderCircle" class="mx-auto size-8! animate-spin text-muted-foreground" />
+                <p class="mt-3 font-semibold">Loading route map</p>
+                <p class="mt-1 max-w-md text-sm text-muted-foreground">
+                  Checking your location and active assigned stops.
+                </p>
+              </div>
             </div>
-          </div>
-          } @else {
-          <div class="grid h-80 place-items-center p-6 text-center">
-            <div>
-              <ng-icon name="lucideNavigation" class="mx-auto size-8! text-muted-foreground" />
-              <p class="mt-3 font-semibold">Route map unavailable</p>
-              <p class="mt-1 max-w-md text-sm text-muted-foreground">
-                Use your location and keep active assigned pickups with saved coordinates to show the stop route.
-              </p>
+            } @else {
+            <div class="grid h-80 place-items-center p-6 text-center">
+              <div>
+                <ng-icon name="lucideNavigation" class="mx-auto size-8! text-muted-foreground" />
+                <p class="mt-3 font-semibold">Route map unavailable</p>
+                <p class="mt-1 max-w-md text-sm text-muted-foreground">
+                  Use your location and keep active assigned pickups with saved coordinates to show the stop route.
+                </p>
+              </div>
             </div>
+            }
           </div>
-          }
+
+          <aside class="border-t border-border p-4 xl:border-l xl:border-t-0">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <h2 class="font-semibold">Assigned Route</h2>
+                <p class="text-sm text-muted-foreground">{{ routeStops().length }} active stop{{ routeStops().length === 1 ? '' : 's' }}</p>
+              </div>
+              @if (routeStopDirectionsUrl(); as directionsUrl) {
+              <a
+                [href]="directionsUrl"
+                target="_blank"
+                rel="noreferrer"
+                class="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-full btn-brand px-3 text-sm font-semibold shadow-sm transition-colors"
+              >
+                <ng-icon name="lucideNavigation" class="size-4!" />
+                Open
+              </a>
+              }
+            </div>
+
+            <div class="mt-4 grid max-h-64 gap-2 overflow-y-auto pr-1">
+              @for (pickup of routeStops(); track pickup.id; let index = $index) {
+              <a [routerLink]="[pickup.id]" class="flex gap-3 rounded-xl border border-border bg-card p-3 transition-colors hover:bg-muted/40">
+                <span class="grid size-7 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                  {{ routeStopLabel(index) }}
+                </span>
+                <span class="min-w-0">
+                  <span class="block truncate text-sm font-semibold">#{{ shortId(pickup.id) }} · {{ distanceLabel(pickup) }}</span>
+                  <span class="block truncate text-xs text-muted-foreground">{{ pickup.addressText }}</span>
+                </span>
+              </a>
+              } @empty {
+              <div class="rounded-lg border border-dashed border-border bg-card/50 p-4 text-sm text-muted-foreground">
+                Accepted pickups appear here while they are still active.
+              </div>
+              }
+            </div>
+          </aside>
         </div>
-
-        <aside class="border-t border-border p-4 xl:border-l xl:border-t-0">
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <h2 class="font-semibold">Assigned Route</h2>
-              <p class="text-sm text-muted-foreground">{{ routeStops().length }} active stop{{ routeStops().length === 1 ? '' : 's' }}</p>
-            </div>
-            @if (routeStopDirectionsUrl(); as directionsUrl) {
-            <a
-              [href]="directionsUrl"
-              target="_blank"
-              rel="noreferrer"
-              class="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-3 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
-            >
-              <ng-icon name="lucideNavigation" class="size-4!" />
-              Open
-            </a>
-            }
-          </div>
-
-          <div class="mt-4 grid max-h-64 gap-2 overflow-y-auto pr-1">
-            @for (pickup of routeStops(); track pickup.id; let index = $index) {
-            <a [routerLink]="[pickup.id]" class="flex gap-3 rounded-xl border border-border bg-card p-3 transition-colors hover:bg-muted/40">
-              <span class="grid size-7 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-                {{ routeStopLabel(index) }}
-              </span>
-              <span class="min-w-0">
-                <span class="block truncate text-sm font-semibold">#{{ shortId(pickup.id) }} · {{ distanceLabel(pickup) }}</span>
-                <span class="block truncate text-xs text-muted-foreground">{{ pickup.addressText }}</span>
-              </span>
-            </a>
-            } @empty {
-            <div class="rounded-lg border border-dashed border-border bg-card/50 p-4 text-sm text-muted-foreground">
-              Accepted pickups appear here while they are still active.
-            </div>
-            }
-          </div>
-        </aside>
-      </div>
-    </section>
-    }
+      </section>
+      }
 
       <div class="grid gap-3 lg:hidden">
         @for (pickup of filteredPickups(); track pickup.id) {
@@ -243,11 +251,12 @@
           </tbody>
         </table>
       </div>
+    </div>
   </section>
 
   @if (pickupScope === 'my') {
-  <section class="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6">
-    <div class="mb-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+  <section class="overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
+    <div class="flex flex-col gap-1 border-b border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h2 class="text-lg font-semibold">Completed Pickups</h2>
         <p class="text-sm text-muted-foreground">
@@ -260,6 +269,7 @@
       </span>
     </div>
 
+    <div class="p-5">
       <div class="grid gap-3 lg:hidden">
         @for (pickup of completedPickups(); track pickup.id) {
         <a [routerLink]="[pickup.id]" class="block rounded-2xl border border-border/60 p-3 transition-all hover:-translate-y-px hover:bg-muted/40">
@@ -342,6 +352,9 @@
           </tbody>
         </table>
       </div>
+    </div>
   </section>
+  }
+
   }
 </section>

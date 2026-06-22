@@ -1,6 +1,6 @@
-<section class="grid min-w-0 gap-4 p-4 lg:p-8">
+<section class="grid gap-5 p-4 md:p-6 lg:p-8">
   <app-header mode="route">
-    <button z-button type="button" rightSide class="gap-2" (click)="openAdd()">
+    <button type="button" rightSide class="inline-flex h-9 items-center gap-1.5 rounded-full btn-brand px-4 text-sm font-semibold shadow-sm transition-all" (click)="openAdd()">
       <ng-icon name="lucidePlus" class="size-4!" />
       New Voucher
     </button>
@@ -77,10 +77,22 @@
     </button>
   </div>
 
+  @if (isLoading()) {
+  <div class="flex items-center justify-center py-16">
+    <ng-icon name="lucideLoaderCircle" class="size-6! animate-spin text-muted-foreground" />
+  </div>
+  } @else if (loadError()) {
+  <app-empty-state
+    icon="lucideWifi"
+    [title]="loadError()"
+    description="Pull down to retry or check your connection."
+  />
+  } @else {
   @if (activeTab() === 'catalog') {
   <section
-    class="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6"
+    class="overflow-hidden rounded-3xl border border-border bg-card shadow-sm"
   >
+    <div class="border-b border-border px-5 py-4">
     <app-table-header
       title="Voucher Catalog"
       description="Create and manage rewards customers can redeem with points."
@@ -88,6 +100,7 @@
       [activeFilter]="activeCatalogFilter()"
       (filterChange)="setCatalogFilter($event)"
     />
+    </div>
 
       <div class="grid gap-3 lg:hidden">
         @for (voucher of filteredVouchers(); track voucher.id) {
@@ -280,8 +293,9 @@
   </section>
   } @if (activeTab() === 'redemptions') {
   <section
-    class="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6"
+    class="overflow-hidden rounded-3xl border border-border bg-card shadow-sm"
   >
+    <div class="border-b border-border px-5 py-4">
     <app-table-header
       title="Redemption Logs"
       description="Latest voucher redemption activity across customers."
@@ -289,6 +303,7 @@
       [activeFilter]="activeRedemptionFilter()"
       (filterChange)="setRedemptionFilter($event)"
     />
+    </div>
 
       <div class="max-w-full overflow-x-auto rounded-2xl border border-border">
         <table z-table class="min-w-5xl bg-card">
@@ -346,8 +361,9 @@
   </section>
   } @if (activeTab() === 'ledger') {
   <section
-    class="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6"
+    class="overflow-hidden rounded-3xl border border-border bg-card shadow-sm"
   >
+    <div class="border-b border-border px-5 py-4">
     <app-table-header
       title="Point Ledger"
       description="Audit trail for earned, spent, adjusted, expired, and reversed points."
@@ -355,6 +371,7 @@
       [activeFilter]="activeLedgerFilter()"
       (filterChange)="setLedgerFilter($event)"
     />
+    </div>
 
       <div class="max-w-full overflow-x-auto rounded-2xl border border-border">
         <table z-table class="min-w-304 bg-card">
@@ -427,6 +444,7 @@
         </table>
       </div>
   </section>
+  }
   } @if (modalMode() === 'add' || modalMode() === 'edit') {
   <z-modal
     [isOpen]="true"

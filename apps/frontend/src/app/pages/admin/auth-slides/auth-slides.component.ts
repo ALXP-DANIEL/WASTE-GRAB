@@ -1,18 +1,19 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideImage, lucidePencil, lucidePlus, lucideTrash2 } from '@ng-icons/lucide';
+import { lucideImage, lucideLoaderCircle, lucidePencil, lucidePlus, lucideTrash2, lucideWifi } from '@ng-icons/lucide';
 import { firstValueFrom } from 'rxjs';
 import type { AuthSlide } from '@wastegrab/shared';
 
 import { AdminAuthSlideService } from '@/services/admin-auth-slide.service';
 import { AppHeaderComponent } from '@/ui/header/header.component';
+import { EmptyStateComponent } from '@/ui/empty-state/empty-state.component';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { ZardBadgeComponent } from '@/ui/zard/badge';
 import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { ZardCheckboxComponent } from '@/ui/zard/checkbox';
-import { ZardDialogService } from '@/ui/zard/dialog/dialog.service';
+import { ResponsiveDialogService } from '@/services/responsive-dialog.service';
 import { ZardFormControlComponent, ZardFormFieldComponent, ZardFormLabelComponent } from '@/ui/zard/form/form.component';
 import { ZardInputDirective } from '@/ui/zard/input';
 import { ZardModalComponent } from '@/ui/zard/modal/modal.component';
@@ -26,7 +27,7 @@ type AuthSlideFilter = 'all' | 'active' | 'inactive';
   templateUrl: './auth-slides.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
+
     ReactiveFormsModule,
     AppHeaderComponent,
     TableHeaderComponent,
@@ -38,21 +39,24 @@ type AuthSlideFilter = 'all' | 'active' | 'inactive';
     ZardFormLabelComponent,
     ZardFormControlComponent,
     ZardInputDirective,
+    EmptyStateComponent,
     NgIcon,
     ...ZardTableImports,
   ],
   viewProviders: [
     provideIcons({
       lucideImage,
+      lucideLoaderCircle,
       lucidePencil,
       lucidePlus,
       lucideTrash2,
+      lucideWifi,
     }),
   ],
 })
 export class AdminAuthSlidesPage implements OnInit {
   private readonly slidesService = inject(AdminAuthSlideService);
-  private readonly dialogService = inject(ZardDialogService);
+  private readonly dialogService = inject(ResponsiveDialogService);
 
   protected readonly slides = signal<AuthSlide[]>([]);
   protected readonly isLoading = signal(true);

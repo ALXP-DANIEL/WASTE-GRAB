@@ -8,7 +8,6 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { StatGridComponent } from '@/ui/stat-card/stat-grid.component';
 import type { StatCardItem } from '@/ui/stat-card/stat-card.models';
@@ -36,7 +35,6 @@ import type { LeaderboardEntry } from '@wastegrab/shared';
     AppHeaderComponent,
     EmptyStateComponent,
     NgIcon,
-    RouterLink,
     TableHeaderComponent,
     StatGridComponent,
   ],

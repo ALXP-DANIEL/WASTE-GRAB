@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -19,6 +19,7 @@ import {
   lucideSparkles,
   lucideTruck,
   lucideUser,
+  lucideWifi,
   lucideXCircle,
 } from '@ng-icons/lucide';
 import { AdminPickupService } from '@/services/admin-pickup.service';
@@ -27,6 +28,7 @@ import { CollectorPickupService, type CollectorLocation, type CollectorPickupSco
 import { AuthService } from '@/services/auth.service';
 import { PickupRequestService } from '@/services/pickup-request.service';
 import { AppHeaderComponent } from '@/ui/header/header.component';
+import { EmptyStateComponent } from '@/ui/empty-state/empty-state.component';
 import { StatGridComponent } from '@/ui/stat-card/stat-grid.component';
 import type { StatCardItem } from '@/ui/stat-card/stat-card.models';
 import { RouteMapComponent, type RouteMapPoint, type RouteMapStop } from '@/ui/route-map/route-map.component';
@@ -91,7 +93,7 @@ const PICKUP_STATUS_FLOW = [
 
 @Component({
   selector: 'app-accept-pickup-dialog',
-  imports: [CommonModule, NgIcon, RouteMapComponent],
+  imports: [NgIcon, RouteMapComponent],
   template: `
     <div class="grid gap-4">
       <div class="overflow-hidden rounded-lg border border-border">
@@ -206,7 +208,7 @@ export class AcceptPickupDialogComponent {
 
 @Component({
   selector: 'app-dropoff-location-dialog',
-  imports: [CommonModule, NgIcon, RouterLink, RouteMapComponent],
+  imports: [DecimalPipe, NgIcon, RouterLink, RouteMapComponent],
   template: `
     <div class="grid gap-4">
       @if (selectedLocation(); as selected) {
@@ -314,7 +316,7 @@ export class DropoffLocationDialogComponent {
 @Component({
   selector: 'app-pickup-detail-page',
   templateUrl: './pickup-detail.html',
-  imports: [CommonModule, FormsModule, AppHeaderComponent, RouterLink, NgIcon, RouteMapComponent, StatGridComponent],
+  imports: [DecimalPipe, FormsModule, AppHeaderComponent, EmptyStateComponent, RouterLink, NgIcon, RouteMapComponent, StatGridComponent],
   viewProviders: [
     provideIcons({
       lucideArrowLeft,
@@ -331,6 +333,7 @@ export class DropoffLocationDialogComponent {
       lucideSparkles,
       lucideTruck,
       lucideUser,
+      lucideWifi,
       lucideXCircle,
     }),
   ],

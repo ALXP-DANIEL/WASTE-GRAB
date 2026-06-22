@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -21,17 +21,19 @@ import { AdminPickupService } from '@/services/admin-pickup.service';
 import { ImageType, PickupStatus, type AdminPickupRequest } from '@wastegrab/shared';
 
 import { AppHeaderComponent } from '@/ui/header/header.component';
+import { EmptyStateComponent } from '@/ui/empty-state/empty-state.component';
 import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
 import { StatGridComponent } from '@/ui/stat-card/stat-grid.component';
 import type { StatCardItem } from '@/ui/stat-card/stat-card.models';
 import { ZardTableImports } from '@/ui/zard/table';
+import { DecimalPipe } from '@angular/common';
 
 type PickupFilter = 'all' | 'active' | 'completed' | 'cancelled';
 
 @Component({
   selector: 'app-admin-pickups-page',
   templateUrl: './pickups.html',
-  imports: [CommonModule, RouterLink, AppHeaderComponent, TableHeaderComponent, StatGridComponent, NgIcon, ...ZardTableImports],
+  imports: [RouterLink, AppHeaderComponent, EmptyStateComponent, TableHeaderComponent, DecimalPipe, StatGridComponent, NgIcon, ...ZardTableImports],
   viewProviders: [
     provideIcons({
       lucideArrowUpRight,

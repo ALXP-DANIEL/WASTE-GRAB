@@ -29,6 +29,7 @@ export class ResponsiveDialogService {
     if (this.isMobile() && !isComponentContent) {
       return this.sheet.create<T, U>({
         ...options,
+        zContent: (options.zContent ?? '') as typeof options.zContent,
         zWidth: undefined,
         zSide: 'bottom',
         zCustomClasses: [
