@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom, interval } from 'rxjs';
@@ -27,7 +34,11 @@ import type { StatCardItem } from '@/ui/stat-card/stat-card.models';
 import { CustomerPickupListItemComponent } from '../_components/customer-pickup-list-item.component';
 import { PickupRequestService } from '@/services/pickup-request.service';
 import { NotificationService } from '@/services/notification.service';
-import { ImageType, PickupStatus, type PickupRequestWithDetails } from '@wastegrab/shared';
+import {
+  ImageType,
+  PickupStatus,
+  type PickupRequestWithDetails,
+} from '@wastegrab/shared';
 import type { CustomerPickupSummary } from '../_components/customer-dashboard.models';
 
 type RequestFilter = 'all' | 'active' | 'completed' | 'cancelled';
@@ -36,7 +47,16 @@ type RequestFilter = 'all' | 'active' | 'completed' | 'cancelled';
   selector: 'app-customer-pickups-page',
   templateUrl: './pickups.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink, AppHeaderComponent, FetchStateComponent, StatGridComponent, TableHeaderComponent, NgIcon, CustomerPickupListItemComponent],
+  imports: [
+    CommonModule,
+    RouterLink,
+    AppHeaderComponent,
+    FetchStateComponent,
+    StatGridComponent,
+    TableHeaderComponent,
+    NgIcon,
+    CustomerPickupListItemComponent,
+  ],
   viewProviders: [
     provideIcons({
       lucideAlertCircle,
@@ -64,24 +84,34 @@ export class CustomerPickupsPage {
   protected readonly activeFilter = signal<RequestFilter>('all');
 
   protected readonly filters = [
-    { value: 'all' as const,       label: 'All'       },
-    { value: 'active' as const,    label: 'Active'    },
+    { value: 'all' as const, label: 'All' },
+    { value: 'active' as const, label: 'Active' },
     { value: 'completed' as const, label: 'Completed' },
     { value: 'cancelled' as const, label: 'Cancelled' },
   ];
 
   protected readonly progressSteps = [
-    { status: PickupStatus.PENDING,   label: 'Pending',   icon: 'lucideClock3'       },
-    { status: PickupStatus.ACCEPTED,  label: 'Accepted',  icon: 'lucideTruck'        },
-    { status: PickupStatus.ARRIVED,   label: 'Arrived',   icon: 'lucideMapPin'       },
-    { status: PickupStatus.VERIFIED,  label: 'Verified',  icon: 'lucideCheckCircle2' },
-    { status: PickupStatus.COMPLETED, label: 'Completed', icon: 'lucidePackageCheck' },
+    { status: PickupStatus.PENDING, label: 'Pending', icon: 'lucideClock3' },
+    { status: PickupStatus.ACCEPTED, label: 'Accepted', icon: 'lucideTruck' },
+    { status: PickupStatus.ARRIVED, label: 'Arrived', icon: 'lucideMapPin' },
+    {
+      status: PickupStatus.VERIFIED,
+      label: 'Verified',
+      icon: 'lucideCheckCircle2',
+    },
+    {
+      status: PickupStatus.COMPLETED,
+      label: 'Completed',
+      icon: 'lucidePackageCheck',
+    },
   ];
 
   protected readonly activeRequests = computed(() =>
     this.requests().filter((r) => this.isActive(r.status)),
   );
-  protected readonly latestActiveRequest = computed(() => this.activeRequests()[0] ?? null);
+  protected readonly latestActiveRequest = computed(
+    () => this.activeRequests()[0] ?? null,
+  );
 
   protected readonly totalWeight = computed(() =>
     this.requests().reduce((t, r) => t + this.weight(r), 0),
@@ -91,10 +121,31 @@ export class CustomerPickupsPage {
   );
 
   protected readonly pageStats = computed<StatCardItem[]>(() => [
-    { icon: 'lucidePackage',   label: 'Total Requests',     value: this.requests().length,                            tone: 'brand' },
-    { icon: 'lucideTruck',     label: 'Active',             value: this.activeRequests().length,                      tone: 'brand' },
-    { icon: 'lucideScale',     label: 'Contributed Weight', value: this.totalWeight().toFixed(1), unit: 'kg',         tone: 'brand' },
-    { icon: 'lucideCoins',     label: 'Total Points',       value: this.totalPoints(),                                tone: 'brand' },
+    {
+      icon: 'lucidePackage',
+      label: 'Total Requests',
+      value: this.requests().length,
+      tone: 'brand',
+    },
+    {
+      icon: 'lucideTruck',
+      label: 'Active',
+      value: this.activeRequests().length,
+      tone: 'brand',
+    },
+    {
+      icon: 'lucideScale',
+      label: 'Contributed',
+      value: this.totalWeight().toFixed(1),
+      unit: 'kg',
+      tone: 'brand',
+    },
+    {
+      icon: 'lucideCoins',
+      label: 'Potential Points',
+      value: this.totalPoints(),
+      tone: 'brand',
+    },
   ]);
 
   protected readonly summaries = computed(() =>
@@ -104,39 +155,69 @@ export class CustomerPickupsPage {
   protected readonly filteredSummaries = computed(() => {
     const f = this.activeFilter();
     const all = this.summaries();
-    if (f === 'all')       return all;
-    if (f === 'active')    return all.filter((s) => s.isActive);
-    if (f === 'completed') return all.filter((s) => s.status === PickupStatus.COMPLETED);
+    if (f === 'all') return all;
+    if (f === 'active') return all.filter((s) => s.isActive);
+    if (f === 'completed')
+      return all.filter((s) => s.status === PickupStatus.COMPLETED);
     return all.filter((s) => s.status === PickupStatus.CANCELLED);
   });
 
   constructor() {
     void this.load();
-    interval(30_000).pipe(takeUntilDestroyed()).subscribe(() => void this.load());
-    effect(() => { if (this.notificationService.pickupUpdate()) void this.load(); });
+    interval(30_000)
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => void this.load());
+    effect(() => {
+      if (this.notificationService.pickupUpdate()) void this.load();
+    });
   }
 
-  protected setFilter(f: string): void { this.activeFilter.set(f as RequestFilter); }
+  protected setFilter(f: string): void {
+    this.activeFilter.set(f as RequestFilter);
+  }
 
   protected isActive(status: PickupStatus): boolean {
-    return [PickupStatus.PENDING, PickupStatus.ACCEPTED, PickupStatus.ARRIVED, PickupStatus.VERIFIED].includes(status);
+    return [
+      PickupStatus.PENDING,
+      PickupStatus.ACCEPTED,
+      PickupStatus.ARRIVED,
+      PickupStatus.VERIFIED,
+    ].includes(status);
   }
 
-  protected isStepComplete(request: PickupRequestWithDetails, step: PickupStatus): boolean {
-    const order = [PickupStatus.PENDING, PickupStatus.ACCEPTED, PickupStatus.ARRIVED, PickupStatus.VERIFIED, PickupStatus.COMPLETED];
+  protected isStepComplete(
+    request: PickupRequestWithDetails,
+    step: PickupStatus,
+  ): boolean {
+    const order = [
+      PickupStatus.PENDING,
+      PickupStatus.ACCEPTED,
+      PickupStatus.ARRIVED,
+      PickupStatus.VERIFIED,
+      PickupStatus.COMPLETED,
+    ];
     return order.indexOf(request.status) > order.indexOf(step);
   }
 
-  protected isCurrentStep(request: PickupRequestWithDetails, step: PickupStatus): boolean {
+  protected isCurrentStep(
+    request: PickupRequestWithDetails,
+    step: PickupStatus,
+  ): boolean {
     return request.status === step;
   }
 
   protected categoryLabel(r: PickupRequestWithDetails): string {
-    return r.aiClassificationLabel || `${r.items.length} waste item${r.items.length === 1 ? '' : 's'}`;
+    return (
+      r.aiClassificationLabel ||
+      `${r.items.length} waste item${r.items.length === 1 ? '' : 's'}`
+    );
   }
 
   protected primaryImage(r: PickupRequestWithDetails): string | null {
-    return r.images.find((i) => i.imageType === ImageType.USER_UPLOAD)?.imageUrl ?? null;
+    return (
+      r.images.find((i) => i.imageType === ImageType.USER_UPLOAD)?.imageUrl ??
+      null
+    );
   }
 
   protected shortId(id: string): string {
@@ -147,7 +228,9 @@ export class CustomerPickupsPage {
     this.isLoading.set(true);
     this.loadError.set('');
     try {
-      const res = await firstValueFrom(this.pickupRequests.listPickupRequests());
+      const res = await firstValueFrom(
+        this.pickupRequests.listPickupRequests(),
+      );
       this.requests.set(res.pickupRequests);
     } catch {
       this.loadError.set('Unable to load pickup requests.');
@@ -157,7 +240,10 @@ export class CustomerPickupsPage {
   }
 
   private weight(r: PickupRequestWithDetails): number {
-    return r.items.reduce((t, i) => t + Number(i.actualWeight ?? i.estimatedWeight ?? 0), 0);
+    return r.items.reduce(
+      (t, i) => t + Number(i.actualWeight ?? i.estimatedWeight ?? 0),
+      0,
+    );
   }
 
   private points(r: PickupRequestWithDetails): number {
@@ -167,10 +253,20 @@ export class CustomerPickupsPage {
     }, 0);
   }
 
-  private sorted(requests: PickupRequestWithDetails[]): PickupRequestWithDetails[] {
+  private sorted(
+    requests: PickupRequestWithDetails[],
+  ): PickupRequestWithDetails[] {
     return [...requests].sort((a, b) => {
-      const aD = a.status === PickupStatus.COMPLETED || a.status === PickupStatus.CANCELLED ? 1 : 0;
-      const bD = b.status === PickupStatus.COMPLETED || b.status === PickupStatus.CANCELLED ? 1 : 0;
+      const aD =
+        a.status === PickupStatus.COMPLETED ||
+        a.status === PickupStatus.CANCELLED
+          ? 1
+          : 0;
+      const bD =
+        b.status === PickupStatus.COMPLETED ||
+        b.status === PickupStatus.CANCELLED
+          ? 1
+          : 0;
       if (aD !== bD) return aD - bD;
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
@@ -193,21 +289,64 @@ export class CustomerPickupsPage {
       pointsLabel: r.status === PickupStatus.COMPLETED ? 'pts awarded' : 'pts',
       itemCount: r.items.length,
       isActive: this.isActive(r.status),
-      createdAtLabel: new Date(r.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-      createdAtFullLabel: new Intl.DateTimeFormat('en-MY', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(r.createdAt)),
+      createdAtLabel: new Date(r.createdAt).toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric',
+      }),
+      createdAtFullLabel: new Intl.DateTimeFormat('en-MY', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(new Date(r.createdAt)),
       detailRoute: ['/customer/pickups', r.id],
       statusMessage: '',
     };
   }
 
-  private statusMeta(status: PickupStatus): { label: string; className: string; icon: string } {
+  private statusMeta(status: PickupStatus): {
+    label: string;
+    className: string;
+    icon: string;
+  } {
     switch (status) {
-      case PickupStatus.PENDING:   return { label: 'Pending',   className: 'bg-amber-500/10 text-amber-700 dark:text-amber-300',   icon: 'lucideClock3'      };
-      case PickupStatus.ACCEPTED:  return { label: 'Accepted',  className: 'bg-sky-500/10 text-sky-700 dark:text-sky-300',         icon: 'lucideTruck'       };
-      case PickupStatus.ARRIVED:   return { label: 'Arrived',   className: 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-300', icon: 'lucideMapPin'      };
-      case PickupStatus.VERIFIED:  return { label: 'Verified',  className: 'bg-primary/10 text-primary',                           icon: 'lucideCheckCircle2' };
-      case PickupStatus.COMPLETED: return { label: 'Completed', className: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300', icon: 'lucideCheckCircle2' };
-      case PickupStatus.CANCELLED: return { label: 'Cancelled', className: 'bg-rose-500/10 text-rose-700 dark:text-rose-300',      icon: 'lucideAlertCircle' };
+      case PickupStatus.PENDING:
+        return {
+          label: 'Pending',
+          className: 'bg-amber-500/10 text-amber-700 dark:text-amber-300',
+          icon: 'lucideClock3',
+        };
+      case PickupStatus.ACCEPTED:
+        return {
+          label: 'Accepted',
+          className: 'bg-sky-500/10 text-sky-700 dark:text-sky-300',
+          icon: 'lucideTruck',
+        };
+      case PickupStatus.ARRIVED:
+        return {
+          label: 'Arrived',
+          className: 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-300',
+          icon: 'lucideMapPin',
+        };
+      case PickupStatus.VERIFIED:
+        return {
+          label: 'Verified',
+          className: 'bg-primary/10 text-primary',
+          icon: 'lucideCheckCircle2',
+        };
+      case PickupStatus.COMPLETED:
+        return {
+          label: 'Completed',
+          className: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
+          icon: 'lucideCheckCircle2',
+        };
+      case PickupStatus.CANCELLED:
+        return {
+          label: 'Cancelled',
+          className: 'bg-rose-500/10 text-rose-700 dark:text-rose-300',
+          icon: 'lucideAlertCircle',
+        };
     }
   }
 }
