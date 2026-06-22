@@ -31,12 +31,15 @@ export type VoucherCardItem = {
       <!-- Left: image bg + points -->
       <div
         class="relative flex w-20 shrink-0 flex-col items-center justify-center gap-0.5 overflow-hidden rounded-l-2xl px-2 py-3 sm:w-28 sm:gap-1 sm:rounded-l-3xl sm:px-3 sm:py-6"
-        [style.background]="
-          item().imageUrl ? 'url(' + item().imageUrl + ') center/cover' : ''
-        "
         [class]="item().imageUrl ? '' : defaultLeftBg()"
       >
         @if (item().imageUrl) {
+          <img
+            [src]="item().imageUrl"
+            alt=""
+            aria-hidden="true"
+            class="absolute inset-0 size-full object-cover"
+          />
           <div
             class="absolute inset-0 rounded-l-2xl bg-linear-to-b from-black/50 to-black/70 sm:rounded-l-3xl"
           ></div>

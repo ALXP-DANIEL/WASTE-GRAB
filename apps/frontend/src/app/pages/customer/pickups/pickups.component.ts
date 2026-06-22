@@ -258,18 +258,11 @@ export class CustomerPickupsPage {
   private sorted(
     requests: PickupRequestWithDetails[],
   ): PickupRequestWithDetails[] {
+    const rank = (s: PickupStatus) =>
+      s === PickupStatus.COMPLETED ? 2 : s === PickupStatus.CANCELLED ? 1 : 0;
     return [...requests].sort((a, b) => {
-      const aD =
-        a.status === PickupStatus.COMPLETED ||
-        a.status === PickupStatus.CANCELLED
-          ? 1
-          : 0;
-      const bD =
-        b.status === PickupStatus.COMPLETED ||
-        b.status === PickupStatus.CANCELLED
-          ? 1
-          : 0;
-      if (aD !== bD) return aD - bD;
+      const diff = rank(a.status) - rank(b.status);
+      if (diff !== 0) return diff;
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
   }
@@ -288,7 +281,8 @@ export class CustomerPickupsPage {
       imageUrl: this.primaryImage(r),
       weightKg: this.weight(r),
       points: this.points(r),
-      pointsLabel: r.status === PickupStatus.COMPLETED ? 'pts awarded' : 'pts',
+      pointsLabel:
+        r.status === PickupStatus.COMPLETED ? 'pts' : 'Potential pts',
       itemCount: r.items.length,
       isActive: this.isActive(r.status),
       createdAtLabel: new Date(r.createdAt).toLocaleDateString(undefined, {

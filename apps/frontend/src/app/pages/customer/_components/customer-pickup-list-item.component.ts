@@ -96,8 +96,8 @@ import type { CustomerPickupSummary } from './customer-dashboard.models';
           }
         </span>
         <span class="min-w-0">
-          <span class="block truncate font-semibold">{{ item().title }}</span>
           <span class="block truncate font-mono text-[11px] text-muted-foreground">#{{ item().shortId }}</span>
+          <span class="block truncate font-semibold">{{ item().title }}</span>
         </span>
       </span>
 
@@ -118,7 +118,7 @@ import type { CustomerPickupSummary } from './customer-dashboard.models';
 
       <span class="flex items-center justify-end gap-1 text-sm font-semibold text-primary">
         <ng-icon name="lucideCoins" class="size-3.5!" />
-        {{ item().points }}
+        {{ item().points }} {{ item().pointsLabel }}
       </span>
     </a>
   `,

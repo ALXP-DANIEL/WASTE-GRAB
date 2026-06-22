@@ -355,7 +355,7 @@ export class CustomerPage {
       weightKg: this.requestWeight(request),
       points: this.potentialPoints(request),
       pointsLabel:
-        request.status === PickupStatus.COMPLETED ? 'pts awarded' : 'pts',
+        request.status === PickupStatus.COMPLETED ? 'pts' : 'Potential pts',
       itemCount: request.items.length,
       isActive: this.isActiveStatus(request.status),
       createdAtLabel: this.dateLabel(request.createdAt),
