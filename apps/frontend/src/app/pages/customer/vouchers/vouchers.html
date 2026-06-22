@@ -1,4 +1,4 @@
-<section class="grid w-full gap-5 p-4 md:p-6 lg:p-8">
+<section class="grid gap-5 p-4 md:p-6 lg:p-8">
   <app-header mode="route" />
 
   <app-stat-grid [stats]="stats()" gridClass="grid grid-cols-2 gap-3 sm:grid-cols-3" />
@@ -13,6 +13,17 @@
     />
 
     <div class="mt-5 border-t border-border/70 pt-5">
+      @if (isLoading()) {
+      <div class="flex items-center justify-center py-16">
+        <ng-icon name="lucideLoaderCircle" class="size-6! animate-spin text-muted-foreground" />
+      </div>
+      } @else if (loadError()) {
+      <app-empty-state
+        icon="lucideWifi"
+        [title]="loadError()"
+        description="Pull down to retry or check your connection."
+      />
+      } @else {
         <!-- Available -->
         @if (activeTab() === 'available') { @if (vouchers().length) {
         <div class="grid items-stretch gap-5 sm:grid-cols-2 xl:grid-cols-3">
@@ -76,6 +87,7 @@
           </div>
         </div>
         } }
+      }
     </div>
   </section>
 </section>

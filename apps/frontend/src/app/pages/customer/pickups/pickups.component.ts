@@ -6,7 +6,6 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom, interval } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -17,6 +16,7 @@ import {
   lucideCheckCircle2,
   lucideClock3,
   lucideCoins,
+  lucideLoaderCircle,
   lucideMapPin,
   lucidePackage,
   lucidePackageCheck,
@@ -24,7 +24,9 @@ import {
   lucideRecycle,
   lucideScale,
   lucideTruck,
+  lucideWifi,
 } from '@ng-icons/lucide';
+import { EmptyStateComponent } from '@/ui/empty-state/empty-state.component';
 
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { StatGridComponent } from '@/ui/stat-card/stat-grid.component';
@@ -47,9 +49,9 @@ type RequestFilter = 'all' | 'active' | 'completed' | 'cancelled';
   templateUrl: './pickups.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     RouterLink,
     AppHeaderComponent,
+    EmptyStateComponent,
     StatGridComponent,
     TableHeaderComponent,
     NgIcon,
@@ -62,6 +64,7 @@ type RequestFilter = 'all' | 'active' | 'completed' | 'cancelled';
       lucideCheckCircle2,
       lucideClock3,
       lucideCoins,
+      lucideLoaderCircle,
       lucideMapPin,
       lucidePackage,
       lucidePackageCheck,
@@ -69,6 +72,7 @@ type RequestFilter = 'all' | 'active' | 'completed' | 'cancelled';
       lucideRecycle,
       lucideScale,
       lucideTruck,
+      lucideWifi,
     }),
   ],
 })

@@ -6,6 +6,17 @@
 
     <app-stat-grid [stats]="dashboardStats()" />
 
+    @if (isLoadingRequests()) {
+    <div class="flex items-center justify-center py-16">
+      <ng-icon name="lucideLoaderCircle" class="size-6! animate-spin text-muted-foreground" />
+    </div>
+    } @else if (loadErrorRequests()) {
+    <app-empty-state
+      icon="lucideWifi"
+      [title]="loadErrorRequests()"
+      description="Pull down to retry or check your connection."
+    />
+    } @else {
     <section class="lg:grid lg:grid-cols-3 lg:gap-6">
       <div class="grid gap-5 lg:col-span-2">
         <app-customer-active-pickup-card
@@ -34,5 +45,6 @@
       [requests]="recentPickupSummaries()"
       [pickupsRoute]="pickupsPath"
     />
+    }
   </div>
 </section>

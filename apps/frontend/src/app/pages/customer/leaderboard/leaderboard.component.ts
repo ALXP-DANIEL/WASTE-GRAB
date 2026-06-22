@@ -1,19 +1,30 @@
 import { AppHeaderComponent } from '@/ui/header/header.component';
 import { EmptyStateComponent } from '@/ui/empty-state/empty-state.component';
 import { PickupRequestService } from '@/services/pickup-request.service';
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { TableHeaderComponent } from '@/ui/table-header/table-header.component';
+import { StatGridComponent } from '@/ui/stat-card/stat-grid.component';
+import type { StatCardItem } from '@/ui/stat-card/stat-card.models';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideAward,
   lucideChevronRight,
   lucideCrown,
+  lucideLoaderCircle,
   lucideMedal,
   lucideRecycle,
   lucideScale,
   lucideTrophy,
   lucideUser,
+  lucideUsers,
+  lucideWifi,
 } from '@ng-icons/lucide';
 import { firstValueFrom } from 'rxjs';
 import type { LeaderboardEntry } from '@wastegrab/shared';
@@ -21,18 +32,28 @@ import type { LeaderboardEntry } from '@wastegrab/shared';
 @Component({
   selector: 'app-customer-leaderboard-page',
   templateUrl: './leaderboard.html',
-  imports: [CommonModule, AppHeaderComponent, EmptyStateComponent, NgIcon, RouterLink],
+  imports: [
+    AppHeaderComponent,
+    EmptyStateComponent,
+    NgIcon,
+    RouterLink,
+    TableHeaderComponent,
+    StatGridComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   viewProviders: [
     provideIcons({
       lucideAward,
       lucideChevronRight,
       lucideCrown,
+      lucideLoaderCircle,
       lucideMedal,
       lucideRecycle,
       lucideScale,
       lucideTrophy,
       lucideUser,
+      lucideUsers,
+      lucideWifi,
     }),
   ],
 })
@@ -45,26 +66,51 @@ export class CustomerLeaderboardPage {
   protected readonly loadError = signal('');
 
   protected readonly topThree = computed(() => this.leaderboard().slice(0, 3));
-  protected readonly remainingEntries = computed(() => this.leaderboard().slice(3));
-  protected readonly currentUserIsVisible = computed(() => (
-    this.currentUserRank() ? this.leaderboard().some((entry) => entry.userId === this.currentUserRank()?.userId) : true
-  ));
-  protected readonly totalVisibleWeight = computed(() => (
-    this.leaderboard().reduce((total, entry) => total + Number(entry.totalWeightKg), 0)
-  ));
+  protected readonly remainingEntries = computed(() =>
+    this.leaderboard().slice(3),
+  );
+  protected readonly currentUserIsVisible = computed(() =>
+    this.currentUserRank()
+      ? this.leaderboard().some(
+          (entry) => entry.userId === this.currentUserRank()?.userId,
+        )
+      : true,
+  );
+  protected readonly totalVisibleWeight = computed(() =>
+    this.leaderboard().reduce(
+      (total, entry) => total + Number(entry.totalWeightKg),
+      0,
+    ),
+  );
+
+  protected readonly stats = computed<StatCardItem[]>(() => [
+    { icon: 'lucideUsers', label: 'Participants', value: this.leaderboard().length },
+    { icon: 'lucideScale', label: 'Community Weight', value: this.totalVisibleWeight().toFixed(1), unit: 'kg' },
+    { icon: 'lucideAward', label: 'Your Rank', value: this.currentUserRank()?.rank != null ? `#${this.currentUserRank()?.rank}` : '—', spanClass: 'col-span-2 sm:col-span-1' },
+  ]);
 
   constructor() {
     void this.loadLeaderboard();
   }
 
   protected initials(name: string): string {
-    return name
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part.charAt(0).toUpperCase())
-      .join('') || 'U';
+    return (
+      name
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part.charAt(0).toUpperCase())
+        .join('') || 'U'
+    );
+  }
+
+  protected rankBadgeClass(rank: number): string {
+    switch (rank) {
+      case 1: return 'bg-yellow-400 text-yellow-900';
+      case 2: return 'bg-slate-300 text-slate-700';
+      default: return 'bg-orange-500 text-white';
+    }
   }
 
   protected rankClass(rank: number): string {
@@ -95,36 +141,27 @@ export class CustomerLeaderboardPage {
     return rank === 1 ? 'lucideCrown' : 'lucideMedal';
   }
 
-  protected podiumCardClass(rank: number): string {
+  protected podiumOrder(rank: number): string {
+    return rank === 1 ? 'order-2' : rank === 2 ? 'order-1' : 'order-3';
+  }
+
+  protected podiumBarClass(rank: number): string {
     switch (rank) {
-      case 1:
-        return 'border-amber-400/50 sm:order-2 sm:-translate-y-4';
-      case 2:
-        return 'border-border sm:order-1';
-      default:
-        return 'border-orange-400/40 sm:order-3';
+      case 1: return 'h-40 sm:h-52 lg:h-64 bg-linear-to-b from-amber-400 to-yellow-500';
+      case 2: return 'h-28 sm:h-36 lg:h-48 bg-linear-to-b from-slate-300 to-slate-400 dark:from-slate-500 dark:to-slate-600';
+      default: return 'h-20 sm:h-28 lg:h-36 bg-linear-to-b from-orange-400 to-orange-600';
     }
+  }
+
+  protected podiumAvatarSize(rank: number): string {
+    return rank === 1 ? 'size-20 sm:size-24 text-xl' : 'size-16 sm:size-20 text-base';
   }
 
   protected podiumRingClass(rank: number): string {
     switch (rank) {
-      case 1:
-        return 'ring-4 ring-amber-400/60';
-      case 2:
-        return 'ring-2 ring-border';
-      default:
-        return 'ring-2 ring-orange-400/50';
-    }
-  }
-
-  protected podiumStripClass(rank: number): string {
-    switch (rank) {
-      case 1:
-        return 'bg-linear-to-r from-amber-400 to-yellow-300';
-      case 2:
-        return 'bg-linear-to-r from-muted-foreground/40 to-muted-foreground/20';
-      default:
-        return 'bg-linear-to-r from-orange-400 to-amber-300';
+      case 1: return 'ring-4 ring-yellow-400';
+      case 2: return 'ring-4 ring-slate-300 dark:ring-slate-500';
+      default: return 'ring-4 ring-orange-400';
     }
   }
 

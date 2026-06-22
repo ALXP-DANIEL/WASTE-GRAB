@@ -6,14 +6,14 @@
       [class.opacity-50]="activeRequests().length > 0"
       [title]="activeRequests().length > 0 ? 'Complete or cancel your active request first' : ''"
       rightSide
-      class="h-9 items-center gap-1.5 rounded-full btn-brand px-4 text-sm font-semibold shadow-sm transition-all"
+      class="inline-flex h-9 items-center gap-1.5 rounded-full btn-brand px-4 text-sm font-semibold shadow-sm transition-all"
     >
       <ng-icon name="lucidePlus" class="size-4!" />
       New Request
     </a>
   </app-header>
 
-  <div class="grid w-full gap-6">
+  <div class="grid w-full gap-5">
     <!-- Stats -->
     <app-stat-grid [stats]="pageStats()" />
 
@@ -95,7 +95,23 @@
     }
 
     <!-- Request list -->
-    <section class="min-w-0 rounded-3xl border border-border bg-card shadow-sm">
+    @if (isLoading()) {
+    <div class="flex items-center justify-center py-16">
+      <ng-icon
+        name="lucideLoaderCircle"
+        class="size-6! animate-spin text-muted-foreground"
+      />
+    </div>
+    } @else if (loadError()) {
+    <app-empty-state
+      icon="lucideWifi"
+      [title]="loadError()"
+      description="Pull down to retry or check your connection."
+    />
+    } @else {
+    <section
+      class="overflow-hidden rounded-3xl border border-border bg-card shadow-sm"
+    >
       <div class="border-b border-border px-5 py-4">
         <app-table-header
           title="My Requests"
@@ -106,45 +122,43 @@
         />
       </div>
 
-        @if (filteredSummaries().length) {
-        <div>
-          <!-- Desktop column headers -->
-          <div
-            class="hidden grid-cols-[1.7fr_1fr_1fr_0.7fr_0.7fr] items-center border-b border-border/70 px-3 py-2 text-xs font-semibold text-muted-foreground md:grid"
-          >
-            <span>Request</span>
-            <span>Date</span>
-            <span>Status</span>
-            <span class="text-right">Weight</span>
-            <span class="text-right">Points</span>
-          </div>
-          @for (summary of filteredSummaries(); track summary.id) {
-          <app-customer-pickup-list-item [item]="summary" />
-          }
+      @if (filteredSummaries().length) {
+      <div>
+        <!-- Desktop column headers -->
+        <div
+          class="hidden grid-cols-[1.7fr_1fr_1fr_0.7fr_0.7fr] items-center border-b border-border/70 px-3 py-2 text-xs font-semibold text-muted-foreground md:grid"
+        >
+          <span>Request</span>
+          <span>Date</span>
+          <span>Status</span>
+          <span class="text-right">Weight</span>
+          <span class="text-right">Points</span>
         </div>
-        } @else {
-        <div class="flex flex-col items-center gap-4 px-6 py-16 text-center">
-          <div class="grid size-16 place-items-center rounded-full bg-muted">
-            <ng-icon
-              name="lucideRecycle"
-              class="size-7! text-muted-foreground"
-            />
-          </div>
-          <div>
-            <p class="font-semibold text-foreground">No requests found</p>
-            <p class="mt-1 text-sm text-muted-foreground">
-              Create a pickup request to start tracking your recyclables.
-            </p>
-          </div>
-          <a
-            routerLink="/customer/new-pickup"
-            class="inline-flex h-10 items-center gap-2 rounded-full btn-brand px-5 text-sm font-semibold shadow-sm transition-all"
-          >
-            <ng-icon name="lucidePlus" class="size-4!" />
-            New Request
-          </a>
-        </div>
+        @for (summary of filteredSummaries(); track summary.id) {
+        <app-customer-pickup-list-item [item]="summary" />
         }
+      </div>
+      } @else {
+      <div class="flex flex-col items-center gap-4 px-6 py-16 text-center">
+        <div class="grid size-16 place-items-center rounded-full bg-muted">
+          <ng-icon name="lucideRecycle" class="size-7! text-muted-foreground" />
+        </div>
+        <div>
+          <p class="font-semibold text-foreground">No requests found</p>
+          <p class="mt-1 text-sm text-muted-foreground">
+            Create a pickup request to start tracking your recyclables.
+          </p>
+        </div>
+        <a
+          routerLink="/customer/new-pickup"
+          class="inline-flex h-10 items-center gap-2 rounded-full btn-brand px-5 text-sm font-semibold shadow-sm transition-all"
+        >
+          <ng-icon name="lucidePlus" class="size-4!" />
+          New Request
+        </a>
+      </div>
+      }
     </section>
+    }
   </div>
 </section>

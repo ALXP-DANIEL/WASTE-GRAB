@@ -1,7 +1,6 @@
-import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideCalendarCheck, lucideCoins, lucideScale, lucideTrophy, lucideTruck } from '@ng-icons/lucide';
+import { lucideCalendarCheck, lucideCoins, lucideLoaderCircle, lucideScale, lucideTrophy, lucideTruck, lucideWifi } from '@ng-icons/lucide';
 import { AchievementMetric, type UserAchievement } from '@wastegrab/shared';
 import { AchievementService } from '@/services/achievement.service';
 import { AppHeaderComponent } from '@/ui/header/header.component';
@@ -12,9 +11,9 @@ import type { StatCardItem } from '@/ui/stat-card/stat-card.models';
 @Component({
   selector: 'app-customer-achievements-page',
   templateUrl: './achievements.html',
-  imports: [CommonModule, AppHeaderComponent, EmptyStateComponent, StatGridComponent, NgIcon],
+  imports: [AppHeaderComponent, EmptyStateComponent, StatGridComponent, NgIcon],
   viewProviders: [
-    provideIcons({ lucideCalendarCheck, lucideCoins, lucideScale, lucideTrophy, lucideTruck }),
+    provideIcons({ lucideCalendarCheck, lucideCoins, lucideLoaderCircle, lucideScale, lucideTrophy, lucideTruck, lucideWifi }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

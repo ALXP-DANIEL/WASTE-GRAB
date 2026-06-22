@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -7,13 +6,16 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { provideIcons } from '@ng-icons/core';
+import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideCheckCircle2,
   lucideFileText,
+  lucideLoaderCircle,
   lucideScale,
   lucideStar,
+  lucideWifi,
 } from '@ng-icons/lucide';
+import { EmptyStateComponent } from '@/ui/empty-state/empty-state.component';
 import { firstValueFrom, interval } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -53,7 +55,8 @@ import { NotificationService } from '@/services/notification.service';
   templateUrl: './customer.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
+    NgIcon,
+    EmptyStateComponent,
     CustomerActivePickupCardComponent,
     CustomerHeroComponent,
     CustomerQuickActionsComponent,
@@ -67,8 +70,10 @@ import { NotificationService } from '@/services/notification.service';
     provideIcons({
       lucideCheckCircle2,
       lucideFileText,
+      lucideLoaderCircle,
       lucideScale,
       lucideStar,
+      lucideWifi,
     }),
   ],
 })
