@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ZardButtonComponent } from '@/ui/zard/button/button.component';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideBell,
@@ -58,6 +59,7 @@ type MarkdownFormat = 'h1' | 'h2' | 'bold' | 'italic' | 'list';
     ZardFormFieldComponent,
     ZardFormLabelComponent,
     ZardFormControlComponent,
+    ZardButtonComponent,
     ZardInputDirective,
     NotificationMarkdownPipe,
     EmptyStateComponent,

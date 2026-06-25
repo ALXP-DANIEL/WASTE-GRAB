@@ -240,9 +240,9 @@ function getInitials(name?: string | null): string {
         <!-- Brand Icon -->
         <div class="w-full px-6 py-6 flex flex-col items-center justify-center">
           <a routerLink="/" class="flex items-center gap-3 text-primary no-underline hover:opacity-80">
-          <div class="flex h-14 w-14 items-center justify-center rounded-full bg-white border-2 border-[#008235]">
-            <ng-icon name="lucideRecycle" class="size-6! text-[#5B5B44]"/>
-          </div>
+            <div class="px-6 py-3">
+              <app-brand-logo size="lg" />
+            </div>
           </a>
           <div class="pt-3 w-48 border-b-2 border-[#008235] mt-4"></div>
         </div>

@@ -107,21 +107,7 @@
       }
 
       <div
-<<<<<<< HEAD
         class="fixed bottom-20 inset-x-4 z-40 flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-card/90 p-3 shadow-lg backdrop-blur lg:sticky lg:bottom-4 lg:inset-x-auto"
-=======
-        class="sticky bottom-4 z-10 flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-card/90 p-3 shadow-lg backdrop-blur"
-<<<<<<< HEAD
-=======
-      <button
-        type="submit"
-        class="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-background shadow-sm transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
-        [disabled]="isSubmitting() || isAnalyzing() || !isStepActive('confirm') || !canCreateRequest()"
-        data-tour="pickup-submit"
->>>>>>> 3a9c682 (Updated customer pages styling)
->>>>>>> 75ee135 (Updated customer pages styling)
-=======
->>>>>>> 2ae8daa (Rebased and updated customer pages)
       >
         <button
           type="button"
@@ -146,11 +132,7 @@
         @if (!isStepActive('confirm')) {
         <button
           type="button"
-<<<<<<< HEAD
-          class="inline-flex h-11 items-center justify-center gap-2 rounded-full btn-brand px-6 text-sm font-semibold shadow-sm transition-all disabled:cursor-not-allowed disabled:opacity-60"
-=======
-          class="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-background shadow-sm transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
->>>>>>> 2ae8daa (Rebased and updated customer pages)
+          class="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary text-background hover:bg-primary/90 px-6 text-sm font-semibold shadow-sm transition-all disabled:cursor-not-allowed disabled:opacity-60"
           (click)="nextStep()"
           [disabled]="!canGoNext() || !canCreateRequest()"
         >
@@ -160,7 +142,7 @@
         } @else {
         <button
           type="submit"
-          class="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+          class="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary text-background hover:bg-primary/90 px-6 text-sm font-semibold shadow-sm transition-all disabled:cursor-not-allowed disabled:opacity-60"
           [disabled]="isSubmitting() || isAnalyzing() || !isStepActive('confirm') || !canCreateRequest()"
           data-tour="pickup-submit"
         >
