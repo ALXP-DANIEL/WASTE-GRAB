@@ -29,9 +29,9 @@
     />
     </div>
 
-      <div class="grid gap-3 lg:hidden">
+      <div class="grid gap-3 lg:hidden min-w-0">
         @for (loc of locations(); track loc.id) {
-        <article class="rounded-lg border border-border p-3">
+        <article class="rounded-lg border border-border p-3 min-w-0 overflow-hidden">
           <div class="flex gap-3">
             <div class="grid size-16 shrink-0 place-items-center overflow-hidden rounded-lg border border-border bg-muted text-muted-foreground">
               @if (loc.imageUrl) {

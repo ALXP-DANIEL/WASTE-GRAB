@@ -29,7 +29,7 @@
 
       <div class="grid gap-3 lg:hidden">
         @for (pickup of filteredPickups(); track pickup.id) {
-        <a [routerLink]="[pickup.id]" class="block rounded-2xl border border-border/60 p-3 transition-all hover:-translate-y-px hover:bg-muted/40">
+        <a [routerLink]="[pickup.id]" class="min-w-[20rem] shrink-0 snap-start rounded-2xl border border-border/60 p-3 transition-all hover:-translate-y-px hover:bg-muted/40">
           <div class="flex items-start gap-3">
             @if (primaryImage(pickup)) {
             <img
