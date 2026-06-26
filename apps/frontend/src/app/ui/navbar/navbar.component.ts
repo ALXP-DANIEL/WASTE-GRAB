@@ -83,7 +83,7 @@ const ROLE_NAV = {
         ROUTE_PATHS.customer.achievements,
       ),
       icon: 'lucideTrophy',
-      showOnMobile: false,
+      showOnMobile: true,
     },
     {
       label: 'Leaderboard',
@@ -320,36 +320,52 @@ function getInitials(name?: string | null): string {
     </aside>
 
     <!-- Mobile Bottom Nav -->
-    <nav
-      class="lg:hidden m-2 mt-0 bg-card/95 backdrop-blur border border-border/60 rounded-[1.75rem] shadow-lg z-40"
-    >
-      <div class="flex h-20 items-stretch gap-2 p-2">
-        @for (item of navItems(); track item.route) {
-          @if (item.showOnMobile) {
-            <a
-              [routerLink]="item.route"
-              routerLinkActive="bg-primary text-primary-foreground shadow-sm"
-              [routerLinkActiveOptions]="{ exact: true }"
-              ariaCurrentWhenActive="page"
-              class="flex-1 flex flex-col items-center justify-center gap-1 rounded-xl text-primary-foreground transition-colors hover:bg-primary/10"
-            >
-              <ng-icon [name]="item.icon" class="size-5!" />
-              <span class="text-xs font-medium">{{ item.label }}</span>
-            </a>
-          }
+    <nav class="lg:hidden mx-3 mb-2 mt-0 z-40 flex items-center gap-2">
+      <!-- Main pill -->
+      <div
+        class="flex flex-1 items-center gap-1 rounded-full bg-card p-2 shadow-xl ring-1 ring-border/60"
+      >
+        @for (item of mobileNavItems(); track item.route) {
+          <a
+            [routerLink]="item.route"
+            routerLinkActive
+            #rla="routerLinkActive"
+            [routerLinkActiveOptions]="{ exact: true }"
+            ariaCurrentWhenActive="page"
+            class="flex flex-1 items-center justify-center gap-2 transition-all active:scale-95"
+            [class]="
+              rla.isActive ? 'rounded-full bg-primary px-3 py-2' : 'py-2'
+            "
+          >
+            <ng-icon
+              [name]="item.icon"
+              class="size-5! shrink-0"
+              [class]="
+                rla.isActive
+                  ? 'text-background'
+                  : 'text-muted-foreground'
+              "
+            />
+            @if (rla.isActive) {
+              <span
+                class="whitespace-nowrap text-xs font-bold text-background"
+                >{{ item.label }}</span
+              >
+            }
+          </a>
         }
       </div>
 
       <!-- Primary action bubble -->
       @if (mobilePrimaryItem(); as primary) {
         <a
-          [routerLink]="profileRoute"
-          routerLinkActive="bg-primary text-black shadow-sm"
+          [routerLink]="primary.route"
+          routerLinkActive="ring-2 ring-primary/40 ring-offset-2"
           [routerLinkActiveOptions]="{ exact: true }"
           ariaCurrentWhenActive="page"
-          class="flex-1 flex flex-col items-center justify-center gap-1 rounded-xl text-primary-foreground transition-colors hover:bg-primary/10"
+          class="grid size-13 shrink-0 place-items-center rounded-full bg-primary text-background shadow-xl transition-all active:scale-95"
         >
-          <ng-icon [name]="primary.icon" class="size-6!" />
+          <ng-icon [name]="primary.icon" class="size-5!" />
         </a>
       }
     </nav>
