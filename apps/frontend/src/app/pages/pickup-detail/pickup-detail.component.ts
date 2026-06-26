@@ -21,6 +21,7 @@ import {
   lucideUser,
   lucideWifi,
   lucideXCircle,
+  lucideChevronRight,
 } from '@ng-icons/lucide';
 import { AdminPickupService } from '@/services/admin-pickup.service';
 import { NotificationService } from '@/services/notification.service';
@@ -249,10 +250,10 @@ export class AcceptPickupDialogComponent {
         <p class="text-sm text-muted-foreground">Open the location when you are ready to drop the collected waste.</p>
         <a
           [routerLink]="['/collector', 'locations', locationSlug(selected)]"
-          class="inline-flex h-9 items-center justify-center gap-2 rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+          class="inline-flex shrink-0 h-9 items-center justify-center gap-2 rounded-full bg-primary px-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
         >
           <ng-icon name="lucideNavigation" class="size-4!" />
-          Open drop-off location
+          Drop-off location
         </a>
       </div>
       }
@@ -335,6 +336,7 @@ export class DropoffLocationDialogComponent {
       lucideUser,
       lucideWifi,
       lucideXCircle,
+      lucideChevronRight,
     }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
