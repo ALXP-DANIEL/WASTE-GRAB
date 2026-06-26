@@ -238,7 +238,7 @@ function getInitials(name?: string | null): string {
       <div class="flex flex-col h-full">
 
         <!-- Brand Icon -->
-        <div class="w-full px-6 py-6 flex flex-col items-center justify-center">
+        <div class="w-full p-6 flex flex-col items-center justify-center">
           <a routerLink="/" class="flex items-center gap-3 text-primary no-underline hover:opacity-80">
             <div class="px-6 py-3">
               <app-brand-logo size="lg" />
@@ -248,7 +248,7 @@ function getInitials(name?: string | null): string {
         </div>
 
         <!-- Nav -->
-        <nav class="flex-1 px-4 py-4">
+        <nav class="flex-1 p-4">
           @for (item of navItems(); track item.route) {
             <a
               [routerLink]="item.route"
@@ -257,7 +257,7 @@ function getInitials(name?: string | null): string {
               ariaCurrentWhenActive="page"
               class="group py-2 mb-1 flex items-center gap-3 rounded-l-2xl -mr-8 text-md font-medium hover:font-bold dark:font-thin dark:hover:font-medium"
             >
-              <span class="flex w-full items-center gap-4 rounded-l-2xl px-4 py-2 transition-colors !text-primary-foreground group-hover:bg-background dark:!text-foreground">
+              <span class="flex w-full items-center gap-4 rounded-l-2xl px-4 py-2 transition-colors text-primary-foreground! group-hover:bg-background dark:text-foreground!">
                 <ng-icon [name]="item.icon" class="size-4!" />
                 <span>{{ item.label }}</span>
               </span>
@@ -278,7 +278,7 @@ function getInitials(name?: string | null): string {
                 [zFallback]="userInitials()"
                 [zAlt]="avatarAlt()"
                 zSize="md"
-                class="w-10 h-10 text-foreground"
+                class="size-10 text-foreground"
               />
               <div class="flex flex-col width-full">
                 <p class="truncate text-md font-bold">{{ user()?.name }}</p>
