@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '@/services/auth.service';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -67,7 +66,6 @@ type FooterGroup = { title: string; links: Array<{ label: string; href: string }
 @Component({
   selector: 'app-home-page',
   imports: [
-    DecimalPipe,
     RouterLink,
     NgIcon,
     ZardButtonComponent,
