@@ -233,6 +233,11 @@ npm exec -- nx run e2e:e2e
 
 CI runs build, database sync, tests, Docker image workflows, and deployment-related checks through GitHub Actions.
 
+## Portfolio metadata
+
+The root [`project.json`](project.json) and artwork in `metadata/picture/` feed
+Alif Daniel's GitHub-backed portfolio CMS.
+
 ## Environment Variables
 
 See `.env.example` for the full list. Important variables include:
