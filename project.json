@@ -3,12 +3,12 @@
   "title": "WasteGrab",
   "type": "Full-Stack Web App",
   "category": "Recycling Platform",
-  "summary": "A smart recycling pickup and rewards platform connecting customers, collectors, and admins — with AI-assisted waste analysis and map-based route planning.",
-  "overview": "WasteGrab is an Nx monorepo with an Angular 21 frontend, an Express/Prisma backend, and a shared TypeScript types library. Customers request recyclable pickups with image upload and AI-suggested category, weight, and reward points via Roboflow; collectors manage assigned pickups with MapLibre + OSRM route previews and verify actual weight; admins manage users, categories, collection locations, vouchers, notifications, and reward activity. It includes a reward points ledger, voucher redemption, in-app and web push notifications, and full role-based authentication.",
+  "summary": "A smart recycling pickup and rewards platform connecting customers, collectors, and administrators through AI-assisted classification, live operations, routing, achievements, and incentives.",
+  "overview": "WasteGrab is an Nx monorepo with an Angular 21 frontend, Express API, Prisma 7 data layer, and shared TypeScript domain library. Customers create pickups with multiple images, saved addresses, Roboflow-assisted material estimates, lifecycle tracking, achievements, a recycling leaderboard, reward points, and voucher redemption. Collectors discover and accept work, manage assigned stops, view MapLibre and OSRM route guidance, update arrival and completion states, and verify actual weight. Administrators manage users, collectors, requests, material categories, collection locations, vouchers, achievements, notification campaigns, and authentication artwork. Supabase stores public media, Server-Sent Events and Web Push deliver updates, and Docker, Railway, GHCR, GitHub Actions, Playwright, and Vitest support delivery and testing.",
   "year": "2026",
   "spotlight": true,
-  "thumbnail": "https://picsum.photos/seed/wastegrab-cover/1400/900",
-  "spotlightImage": "https://picsum.photos/seed/wastegrab-hero/1800/1100",
+  "thumbnail": "./metadata/picture/thumbnail.png",
+  "spotlightImage": "./metadata/picture/thumbnail.png",
   "techStack": [
     "Angular 21",
     "TypeScript",
@@ -23,6 +23,8 @@
     "MapLibre GL",
     "OSRM Routing",
     "Google Maps Places",
+    "Server-Sent Events",
+    "Web Push",
     "Nx",
     "Docker",
     "GitHub Actions",
@@ -31,34 +33,28 @@
   ],
   "highlights": [
     "Full-stack recycling pickup and rewards platform for customers, collectors, and admins (Angular 21, Express, Prisma, MySQL/MariaDB).",
-    "Customer pickup requests with image upload, saved addresses, lifecycle tracking, history, and voucher redemption.",
-    "Roboflow AI analysis suggests waste category, estimated weight, and reward points before submission — manually adjustable.",
-    "Collector workflows: available and assigned pickups, MapLibre + OSRM multi-stop route previews, status updates, and actual-weight verification.",
-    "Admin modules for users, collectors, pickups, waste categories, collection locations, vouchers, notifications, and reward activity.",
-    "Reward points ledger, in-app and web push notifications, and Nx-based CI/CD with Docker, GitHub Actions, GHCR, and Railway."
+    "Customer journeys cover multi-image pickup requests, saved addresses, AI-assisted estimates, status history, achievements, leaderboards, points, and vouchers.",
+    "Roboflow suggests material category, weight, and reward value before submission while keeping the estimate manually adjustable.",
+    "Collector operations include available and assigned jobs, distance-aware views, MapLibre and OSRM multi-stop routing, lifecycle updates, and final-weight verification.",
+    "Admin modules manage users, collectors, pickups, material categories, collection locations, vouchers, achievements, auth slides, and notification campaigns.",
+    "Supabase-backed media, in-app notifications, Server-Sent Events, Web Push, and a points ledger connect operational updates to customer rewards.",
+    "Nx, shared TypeScript contracts, Docker, GitHub Actions, GHCR, Railway, Playwright, and Vitest support the monorepo delivery pipeline."
   ],
   "previewImages": [
     {
-      "src": "https://picsum.photos/seed/wastegrab-1/1400/900",
-      "title": "Customer Pickup",
-      "caption": "Pickup request with image upload and AI estimates.",
-      "alt": "WasteGrab customer pickup flow"
+      "src": "./metadata/picture/preview-route.png",
+      "title": "Collector Routing Concept",
+      "caption": "Portfolio presentation of the implemented multi-stop collector routing workflow.",
+      "alt": "WasteGrab collector route planning presentation"
     },
     {
-      "src": "https://picsum.photos/seed/wastegrab-2/1400/900",
-      "title": "Collector Routes",
-      "caption": "Map-based route planning with OSRM previews.",
-      "alt": "WasteGrab collector route planning"
-    },
-    {
-      "src": "https://picsum.photos/seed/wastegrab-3/1400/900",
-      "title": "Admin Dashboard",
-      "caption": "Managing pickups, categories, vouchers, and rewards.",
-      "alt": "WasteGrab admin dashboard"
+      "src": "./metadata/picture/preview-admin.png",
+      "title": "Operations Dashboard Concept",
+      "caption": "Portfolio presentation of recycling operations, collector activity, materials, and rewards.",
+      "alt": "WasteGrab administration dashboard presentation"
     }
   ],
   "actions": {
-    "open": "https://wastegrab.alifdaniel.dpdns.org",
     "github": "https://github.com/ALXP-DANIEL/WASTE-GRAB"
   }
 }
